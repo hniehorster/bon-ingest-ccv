@@ -18,6 +18,7 @@
                         </p>
                     </div>
                     <form method="POST" action="{{ route('redirectPage', ['user_uuid' => $user_uuid, 'apiLocale' => $apiLocale]) }}" id="shopnumber-form">
+
                     <div class="card-content">
                         <div class="content">
                             <div class="field">
@@ -27,7 +28,7 @@
                             </div>
                                 <div class="field is-grouped">
                                     <div class="control">
-                                        <button class="button is-link" type="submit">Submit</button>
+                                        <button class="button is-link" name="submit" value="formSubmit" type="submit">Submit</button>
                                     </div>
                                 </div>
                         </div>

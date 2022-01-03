@@ -1,19 +1,28 @@
 <?php
 
 namespace App\Jobs;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class FetchShopDataJob extends Job
+class FetchShopDataJob extends Job implements ShouldQueue
 {
+    use InteractsWithQueue, Queueable, SerializesModels;
+
+    public $externalIdentifier;
+    public $createdAtMax;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(int $externalIdentifier, string $createdAtMax)
     {
-        //
+        $this->externalIdentifier   = $externalIdentifier;
+        $this->createdAtMax         = $createdAtMax;
     }
 
     /**
@@ -23,6 +32,6 @@ class FetchShopDataJob extends Job
      */
     public function handle()
     {
-
+        dispatch(new InitialFetchOrdersJob($this->externalIdentifier, $this->createdAtMax));
     }
 }

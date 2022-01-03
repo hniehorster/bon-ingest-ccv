@@ -3,12 +3,17 @@
 return [
     'platform_name' => 'LightspeedEcom',
     'has_webhooks' => true,
+    'has_shop_scripts' => true,
     'webhooks' => [
         'orders' => [
-            'url' => 'ordersWebhook',
+            'itemGroup'     => 'orders',
+            'itemAction'   => '*',
+            'url'           => 'ordersWebhook',
         ],
         'shipments' => [
-            'url' => 'shipmentsWebhook',
+            'itemGroup'     => 'shipments',
+            'itemAction'   => '*',
+            'url'           => 'shipmentsWebhook',
         ]
     ]
 ];

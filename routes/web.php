@@ -20,8 +20,11 @@ $router->group([
 
     $router->get('/install', 'Install\InstallController@preInstall');
     $router->post('/install', ['as' => 'redirectPage', 'uses' => 'Install\InstallController@generateRedirect']);
+    $router->get('/install/confirmed', ['as' => 'confirmedPage', 'uses' => 'Install\InstallController@postInstall']);
+    $router->get('/time', 'TimeController@get');
 
 });
 
 $router->post('/webhooks/orders', ['as' => 'ordersWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
 $router->post('/webhooks/shipments', ['as' => 'shipmentsWebhook', 'uses' => 'Orders\ShipmentController@acceptWebhook']);
+

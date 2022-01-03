@@ -25,7 +25,7 @@ $app = new Laravel\Lumen\Application(
 
 $app->withFacades();
 
-// $app->withEloquent();
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +61,8 @@ $app->singleton(
 
 $app->configure('app');
 $app->configure('database');
+$app->configure('bff');
+$app->configure('queue');
 $app->configure('platform_config');
 
 /*

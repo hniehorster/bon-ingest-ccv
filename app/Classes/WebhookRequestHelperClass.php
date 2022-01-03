@@ -24,14 +24,15 @@ class WebhookRequestHelperClass
      * @param string|null $header
      * @return array|mixed
      */
-    public function getHeaders(string $header = null): object
+    public function getHeaders(string $header = null): array
     {
 
-        $this->headers = (object)$this->request->header();
+        $headers = $this->request->header();
 
-        if (!is_null($header)) {
-            return $this->headers->$header;
+        foreach($headers as $headerKey => $headerValue) {
+            $headers[$headerKey] = $headerValue[0];
         }
+        $this->headers = $headers;
 
         return $this->headers;
     }
@@ -39,9 +40,9 @@ class WebhookRequestHelperClass
     /**
      * @return array
      */
-    public function getContent(): object
+    public function getContent(): array
     {
-        return json_decode($this->request->getContent());
+        return json_decode($this->request->getContent(), true);
     }
 
     /**

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Orders;
 
 use App\Classes\QueueHelperClass;
 use App\Classes\WebhookRequestHelperClass;
+use App\Jobs\ProcessOrderJob;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class OrderController extends BaseController {
@@ -20,8 +22,7 @@ class OrderController extends BaseController {
         $webhook = new WebhookRequestHelperClass($request);
         $queueData = $webhook->getQueuePreparedData();
 
-        QueueHelperClass::pushOn(self::OBJECT_QUEUE, self::OBJECT_TYPE, $queueData);
-
+        dispatch(new ProcessOrderJob($queueData->headers['x-order-id'], $queueData->headers['x-shop-id'], $queueData->content['order']));
     }
 
 }

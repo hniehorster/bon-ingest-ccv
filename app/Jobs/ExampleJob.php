@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use Illuminate\Support\Facades\Log;
+
 class ExampleJob extends Job
 {
     /**
@@ -11,7 +13,7 @@ class ExampleJob extends Job
      */
     public function __construct()
     {
-        //
+        Log::info('Test job _ contrstruct)');
     }
 
     /**
@@ -21,6 +23,6 @@ class ExampleJob extends Job
      */
     public function handle()
     {
-        //
+        Log::info('Test job _ handled)');
     }
 }

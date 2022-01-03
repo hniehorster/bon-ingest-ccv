@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Shipments;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebhookRequestHelperClass;
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessOrderJob;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
@@ -12,6 +13,7 @@ class ShipmentController extends BaseController {
 
     const OBJECT_TYPE = 'shipments';
     const OBJECT_QUEUE = 'general';
+
 
     /**
      * @param Request $request
@@ -21,8 +23,7 @@ class ShipmentController extends BaseController {
         $webhook = new WebhookRequestHelperClass($request);
         $queueData = $webhook->getQueuePreparedData();
 
-        QueueHelperClass::pushOn(self::OBJECT_QUEUE, self::OBJECT_TYPE, $queueData);
-
+        dispatch(new ProcessOrderJob($queueData->headers['x-shipment-id'], $queueData->headers['x-shop-id'], $queueData->content['shipment']));
     }
 
 }

@@ -10,7 +10,11 @@
         "guzzlehttp/guzzle": "^7.2",
         "illuminate/redis": "^8.16",
         "predis/predis": "^1.1",
-        "sentry/sentry-laravel": "^2.8"
+        "sentry/sentry-laravel": "^2.8",
+        "hniehorster/bon-api-ingest": "dev-master",
+        "hniehorster/bon-sdk-ingest": "dev-master",
+        "hniehorster/bon-sdk-gid": "dev-master"
+
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "dev-master",
@@ -25,6 +29,20 @@
             "Database\\Seeders\\": "database/seeders/"
         }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/hniehorster/bon-api-ingest"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/hniehorster/bon-sdk-ingest"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/hniehorster/bon-sdk-gid"
+        }
+    ],
     "autoload-dev": {
         "classmap": [
             "tests/"
