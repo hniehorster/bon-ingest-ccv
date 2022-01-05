@@ -5,7 +5,11 @@ namespace App\Jobs;
 use App\Classes\AuthenticationHelper;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
+use App\Exceptions\ObjectDoesNotExistException;
 use App\Transformers\Transformer;
+use BonSDK\ApiClient\BonGID;
+use BonSDK\ApiIngest\BonIngestAPI;
+use BonSDK\Classes\BonSDKGID;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -41,10 +45,58 @@ class ProcessShipmentJob extends Job implements ShouldQueue
             $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
 
             if (is_null($this->shipmentData)) {
-                $this->shipmentData = $webshopAppClient->orders->get($this->externalShipmentId);
+                $this->shipmentData = $webshopAppClient->shipments->get($this->externalShipmentId);
             }
 
             $transformedShipment = (new Transformer($apiCredentials->businessUUID, $this->shipmentData, $apiCredentials->defaults))->shipment->transform();
+
+            $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiCredentials->internalApiKey, $apiCredentials->internalApiSecret, $apiCredentials->language);
+
+            $orderGID = (new BonSDKGID)->encode(env('PLATFORM_TEXT'), $apiCredentials->businessUUID, 'order', $transformedShipment['external_order_id']);
+
+            $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
+
+            if ($bonOrderCheck->meta->count > 0) {
+
+                $transformedShipment['object_type'] = 'order';
+                $transformedShipment['object_uuid'] = $bonOrderCheck->data[0]->uuid;
+
+                $bonShipmentsCheck = $bonApi->shipments->get(null, ['gid' => $transformedShipment['gid']]);
+
+                if ($bonShipmentsCheck->meta->count > 0) {
+                    $bonShipment = $bonApi->shipments->update($bonShipmentsCheck->data[0]->uuid, $transformedShipment);
+                } else {
+                    $bonShipment = $bonApi->shipments->create($transformedShipment);
+                }
+
+                //Shipment Tracking
+                $bonShipmentTrackingCheck = $bonApi->shipmentTrackings->get(null, ['shipment_uuid' => $bonShipment->uuid]);
+
+                $shipmentTracking = [
+                    'shipment_uuid'     => $bonShipment->uuid,
+                    'tracking_code'     => $transformedShipment['tracking_code'],
+                    'tracking_enabled'  => '',
+                    'carrier'           => '', //TODO find the carrier
+                ];
+
+                if ($bonShipmentTrackingCheck->meta->count > 0) {
+
+
+                    $bonShipment = $bonApi->shipmentTrackings->update($bonShipmentsCheck->data[0]->uuid, $transformedShipment);
+                } else {
+
+                    $shipmentTracking['status'] = 'NEW';
+                    $bonShipment = $bonApi->shipmentTrackings->create($transformedShipment);
+                }
+
+                //Shipment Line Items
+
+
+
+            }else{
+                throw new ObjectDoesNotExistException();
+            }
+
 
         }
         catch (Exception $e) {

@@ -32,10 +32,12 @@ class ShipmentTransformer {
     public function matchingData() : array
     {
         return [
-            'external_id'   => 'id',
-            'gid'           => 'gid:shipment:id',
-            'number'        => 'number',
-            'business_uuid' => 'BON_BUSINESSUUID',
+            'external_id'       => 'id',
+            'gid'               => 'gid:shipment:id',
+            'number'            => 'number',
+            'business_uuid'     => 'BON_BUSINESSUUID',
+            'external_order_id' => 'order.resource.id',
+            'tracking_code'     => 'trackingCode'
         ];
     }
 }

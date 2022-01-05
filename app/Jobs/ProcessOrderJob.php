@@ -57,7 +57,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiCredentials->internalApiKey, $apiCredentials->internalApiSecret, $apiCredentials->language);
             $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $transformedOrder['gid']]);
 
-            if ($bonOrderCheck->meta->count > 1) {
+            if ($bonOrderCheck->meta->count > 0) {
                //Update the order
                 $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, $transformedOrder);
             }else{
@@ -66,11 +66,9 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
             $this->shipmentData = $webshopAppClient->shipments->get(null, ['order' => $this->externalOrderId]);
 
-            //Create the Shipment and the tracking
-            $transformedOrderShipments = (new Transformer($apiCredentials->businessUUID, $this->orderData, $apiCredentials->defaults))->orderShipment->transform();
-
+            //Queue the shipments in their respective jobs
             foreach($this->shipmentData AS $shipment) {
-
+                Queue::push(new ProcessShipmentJob($shipment['id'], $this->externalIdentifier, $shipment));
             }
 
             // Let's add the OrderLineItems
