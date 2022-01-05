@@ -5,10 +5,10 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.3",
+        "php": "^7.3|^8.0",
         "laravel/lumen-framework": "^8.3.1",
         "guzzlehttp/guzzle": "^7.2",
-        "illuminate/redis": "^8.16",
+        "illuminate/redis": "^8.21",
         "predis/predis": "^1.1",
         "sentry/sentry-laravel": "^2.8",
         "hniehorster/bon-api-ingest": "dev-master",
