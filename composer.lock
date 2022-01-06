@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ae4651d75ebf7ce22b02d8283d2c154",
+    "content-hash": "138f8718e7018551a0c4e3ef99d532db",
     "packages": [
         {
             "name": "brick/math",
@@ -10632,8 +10632,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "hniehorster/bon-api-ingest": 20,
-        "hniehorster/bon-sdk-ingest": 20,
         "hniehorster/bon-sdk-gid": 20,
+        "hniehorster/bon-sdk-ingest": 20,
         "barryvdh/laravel-ide-helper": 20
     },
     "prefer-stable": true,

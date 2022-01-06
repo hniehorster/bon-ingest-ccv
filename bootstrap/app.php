@@ -100,6 +100,7 @@ $app->configure('platform_config');
 // $app->register(App\Providers\EventServiceProvider::class);
 
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register('Sentry\Laravel\ServiceProvider');
 
 /*
 |--------------------------------------------------------------------------
