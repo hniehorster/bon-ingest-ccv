@@ -15,7 +15,9 @@
         "sentry/sentry-laravel": "^2.8",
         "hniehorster/bon-api-ingest": "dev-master",
         "hniehorster/bon-sdk-ingest": "dev-master",
-        "hniehorster/bon-sdk-gid": "dev-master"
+        "hniehorster/bon-sdk-gid": "dev-master",
+        "symfony/polyfill-ctype": "1.23.0",
+        "symfony/polyfill-mbstring": "1.23.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "dev-master",
