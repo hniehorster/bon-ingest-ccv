@@ -207,7 +207,7 @@ class InstallController extends Controller {
             $now = Carbon::now()->format('Y-m-d H:i:s');
 
             //4. Create a job to fetch all orders
-            $this->dispatch(new FetchShopDataJob($request->get('shop_id'), $now));
+            dispatch(new FetchShopDataJob($request->get('shop_id')));
 
         }else{
 
