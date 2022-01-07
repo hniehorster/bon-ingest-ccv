@@ -29,16 +29,12 @@ class InitialFetchOrdersJob extends Job
     public function handle()
     {
 
-        Log::info('Fetch Initial Orders');
-
         try {
 
             $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
 
             //start processing the pages
             if ($this->pageNumber == 1) {
-
-                Log::info('Fetching the first page');
 
                 //Check all the pages
                 $ordersPageCount = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
@@ -49,8 +45,6 @@ class InitialFetchOrdersJob extends Job
                 $this->fetchPage(1, $apiCredentials);
 
             } else {
-
-                Log::info('Fetching the ' . $this->pageNumber . ' page');
 
                 $this->fetchPage($this->pageNumber, $apiCredentials);
 
@@ -68,8 +62,6 @@ class InitialFetchOrdersJob extends Job
 
             if($e->getCode() == 429){
 
-                Log::info('Job Queued due to ApiLImit');
-
                 Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new InitialFetchOrdersJob($this->externalIdentifier, $this->createdAtMax, $this->pageNumber, $this->maxPageNumber));
             }
 
@@ -83,17 +75,13 @@ class InitialFetchOrdersJob extends Job
      */
     public function fetchPage(int $pageNumber, stdClass $apiCredentials)
     {
-        Log::info(json_encode($apiCredentials, JSON_PRETTY_PRINT));
-
         $ordersAPI = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
 
         $orderObjects = $ordersAPI->orders->get(null, ['created_at_max' => $this->createdAtMax, 'limit' => env('API_MAX_PAGE_SIZE'), 'page' => $pageNumber]);
 
         foreach($orderObjects as $orderObject) {
 
-            Log::info('Fetched Order' . $orderObject['id']);
             Queue::later(QueueHelperClass::getNearestTimeRoundedUp(5, true), new ProcessOrderJob($orderObject['id'], $apiCredentials->externalIdentifier));
-            Log::info('Order Queued');
         }
     }
 }
