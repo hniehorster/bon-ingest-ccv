@@ -98,20 +98,22 @@ class InstallController extends Controller {
 
             echo "New Business Needs to be created";
 
-            $accountData['name']                = $externalAccountDetails['name'];
-            $accountData['address_1']           = $externalAccountDetails['street'];
-            $accountData['address_2']           = $externalAccountDetails['street2'];
-            $accountData['number']              = "";
-            $accountData['number_extension']    = "";
-            $accountData['zipcode']             = $externalAccountDetails['zipcode'];
-            $accountData['city']                = $externalAccountDetails['city'];
-            $accountData['country']             = $externalAccountDetails['country']['title'];
-            $accountData['country_code']        = $externalAccountDetails['country']['code'];
-            $accountData['region']              = $externalAccountDetails['region'];
-            $accountData['coc_number']          = $externalAccountDetails['cocNumber'];
-            $accountData['coc_location']        = $externalAccountDetails['cocLocation'];
-            $accountData['vat_number']          = $externalAccountDetails['vatNumber'];
-            $accountData['national_id']         = $externalAccountDetails['nationalId'];
+            $accountData = [
+                'name'                => $externalAccountDetails['name'],
+                'address_1'           => $externalAccountDetails['street'],
+                'address_2'           => $externalAccountDetails['street2'],
+                'number'              => "",
+                'number_extension'    => "",
+                'zipcode'             => $externalAccountDetails['zipcode'],
+                'city'                => $externalAccountDetails['city'],
+                'country'             => $externalAccountDetails['country']['title'],
+                'country_code'        => $externalAccountDetails['country']['code'],
+                'region'              => $externalAccountDetails['region'],
+                'coc_number'          => $externalAccountDetails['cocNumber'],
+                'coc_location'        => $externalAccountDetails['cocLocation'],
+                'vat_number'          => $externalAccountDetails['vatNumber'],
+                'national_id'         => $externalAccountDetails['nationalId'],
+            ];
 
             //2. Create the Account
             $newAccount = json_decode((new AccountService())->createAccount('en', $accountData));
@@ -120,21 +122,23 @@ class InstallController extends Controller {
 
             //3. Create the business
 
-            $businessData['account_uuid']       = $newAccount->uuid;
-            $businessData['gid']                = $GID;
-            $businessData['gid_short']          = $shortGID;
-            $businessData['name']               = $externalAccountDetails['name'];
-            $businessData['website']            = $businessDetails['mainDomain'];
-            $businessData['type']               = "digital";
-            $businessData['address_1']          = $externalAccountDetails['street'];
-            $businessData['address_2']          = $externalAccountDetails['street2'];
-            $businessData['number']             = "";
-            $businessData['number_extension']   = "";
-            $businessData['zipcode']            = $externalAccountDetails['zipcode'];
-            $businessData['city']               = $externalAccountDetails['city'];
-            $businessData['country']            = $externalAccountDetails['country']['title'];
-            $businessData['country_code']       = $externalAccountDetails['country']['code'];
-            $businessData['region']             = $externalAccountDetails['region'];
+            $businessData = [
+                'account_uuid'       => $newAccount->uuid,
+                'gid'                => $GID,
+                'gid_short'          => $shortGID,
+                'name'               => $externalAccountDetails['name'],
+                'website'            => $businessDetails['mainDomain'],
+                'type'               => "digital",
+                'address_1'          => $externalAccountDetails['street'],
+                'address_2'          => $externalAccountDetails['street2'],
+                'number'             => "",
+                'number_extension'   => "",
+                'zipcode'            => $externalAccountDetails['zipcode'],
+                'city'               => $externalAccountDetails['city'],
+                'country'            => $externalAccountDetails['country']['title'],
+                'country_code'       => $externalAccountDetails['country']['code'],
+                'region'             => $externalAccountDetails['region'],
+            ];
 
             $newBusiness = json_decode((new BusinessService())->createBusiness($request->get('language'), $businessData));
 
@@ -186,13 +190,14 @@ class InstallController extends Controller {
 
                 foreach($newWebhooks as $webhook){
 
-                    $webhookParams = [];
-                    $webhookParams['itemAction']    = $webhook['itemAction'];
-                    $webhookParams['itemGroup']     = $webhook['itemGroup'];
-                    $webhookParams['isActive']      = true;
-                    $webhookParams['address']       = route($webhook['url']);
-                    $webhookParams['format']        = 'json';
-                    $webhookParams['language']      = $request->get('language');
+                    $webhookParams = [
+                        'itemAction'    => $webhook['itemAction'],
+                        'itemGroup'     => $webhook['itemGroup'],
+                        'isActive'      => true,
+                        'address'       => route($webhook['url']),
+                        'format'        => 'json',
+                        'language'      => $request->get('language')
+                    ];
 
                     Log::info(json_encode($webhookParams, JSON_PRETTY_PRINT));
 
