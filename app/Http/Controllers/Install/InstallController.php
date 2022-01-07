@@ -155,7 +155,7 @@ class InstallController extends Controller {
 
             //Store the BusinessAuth
             $newBusinessToken = BusinessToken::updateOrCreate([
-                'uuid'              => $newBusiness->uuid,
+                'business_uuid'              => $newBusiness->uuid,
                 'external_identifier'  => $request->get('shop_id'),
                 'cluster'           => $cluster
                 ], [
