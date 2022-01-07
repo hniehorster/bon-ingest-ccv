@@ -23,6 +23,10 @@ $router->group([
     $router->get('/install/confirmed', ['as' => 'confirmedPage', 'uses' => 'Install\InstallController@postInstall']);
     $router->get('/time', 'TimeController@get');
 
+    $router->get('/test', function() {
+        echo route('ordersWebhook');
+    });
+
 });
 
 $router->post('/webhooks/orders', ['as' => 'ordersWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);

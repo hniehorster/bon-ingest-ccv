@@ -24,11 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Fix for SwiftMailer Service;
-        $_SERVER["SERVER_NAME"] = "www.salutlabs.com";
-
-        if ($this->app->environment('production')) {
-            URL::forceScheme('https');
-        }
+        URL::forceScheme('https');
     }
 }
