@@ -154,17 +154,18 @@ class InstallController extends Controller {
             }
 
             //Store the BusinessAuth
-            $newBusinessToken = new BusinessToken();
-            $newBusinessToken->business_uuid        = $newBusiness->uuid;
-            $newBusinessToken->external_identifier  = $request->get('shop_id');
-            $newBusinessToken->cluster              = $cluster;
-            $newBusinessToken->language             = $request->get('language');
-            $newBusinessToken->external_api_key     = $apiKey;
-            $newBusinessToken->external_api_secret  = $request->get('token');
-            $newBusinessToken->internal_api_key     = $businessAuth->api_key;
-            $newBusinessToken->internal_api_secret  = $businessAuth->api_secret;
-            $newBusinessToken->defaults             = $defaults;
-            $newBusinessToken->save();
+            $newBusinessToken = BusinessToken::updateOrCreate([
+                'uuid'              => $newBusiness->uuid,
+                'external_identifier'  => $request->get('shop_id'),
+                'cluster'           => $cluster
+                ], [
+                'language'             => $request->get('language'),
+                'external_api_key'     => $apiKey,
+                'external_api_secret'  => $request->get('token'),
+                'internal_api_key'     => $businessAuth->api_key,
+                'internal_api_secret'  => $businessAuth->api_secret,
+                'defaults'             => $defaults,
+            ]);
 
             //Add the user to the business as a store owner
 
@@ -200,6 +201,7 @@ class InstallController extends Controller {
             }
 
             if(config('platform_config.has_shop_scripts')){
+
             }
 
             $now = Carbon::now()->format('Y-m-d H:i:s');

@@ -28,6 +28,9 @@ class InitialFetchOrdersJob extends Job
 
     public function handle()
     {
+
+        Log::info('Fetch Initial Orders');
+
         try {
 
             $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
