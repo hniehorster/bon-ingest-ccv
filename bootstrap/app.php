@@ -77,7 +77,7 @@ $app->configure('platform_config');
 */
 
 $app->middleware([
-    App\Http\Middleware\TrustedProxiesMiddleware::class
+    App\Http\Middleware\TrustedProxies::class
  ]);
 
 // $app->routeMiddleware([
