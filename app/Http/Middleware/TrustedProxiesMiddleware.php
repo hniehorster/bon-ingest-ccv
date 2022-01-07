@@ -12,7 +12,7 @@ class TrustedProxiesMiddleware
      *
      * @var array|string|null
      */
-    protected $proxies = '*';
+    protected $trustedProxies = ['*'];
 
     /**
      * The headers that should be used to detect proxies.
@@ -20,4 +20,9 @@ class TrustedProxiesMiddleware
      * @var int
      */
     protected $headers = Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_AWS_ELB;
+
+    public function handle(Request $request, \Closure $next){
+        Request::setTrustedProxies($this->trustedProxies, $this->headers);
+        return $next($request);
+    }
 }
