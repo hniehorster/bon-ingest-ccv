@@ -80,11 +80,13 @@ class ProcessOrderJob extends Job implements ShouldQueue
                 //Check if Line item already exists
                 $bonLineItemCheck = $bonApi->orderLineItems->get(null, ['order_uuid' => $bonOrder->uuid, 'line_item_id' => $transformedLineItem['line_item_id']]);
 
-                if($bonLineItemCheck->meta->count > 1) {
+                if($bonLineItemCheck->meta->count > 0) {
                     $bonLineItem = $bonApi->orderLineItems->update($bonLineItemCheck->data[0]->uuid, $transformedLineItem);
                 }else{
                     $bonLineItem = $bonApi->orderLineItems->create($transformedLineItem);
                 }
+
+                Log::info('Line Item Info: ' . json_encode($bonLineItem, JSON_PRETTY_PRINT));
 
                 $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
 
