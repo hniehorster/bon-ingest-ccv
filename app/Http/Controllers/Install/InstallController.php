@@ -183,8 +183,8 @@ class InstallController extends Controller {
                 $webhooks = $shopApi->webhooks->get();
 
                 if(count($webhooks) > 0){
-                    foreach($webhooks as $webhook) {
-                        $shopApi->webhooks->delete($webhook['id']);
+                    foreach($webhooks as $existingWebhook) {
+                        $shopApi->webhooks->delete($existingWebhook['id']);
                     }
                 }
 
