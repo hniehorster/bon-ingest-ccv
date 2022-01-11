@@ -171,44 +171,6 @@ class InstallController extends Controller {
                 'defaults'             => $defaults,
             ]);
 
-            //Add the user to the business as a store owner
-
-
-            //Handle all the post install requirements.
-            if(config('platform_config.has_webhooks')){
-
-                $newWebhooks = config('platform_config.webhooks');
-
-                //first remove all the webhooks
-                $webhooks = $shopApi->webhooks->get();
-
-                if(count($webhooks) > 0){
-                    foreach($webhooks as $existingWebhook) {
-                        $shopApi->webhooks->delete($existingWebhook['id']);
-                    }
-                }
-
-                foreach($newWebhooks as $webhook){
-
-                    $webhookParams = [
-                        'itemAction'    => $webhook['itemAction'],
-                        'itemGroup'     => $webhook['itemGroup'],
-                        'isActive'      => true,
-                        'address'       => route($webhook['url']),
-                        'format'        => 'json',
-                        'language'      => $request->get('language')
-                    ];
-
-                    Log::info(json_encode($webhookParams, JSON_PRETTY_PRINT));
-
-                    $shopApi->webhooks->create($webhookParams);
-                }
-            }
-
-            if(config('platform_config.has_shop_scripts')){
-
-            }
-
             $now = Carbon::now()->format('Y-m-d H:i:s');
 
             //4. Create a job to fetch all orders
@@ -219,6 +181,46 @@ class InstallController extends Controller {
             echo "Existing Business Found";
 
             //store already installed push socket out :P
+        }
+
+        //Handle all the post install requirements.
+        if(config('platform_config.has_webhooks')){
+
+            $newWebhooks = config('platform_config.webhooks');
+
+            //first remove all the webhooks
+            $webhooks = $shopApi->webhooks->get();
+
+            Log::info('Existing webhooks found: ' . json_encode($webhooks));
+
+            if(count($webhooks) > 0){
+
+                foreach($webhooks as $existingWebhook) {
+
+                    Log::info('Webhook Id: ' . $existingWebhook['id']);
+
+                    $shopApi->webhooks->delete($existingWebhook['id']);
+                }
+            }
+
+            foreach($newWebhooks as $webhook){
+
+                $webhookParams = [
+                    'itemAction'    => $webhook['itemAction'],
+                    'itemGroup'     => $webhook['itemGroup'],
+                    'isActive'      => true,
+                    'address'       => route($webhook['url']),
+                    'format'        => 'json',
+                    'language'      => $request->get('language')
+                ];
+
+                Log::info(json_encode($webhookParams, JSON_PRETTY_PRINT));
+
+                $shopApi->webhooks->create($webhookParams);
+            }
+        }
+
+        if(config('platform_config.has_shop_scripts')){
 
         }
 
