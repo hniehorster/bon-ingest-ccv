@@ -29,7 +29,7 @@ class OrderTransformer {
 
         return [
             'business_uuid'                     => 'BON_BUSINESSUUID',
-            'gid'                               => 'gid:business:id',
+            'gid'                               => 'gid:order:id',
             'number'                            => 'number',
             'locale'                            => 'language.code',
             'price_incl'                        => 'priceIncl',

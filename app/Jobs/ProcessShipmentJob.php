@@ -51,6 +51,8 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
             $transformedShipment = (new Transformer($apiCredentials->businessUUID, $this->shipmentData, $apiCredentials->defaults))->shipment->transform();
 
+            Log::info('Transformed Shipment: ' . json_encode($transformedShipment, JSON_PRETTY_PRINT));
+
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiCredentials->internalApiKey, $apiCredentials->internalApiSecret, $apiCredentials->language);
 
             $orderGID = (new BonSDKGID)->encode(env('PLATFORM_TEXT'), 'order', $apiCredentials->businessUUID, $transformedShipment['external_order_id']);
@@ -130,7 +132,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
         catch (Exception $e) {
 
             Log::info('ERROR');
-            Log::info('Message:' . $e->getMessage());
+            Log::info('Message:' . $e->getResponse()->getBody()->getContents());
             Log::info('File: ' . $e->getFile());
             Log::info('Line: ' . $e->getLine());
             Log::info('Code:'. $e->getCode());
