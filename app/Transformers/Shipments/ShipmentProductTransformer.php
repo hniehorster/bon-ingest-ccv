@@ -32,6 +32,7 @@ class ShipmentProductTransformer {
     public function matchingData() : array
     {
         return [
+            'business_uuid'     => 'BON_BUSINESSUUID',
             'external_id'       => 'id',
             'quantity'          => 'quantity',
             'ean'               => 'ean',

@@ -109,6 +109,8 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 foreach($shipmentProducts as $shipmentProduct) {
                     $transformedShipmentProduct = (new Transformer($apiCredentials->businessUUID, $shipmentProduct, $apiCredentials->defaults))->shipmentProduct->transform();
 
+                    $transformedShipmentProduct['shipment_uuid'] = $bonShipment->uuid;
+
                     $shipmentLineItemCheck = $bonApi->shipmentLineItems->get($bonShipmentsCheck->data[0]->uuid, null, ['external_id' => $transformedShipmentProduct['external_id']]);
 
                     Log::info("Shipment LineItems found: " . $shipmentLineItemCheck->meta->count);
