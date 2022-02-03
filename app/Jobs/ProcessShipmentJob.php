@@ -102,7 +102,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 }
 
                 //Shipment Line Items
-                $shipmentProducts = $webshopAppClient->shipmentsProducts->get($this->shipmentData->id, null, ['limit' => 250]);
+                $shipmentProducts = $webshopAppClient->shipmentsProducts->get($this->externalShipmentId, null, ['limit' => 250]);
 
                 Log::info("External ShipmentProducts " . json_encode($shipmentProducts, JSON_PRETTY_PRINT));
 
