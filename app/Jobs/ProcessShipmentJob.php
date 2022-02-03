@@ -131,7 +131,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
             Log::info('ERROR');
             Log::info('File: ' . $e->getFile());
             Log::info('Line: ' . $e->getLine());
-            Log::info('Code:', $e->getCode());
+            Log::info('Code:'. $e->getCode());
             Log::info('Trace: ' . $e->getTrace());
 
             if ($e->getCode() == 429) {
