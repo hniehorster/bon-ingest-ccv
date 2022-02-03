@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers\Shipments;
 
-use App\Classes\QueueHelperClass;
 use App\Classes\WebhookRequestHelperClass;
-use App\Http\Controllers\Controller;
-use App\Jobs\ProcessOrderJob;
 use App\Jobs\ProcessShipmentJob;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;

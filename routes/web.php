@@ -30,5 +30,5 @@ $router->group([
 });
 
 $router->post('/webhooks/orders', ['as' => 'ordersWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
-$router->post('/webhooks/shipments', ['as' => 'shipmentsWebhook', 'uses' => 'Orders\ShipmentController@acceptWebhook']);
+$router->post('/webhooks/shipments', ['as' => 'shipmentsWebhook', 'uses' => 'Shipments\ShipmentController@acceptWebhook']);
 

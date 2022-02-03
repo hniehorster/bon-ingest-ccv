@@ -8,7 +8,6 @@ use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Exceptions\ObjectDoesNotExistException;
 use App\Transformers\Transformer;
-use BonSDK\ApiClient\BonGID;
 use BonSDK\ApiIngest\BonIngestAPI;
 use BonSDK\Classes\BonSDKGID;
 use Exception;
@@ -54,9 +53,9 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiCredentials->internalApiKey, $apiCredentials->internalApiSecret, $apiCredentials->language);
 
-            $orderGID = (new BonSDKGID)->encode(env('PLATFORM_TEXT'), $apiCredentials->businessUUID, 'order', $transformedShipment['external_order_id']);
+            $orderGID = (new BonSDKGID)->encode(env('PLATFORM_TEXT'), 'order', $apiCredentials->businessUUID, $transformedShipment['external_order_id']);
 
-            $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
+            $bonOrderCheck = $bonApi->orders->get(null, [ 'gid' => $orderGID ->getGID() ]);
 
             if ($bonOrderCheck->meta->count > 0) {
 
@@ -132,7 +131,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
             Log::info('File: ' . $e->getFile());
             Log::info('Line: ' . $e->getLine());
             Log::info('Code:'. $e->getCode());
-            Log::info('Trace: ' . $e->getTrace());
+            Log::info('Trace: ' . $e->getTraceAsString());
 
             if ($e->getCode() == 429) {
                 Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessShipmentJob($this->externalShipmentId, $this->externalIdentifier, $this->shipmentData));
