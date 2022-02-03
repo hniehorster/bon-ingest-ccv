@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Classes\AuthenticationHelper;
+use App\Classes\CarrierFinderHelper;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Exceptions\ObjectDoesNotExistException;
@@ -42,6 +43,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
             Log::info('Processing shipment: ' . $this->externalShipmentId);
 
             $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
+
             $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
 
             if (is_null($this->shipmentData)) {
@@ -70,29 +72,54 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 }
 
                 //Shipment Tracking
+                $orderData = $webshopAppClient->orders->get($this->shipmentData['order']['resource']['id']);
+
                 $bonShipmentTrackingCheck = $bonApi->shipmentTrackings->get(null, ['shipment_uuid' => $bonShipment->uuid]);
+
+                //Let's find the carrier
+                $carrierData = new CarrierFinderHelper();
+                $carrierData = $carrierData->obtainCarrierDetails($this->shipmentData, $orderData);
+
 
                 $shipmentTracking = [
                     'shipment_uuid'     => $bonShipment->uuid,
-                    'tracking_code'     => $transformedShipment['tracking_code'],
-                    'tracking_enabled'  => '',
-                    'carrier'           => '', //TODO find the carrier
+                    'tracking_code'     => $carrierData['tracking_code'],
+                    'tracking_enabled'  => $carrierData['tracking_enabled'],
+                    'carrier'           => $carrierData['carrier']
                 ];
 
                 if ($bonShipmentTrackingCheck->meta->count > 0) {
 
-
-                    $bonShipment = $bonApi->shipmentTrackings->update($bonShipmentsCheck->data[0]->uuid, $transformedShipment);
+                    $bonShipmentTracking = $bonApi->shipmentTrackings->update($bonShipmentsCheck->data[0]->uuid, $transformedShipment);
                 } else {
-
                     $shipmentTracking['status'] = 'NEW';
-                    $bonShipment = $bonApi->shipmentTrackings->create($transformedShipment);
+                    $bonShipmentTracking = $bonApi->shipmentTrackings->create($transformedShipment);
                 }
 
                 //Shipment Line Items
+                $shipmentProducts = $webshopAppClient->shipmentsProducts->get($this->shipmentData->id, null, ['limit' => 250]);
 
+                Log::info("External ShipmentProducts " . json_encode($shipmentProducts, JSON_PRETTY_PRINT));
 
+                foreach($shipmentProducts as $shipmentProduct) {
+                    $transformedShipmentProduct = (new Transformer($apiCredentials->businessUUID, $shipmentProduct, $apiCredentials->defaults))->shipmentProduct->transform();
 
+                    $shipmentLineItemCheck = $bonApi->shipmentLineItems->get(null, ['external_id' => $transformedShipmentProduct['external_id']]);
+
+                    Log::info("Shipment LineItems found: " . $shipmentLineItemCheck->meta->count);
+
+                    if($shipmentLineItemCheck->meta->count > 0){
+
+                        Log::info("Shipment LineItems UPDATED");
+                        $bonApi->shipmentLineItems->update($bonShipmentsCheck->data[0]->uuid, $shipmentLineItemCheck->data[0]->uuid, $transformedShipmentProduct);
+
+                    }else{
+
+                        Log::info("Shipment LineItems CREATED");
+                        $bonApi->shipmentLineItems->create($bonShipmentsCheck->data[0]->uuid, $transformedShipmentProduct);
+
+                    }
+                }
             }else{
                 throw new ObjectDoesNotExistException();
             }

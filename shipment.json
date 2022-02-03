@@ -1,0 +1,48 @@
+{
+    "shipment": {
+        "id": 201101653,
+        "createdAt": "2022-02-02T10:40:09+01:00",
+        "updatedAt": "2022-02-02T10:58:12+01:00",
+        "number": "SHIP00050",
+        "status": "shipped",
+        "trackingCode": "",
+        "doNotifyShipped": true,
+        "doNotifyReadyForPickup": true,
+        "doNotifyTrackingCode": false,
+        "customer": {
+            "resource": {
+                "id": 153635105,
+                "url": "customers/153635105",
+                "link": "http://api.webshopapp.com/nl/customers/153635105.json"
+            }
+        },
+        "order": {
+            "resource": {
+                "id": 207953669,
+                "url": "orders/207953669",
+                "link": "http://api.webshopapp.com/nl/orders/207953669.json"
+            }
+        },
+        "products": {
+            "resource": {
+                "id": false,
+                "url": "shipments/201101653/products",
+                "link": "http://api.webshopapp.com/nl/shipments/201101653/products.json"
+            }
+        },
+        "metafields": {
+            "resource": {
+                "id": false,
+                "url": "shipments/201101653/metafields",
+                "link": "http://api.webshopapp.com/nl/shipments/201101653/metafields.json"
+            }
+        },
+        "events": {
+            "resource": {
+                "id": false,
+                "url": "orders/events?shipment=201101653",
+                "link": "http://api.webshopapp.com/nl/orders/events.json?shipment=201101653"
+            }
+        }
+    }
+}

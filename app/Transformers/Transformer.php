@@ -7,6 +7,7 @@ use App\Transformers\Orders\OrderLineItemTransformer;
 use App\Transformers\Orders\OrderShipmentTransformer;
 use App\Transformers\Orders\OrderTransformer;
 use App\Transformers\Products\ProductTransformer;
+use App\Transformers\Shipments\ShipmentProductTransformer;
 use App\Transformers\Shipments\ShipmentTransformer;
 use App\Transformers\Shop\ShopTransformer;
 use BonSDK\Classes\BonSDKGID;
@@ -52,6 +53,7 @@ class Transformer
         $this->language             = new LanguageTransformer($this);
         $this->product              = new ProductTransformer($this);
         $this->shipment             = new ShipmentTransformer($this);
+        $this->shipmentProduct      = new ShipmentProductTransformer($this);
     }
 
     /**

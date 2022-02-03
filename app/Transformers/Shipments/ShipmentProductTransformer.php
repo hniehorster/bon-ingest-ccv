@@ -4,7 +4,7 @@ namespace App\Transformers\Shipments;
 use App\Transformers\Orders\OrderTransformer;
 use App\Transformers\Transformer;
 
-class ShipmentTrackingTransformer {
+class ShipmentProductTransformer {
 
     public $transform;
 
@@ -32,7 +32,11 @@ class ShipmentTrackingTransformer {
     public function matchingData() : array
     {
         return [
-            'tracking_code' => 'trackingCode',
+            'external_id'       => 'id',
+            'quantity'          => 'quantity',
+            'ean'               => 'ean',
+            'sku'               => 'sku',
+            'article_code'      => 'articleCode'
         ];
     }
 }

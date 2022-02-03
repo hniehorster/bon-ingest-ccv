@@ -5,8 +5,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.3|^8.0",
-        "ext-intl": "^7.4",
+        "php": "^8.0",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^7.2",
         "hniehorster/bon-api-ingest": "dev-master",
