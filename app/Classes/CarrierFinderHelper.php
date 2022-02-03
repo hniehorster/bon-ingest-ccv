@@ -37,7 +37,9 @@ class CarrierFinderHelper {
     /**
      * @return string
      */
-    private function findCarrier() : string {
+    private function findCarrier() {
+
+        $this->carrierName = null;
 
         if(!is_null($this->carrierString)) {
 
