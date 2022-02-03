@@ -134,7 +134,6 @@ class ProcessShipmentJob extends Job implements ShouldQueue
         catch (Exception $e) {
 
             Log::info('ERROR');
-            Log::info('Message:' . $e->getResponse()->getBody()->getContents());
             Log::info('File: ' . $e->getFile());
             Log::info('Line: ' . $e->getLine());
             Log::info('Code:'. $e->getCode());
