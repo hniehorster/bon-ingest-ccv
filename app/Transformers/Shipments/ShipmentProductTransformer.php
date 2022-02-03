@@ -33,6 +33,8 @@ class ShipmentProductTransformer {
     {
         return [
             'business_uuid'     => 'BON_BUSINESSUUID',
+            'variant_title'     => 'variant',
+            'product_title'     => 'title',
             'external_id'       => 'id',
             'quantity'          => 'quantity',
             'ean'               => 'ean',
