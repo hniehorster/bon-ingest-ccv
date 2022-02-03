@@ -127,6 +127,12 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
         }
         catch (Exception $e) {
+
+            Log::info('ERROR');
+            Log::info('Message: ' . $e->getMessage());
+            Log::info('File: ' . $e->getFile());
+            Log::info('Line: ' . $e->getLine());
+
             if ($e->getCode() == 429) {
                 Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessShipmentJob($this->externalShipmentId, $this->externalIdentifier, $this->shipmentData));
             }else{
