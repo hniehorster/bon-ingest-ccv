@@ -66,11 +66,6 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
             $this->shipmentData = $webshopAppClient->shipments->get(null, ['order' => $this->externalOrderId]);
 
-            //Queue the shipments in their respective jobs
-            foreach($this->shipmentData AS $shipment) {
-                Queue::push(new ProcessShipmentJob($shipment['id'], $this->externalIdentifier, $shipment));
-            }
-
             // Let's add the OrderLineItems
             foreach($this->orderData['products']['resource']['embedded'] as $product) {
 
