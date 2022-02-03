@@ -83,7 +83,6 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 $carrierData = new CarrierFinderHelper();
                 $carrierData = $carrierData->obtainCarrierDetails($this->shipmentData, $orderData);
 
-
                 $shipmentTracking = [
                     'shipment_uuid'     => $bonShipment->uuid,
                     'tracking_code'     => $carrierData['tracking_code'],
@@ -93,10 +92,10 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
                 if ($bonShipmentTrackingCheck->meta->count > 0) {
 
-                    $bonShipmentTracking = $bonApi->shipmentTrackings->update($bonShipmentsCheck->data[0]->uuid, $transformedShipment);
+                    $bonShipmentTracking = $bonApi->shipmentTrackings->update($bonShipmentsCheck->data[0]->uuid, $shipmentTracking);
                 } else {
                     $shipmentTracking['status'] = 'NEW';
-                    $bonShipmentTracking = $bonApi->shipmentTrackings->create($transformedShipment);
+                    $bonShipmentTracking = $bonApi->shipmentTrackings->create($shipmentTracking);
                 }
 
                 //Shipment Line Items

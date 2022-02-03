@@ -4,10 +4,12 @@ namespace App\Classes;
 
 use Illuminate\Support\Facades\Log;
 use Sentry\Util\JSON;
+use function GuzzleHttp\Psr7\str;
 
 class CarrierFinderHelper {
 
     public $carrierString;
+    public $trackingCode;
     public $carrierName;
     public $trackingEnabled = false;
 
@@ -19,13 +21,12 @@ class CarrierFinderHelper {
     public function obtainCarrierDetails(array $shipmentData, array $orderData) : array {
 
         $this->carrierString = $orderData['shipmentId'] . $orderData['shipmentTitle'] . $orderData['shipmentData']['method'];
-
-        Log::info('Carrier String: ' .$this->carrierString);
-
+        $this->trackingCode = $shipmentData['trackingCode'];
+        
         $carrierName = $this->findCarrier();
 
         $returnArray['carrier']             = $carrierName;
-        $returnArray['tracking_code']       = $shipmentData['trackingCode'];
+        $returnArray['tracking_code']       = $this->trackingCode;
         $returnArray['tracking_enabled']    = $this->trackingEnabled;
 
         Log::info('Return Data: ' . json_encode($returnArray, JSON_PRETTY_PRINT));
@@ -44,11 +45,14 @@ class CarrierFinderHelper {
 
             foreach ($this->availableCarriers() as $carrier) {
 
-                Log::info('Matching ' . $this->carrierString . ' on ' . $carrier);
+                if (str_contains($carrierString, $carrier)) {
 
-                if (strpos($carrierString, $carrier) !== false) {
                     $this->carrierName = $carrier;
-                    $this->trackingEnabled = true;
+
+                    if(strlen($this->trackingCode) > 0) {
+                        $this->trackingEnabled = true;
+                    }
+
                     break;
                 }
             }
