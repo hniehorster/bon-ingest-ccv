@@ -55,6 +55,8 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
             $orderGID = (new BonSDKGID)->encode(env('PLATFORM_TEXT'), 'order', $apiCredentials->businessUUID, $transformedShipment['external_order_id']);
 
+            Log::info('GID: ' . $orderGID->getGID());
+
             $bonOrderCheck = $bonApi->orders->get(null, [ 'gid' => $orderGID ->getGID() ]);
 
             if ($bonOrderCheck->meta->count > 0) {
