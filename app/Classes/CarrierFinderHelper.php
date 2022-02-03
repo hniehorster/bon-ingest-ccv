@@ -22,7 +22,7 @@ class CarrierFinderHelper {
 
         $this->carrierString = $orderData['shipmentId'] . $orderData['shipmentTitle'] . $orderData['shipmentData']['method'];
         $this->trackingCode = $shipmentData['trackingCode'];
-        
+
         $carrierName = $this->findCarrier();
 
         $returnArray['carrier']             = $carrierName;

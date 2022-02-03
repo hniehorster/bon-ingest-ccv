@@ -14,11 +14,12 @@ use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
+use Sentry\Util\JSON;
 
 class ProcessShipmentJob extends Job implements ShouldQueue
 {
 
-    public $tries = 30;
+    public $tries = 2;
 
     public $shipmentData;
     public $externalShipmentId;
@@ -79,6 +80,8 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
                 $bonShipmentTrackingCheck = $bonApi->shipmentTrackings->get(null, ['shipment_uuid' => $bonShipment->uuid]);
 
+                Log::info('BonShipmentTrackings: ' . json_encode($bonShipmentTrackingCheck, JSON_PRETTY_PRINT));
+
                 //Let's find the carrier
                 $carrierData = new CarrierFinderHelper();
                 $carrierData = $carrierData->obtainCarrierDetails($this->shipmentData, $orderData);
@@ -92,7 +95,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
                 if ($bonShipmentTrackingCheck->meta->count > 0) {
 
-                    $bonShipmentTracking = $bonApi->shipmentTrackings->update($bonShipmentsCheck->data[0]->uuid, $shipmentTracking);
+                    $bonShipmentTracking = $bonApi->shipmentTrackings->update($bonShipmentTrackingCheck->data[0]->uuid, $shipmentTracking);
                 } else {
                     $shipmentTracking['status'] = 'NEW';
                     $bonShipmentTracking = $bonApi->shipmentTrackings->create($shipmentTracking);
