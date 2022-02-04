@@ -10,8 +10,10 @@ use App\Exceptions\ObjectDoesNotExistException;
 use App\Transformers\Transformer;
 use BonSDK\ApiIngest\BonIngestAPI;
 use BonSDK\Classes\BonSDKGID;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Sentry\Util\JSON;
@@ -90,7 +92,8 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                     'shipment_uuid'     => $bonShipment->uuid,
                     'tracking_code'     => $carrierData['tracking_code'],
                     'tracking_enabled'  => $carrierData['tracking_enabled'],
-                    'carrier'           => $carrierData['carrier']
+                    'carrier'           => $carrierData['carrier'],
+                    'shop_created_at'   => Carbon::now()->format('Y-m-d H:i:s')
                 ];
 
                 if ($bonShipmentTrackingCheck->meta->count > 0) {
