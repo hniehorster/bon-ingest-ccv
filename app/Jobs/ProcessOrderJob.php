@@ -69,16 +69,32 @@ class ProcessOrderJob extends Job implements ShouldQueue
             // Let's add the OrderLineItems
             foreach($this->orderData['products']['resource']['embedded'] as $product) {
 
+                Log::info('Products: ' . json_encode($product, JSON_PRETTY_PRINT));
+
                 $transformedLineItem = (new Transformer($apiCredentials->businessUUID, $product, $apiCredentials->defaults))->orderLineItem->transform();
                 $transformedLineItem['order_uuid'] = $bonOrder->uuid;
+
+                Log::info('Transformed LineItem: ' . json_encode($transformedLineItem, JSON_PRETTY_PRINT));
 
                 //Check if Line item already exists
                 $bonLineItemCheck = $bonApi->orderLineItems->get(null, ['order_uuid' => $bonOrder->uuid, 'line_item_id' => $transformedLineItem['line_item_id']]);
 
+                Log::info('Bon Check: ' . json_encode($bonLineItemCheck, JSON_PRETTY_PRINT));
+
                 if($bonLineItemCheck->meta->count > 0) {
+
+                    Log::info('LineItem updated needed');
+
                     $bonLineItem = $bonApi->orderLineItems->update($bonLineItemCheck->data[0]->uuid, $transformedLineItem);
+
+                    Log::info('Updated: ' . json_encode($bonLineItem, JSON_PRETTY_PRINT));
                 }else{
+
+                    Log::info('LineItem create needed');
+
                     $bonLineItem = $bonApi->orderLineItems->create($transformedLineItem);
+
+                    Log::info('Created: ' . json_encode($bonLineItem, JSON_PRETTY_PRINT));
                 }
 
                 Log::info('Line Item Info: ' . json_encode($bonLineItem, JSON_PRETTY_PRINT));
