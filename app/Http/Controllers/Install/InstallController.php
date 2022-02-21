@@ -205,6 +205,7 @@ class InstallController extends Controller {
             if(!$businessAdminFound) {
                 $createBusinessAdminParams['business_uuid'] = $businessUUID;
                 $createBusinessAdminParams['user_uuid']     = $userUUID;
+                $createBusinessAdminParams['is_active']     = true;
 
                 if($businessAdminOwnerFound) {
                     $createBusinessAdminParams['is_owner']  = false;
