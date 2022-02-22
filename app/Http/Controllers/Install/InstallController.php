@@ -213,6 +213,8 @@ class InstallController extends Controller {
                     $createBusinessAdminParams['is_owner']  = true;
                 }
 
+                Log::info('Create Business Admin Data: ' . json_encode($createBusinessAdminParams, JSON_PRETTY_PRINT));
+
                 $newBusinessAdmin = json_decode((new BusinessAdminService())->createBusinessAdmin('en', $createBusinessAdminParams));
             }
 
