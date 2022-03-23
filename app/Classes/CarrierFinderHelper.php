@@ -75,7 +75,8 @@ class CarrierFinderHelper {
             'fedex',
             'usps',
             'ups',
-            'budbee'
+            'budbee',
+            'instabox'
         ];
     }
 
