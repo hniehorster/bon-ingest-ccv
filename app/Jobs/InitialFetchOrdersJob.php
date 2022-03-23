@@ -8,6 +8,7 @@ use App\Classes\WebshopAppApi\WebshopappApiClient;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Log;
 use stdClass;
+use Symfony\Component\Process\Process;
 
 class InitialFetchOrdersJob extends Job
 {
@@ -82,6 +83,7 @@ class InitialFetchOrdersJob extends Job
         foreach($orderObjects as $orderObject) {
 
             Queue::later(QueueHelperClass::getNearestTimeRoundedUp(5, true), new ProcessOrderJob($orderObject['id'], $apiCredentials->externalIdentifier));
+
         }
     }
 }

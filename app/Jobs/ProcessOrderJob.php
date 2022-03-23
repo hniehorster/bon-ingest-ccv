@@ -9,6 +9,7 @@ use App\Transformers\Transformer;
 use BonSDK\ApiIngest\BonIngestAPI;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
@@ -88,6 +89,16 @@ class ProcessOrderJob extends Job implements ShouldQueue
                     $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
                 }
             }
+
+            $orderCreatedAt = new Carbon($this->orderData['createdAt']);
+
+            //Only process the shipment if younger then 15 days old.
+            if($orderCreatedAt->diff(Carbon::now())->days < 15){
+                foreach($this->orderData['shipments']['resource']['embedded'] as $shipment) {
+                    Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessShipmentJob($shipment['id'], $this->externalIdentifier, $shipment, $this->orderData));
+                }
+            }
+
         }
         catch (Exception $e) {
 

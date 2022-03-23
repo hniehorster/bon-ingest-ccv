@@ -24,14 +24,16 @@ class ProcessShipmentJob extends Job implements ShouldQueue
     public $tries = 2;
 
     public $shipmentData;
+    public $orderData;
     public $externalShipmentId;
     public $externalIdentifier;
 
-    public function __construct(string $externalShipmentId, string $externalIdentifier, array $shipmentData = null)
+    public function __construct(string $externalShipmentId, string $externalIdentifier, array $shipmentData = null, array $orderData = null)
     {
         $this->externalShipmentId    = $externalShipmentId;
         $this->externalIdentifier    = $externalIdentifier;
         $this->shipmentData          = $shipmentData;
+        $this->orderData             = $orderData;
     }
 
     /**
@@ -50,6 +52,10 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
             if (is_null($this->shipmentData)) {
                 $this->shipmentData = $webshopAppClient->shipments->get($this->externalShipmentId);
+            }
+
+            if (is_null($this->orderData)) {
+                $this->orderData = $webshopAppClient->orders->get($this->shipmentData['order']['resource']['id']);
             }
 
             $transformedShipment = (new Transformer($apiCredentials->businessUUID, $this->shipmentData, $apiCredentials->defaults))->shipment->transform();
@@ -77,16 +83,13 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                     $bonShipment = $bonApi->shipments->create($transformedShipment);
                 }
 
-                //Shipment Tracking
-                $orderData = $webshopAppClient->orders->get($this->shipmentData['order']['resource']['id']);
-
                 $bonShipmentTrackingCheck = $bonApi->shipmentTrackings->get(null, ['shipment_uuid' => $bonShipment->uuid]);
 
                 Log::info('BonShipmentTrackings: ' . json_encode($bonShipmentTrackingCheck, JSON_PRETTY_PRINT));
 
                 //Let's find the carrier
                 $carrierData = new CarrierFinderHelper();
-                $carrierData = $carrierData->obtainCarrierDetails($this->shipmentData, $orderData);
+                $carrierData = $carrierData->obtainCarrierDetails($this->shipmentData, $this->orderData);
 
                 $shipmentTracking = [
                     'shipment_uuid'     => $bonShipment->uuid,
