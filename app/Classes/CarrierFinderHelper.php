@@ -3,6 +3,7 @@ namespace App\Classes;
 
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class CarrierFinderHelper {
 
@@ -38,6 +39,7 @@ class CarrierFinderHelper {
     private function findCarrier() {
 
         $this->carrierName = null;
+        $carrierFound = false;
 
         if(!is_null($this->carrierString)) {
 
@@ -51,11 +53,20 @@ class CarrierFinderHelper {
 
                     if(strlen($this->trackingCode) > 0) {
                         $this->trackingEnabled = true;
+                        $carrierFound = true;
                     }
 
                     break;
                 }
             }
+
+            //Hack for finding the instabox
+            if(!$carrierFound && Str::startsWith($this->trackingCode, 'R')){
+                $this->carrierName      = 'instabox';
+                $this->trackingEnabled  = true;
+                $carrierFound           = true;
+            }
+
 
         } else {
             return false;
