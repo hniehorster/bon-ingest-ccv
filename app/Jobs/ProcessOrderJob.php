@@ -21,17 +21,25 @@ class ProcessOrderJob extends Job implements ShouldQueue
     public $orderData;
     public $externalOrderId;
     public $externalIdentifier;
+    public $queueName;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(string $externalOrderId, string $externalIdentifier, array $orderData = null)
+    public function __construct(string $externalOrderId, string $externalIdentifier, array $orderData = null, string $queueName = null)
     {
         $this->externalOrderId    = $externalOrderId;
         $this->externalIdentifier = $externalIdentifier;
         $this->orderData          = $orderData;
+
+        $this->queueName          = 'default';
+
+        if(!is_null($queueName)) {
+            $this->queueName = $queueName;
+        }
+
     }
 
     /**
@@ -95,7 +103,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
             //Only process the shipment if younger then 15 days old.
             if($orderCreatedAt->diff(Carbon::now())->days < 15){
                 foreach($this->orderData['shipments']['resource']['embedded'] as $shipment) {
-                    Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessShipmentJob($shipment['id'], $this->externalIdentifier, $shipment, $this->orderData));
+                    Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessShipmentJob($shipment['id'], $this->externalIdentifier, $shipment, $this->orderData), null, $this->queueName);
                 }
             }
 
@@ -103,7 +111,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
         catch (Exception $e) {
 
             if ($e->getCode() == 429) {
-                Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData));
+                Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
             }else{
                 //release back to the queue if failed
                 $this->release(QueueHelperClass::getNearestTimeRoundedUp());

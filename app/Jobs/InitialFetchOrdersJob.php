@@ -19,6 +19,8 @@ class InitialFetchOrdersJob extends Job
     public $createdAtMax;
     public $maxPageNumber;
 
+    CONST QUEUE_NAME = "initial";
+
     public function __construct($externalIdentifier, string $createdAtMax, int $pageNumber = null, int $maxPageNumber = null)
     {
         $this->externalIdentifier   = $externalIdentifier;
@@ -81,9 +83,7 @@ class InitialFetchOrdersJob extends Job
         $orderObjects = $ordersAPI->orders->get(null, ['created_at_max' => $this->createdAtMax, 'limit' => env('API_MAX_PAGE_SIZE'), 'page' => $pageNumber]);
 
         foreach($orderObjects as $orderObject) {
-
-            Queue::later(QueueHelperClass::getNearestTimeRoundedUp(5, true), new ProcessOrderJob($orderObject['id'], $apiCredentials->externalIdentifier));
-
+            Queue::later(QueueHelperClass::getNearestTimeRoundedUp(5, true), new ProcessOrderJob($orderObject['id'], $apiCredentials->externalIdentifier), null, self::QUEUE_NAME);
         }
     }
 }

@@ -13,12 +13,13 @@
                 <div class="card mb-3">
                     <div class="card-image">
                         <figure class="image has-text-centered">
-                            <img src="https://bon-business-images.ams3.digitaloceanspaces.com/lightspeed_800.png" style="width: auto; height: auto;" />
+                            <img src="https://bon-business-images.ams3.digitaloceanspaces.com/lightspeed_800.png" style="max-width: 350px; width: auto; height: auto;" />
                         </figure>
                     </div>
                     <div class="card-header">
                         <p class="card-header-title">
                             {{ __('pre_install.header') }}
+                            <a href="" class="info">More info</a>
                         </p>
                     </div>
                     <form method="POST" action="{{ route('redirectPage', ['user_uuid' => $user_uuid, 'apiLocale' => $apiLocale]) }}" id="shopnumber-form">
@@ -37,6 +38,14 @@
                             </div>
                         </div>
                     </form>
+
+                    <div class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-content">
+                            <!-- Any other Bulma elements you want -->
+                        </div>
+                        <button class="modal-close is-large" aria-label="close"></button>
+                    </div>
                 </div>
             </div>
         </div>
