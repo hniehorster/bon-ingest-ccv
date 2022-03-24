@@ -21,7 +21,7 @@ use Sentry\Util\JSON;
 class ProcessShipmentJob extends Job implements ShouldQueue
 {
 
-    public $tries = 2;
+    public $tries = 30;
 
     public $shipmentData;
     public $orderData;
