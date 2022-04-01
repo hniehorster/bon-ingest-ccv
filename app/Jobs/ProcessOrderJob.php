@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Queue;
 
 class ProcessOrderJob extends Job implements ShouldQueue
 {
-    public $tries = 30;
+    public $tries = 100;
 
     public $orderData;
     public $externalOrderId;
@@ -55,6 +55,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
             if (is_null($this->orderData)) {
                 $this->orderData = $webshopAppClient->orders->get($this->externalOrderId);
+                Log::info('[LSAPI] GET order ' . $this->externalOrderId);
+
             }
 
             $transformedOrder = (new Transformer($apiCredentials->businessUUID, $this->orderData, $apiCredentials->defaults))->order->transform();
@@ -62,12 +64,16 @@ class ProcessOrderJob extends Job implements ShouldQueue
             //Check if Order Already Exists
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiCredentials->internalApiKey, $apiCredentials->internalApiSecret, $apiCredentials->language);
             $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $transformedOrder['gid']]);
+            Log::info('[BONAPI] GET order ' . $transformedOrder['gid']);
 
             if ($bonOrderCheck->meta->count > 0) {
                //Update the order
                 $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, $transformedOrder);
+                Log::info('[BONAPI] UPDATE order ' . $transformedOrder['gid']);
             }else{
                 $bonOrder = $bonApi->orders->create($transformedOrder);
+                Log::info('[BONAPI] CREATE order ' . $transformedOrder['gid']);
+
             }
 
             // Let's add the OrderLineItems
@@ -78,23 +84,29 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
                 //Check if Line item already exists
                 $bonLineItemCheck = $bonApi->orderLineItems->get(null, ['order_uuid' => $bonOrder->uuid, 'line_item_id' => $transformedLineItem['line_item_id']]);
+                Log::info('[BONAPI] GET orderLineItems ' . $transformedOrder['gid']);
 
                 if($bonLineItemCheck->meta->count > 0) {
 
                     $bonLineItem = $bonApi->orderLineItems->update($bonLineItemCheck->data[0]->uuid, $transformedLineItem);
+                    Log::info('[BONAPI] UPDATE orderLineItems ' . $transformedOrder['gid']);
 
                 }else{
 
                     $bonLineItem = $bonApi->orderLineItems->create($transformedLineItem);
+                    Log::info('[BONAPI] CREATE orderLineItems ' . $transformedOrder['gid']);
 
                 }
 
                 $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
+                Log::info('[BONAPI] CREATE product ' . $transformedLineItem['product_id']);
 
                 $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
 
                 if(!is_null($transformedProduct['image'])){
                     $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
+                    Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
+
                 }
             }
 
