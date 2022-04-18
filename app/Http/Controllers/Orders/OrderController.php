@@ -23,6 +23,8 @@ class OrderController extends BaseController {
         $queueData = $webhook->getQueuePreparedData();
 
         dispatch(new ProcessOrderJob($queueData->headers['x-order-id'], $queueData->headers['x-shop-id'], $queueData->content['order']));
+
+        return response()->json(['message' => 'accepted'], 200);
     }
 
 }
