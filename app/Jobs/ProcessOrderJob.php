@@ -62,6 +62,13 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
             $transformedOrder = (new Transformer($apiCredentials->businessUUID, $this->orderData, $apiCredentials->defaults))->order->transform();
 
+            //Check Order Date Diff
+            $DateDiff = Carbon::parse($transformedOrder['shop_created_at']);
+            $now      = Carbon::now();
+
+            $orderDatysDiff = $DateDiff->diffInDays($now);
+
+
             //Check if Order Already Exists
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiCredentials->internalApiKey, $apiCredentials->internalApiSecret, $apiCredentials->language);
             $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $transformedOrder['gid']]);
@@ -99,16 +106,26 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
                 }
 
-                $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
-                Log::info('[BONAPI] CREATE product ' . $transformedLineItem['product_id']);
+                try{
+                    $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
 
-                $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
+                    $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
 
-                if(!is_null($transformedProduct['image'])){
+                    if(!is_null($transformedProduct['image'])){
 
-                    $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
-                    Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
+                        $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
+                        Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
 
+                    }
+                } catch (Exception $e) {
+                    if($e->getCode() == 404){
+                        Log::info('[LSAPI] Product not found, but process order');
+                    }elseif ($e->getCode() == 429) {
+                        Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
+                        Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
+                    }else{
+                        $this->release(QueueHelperClass::getNearestTimeRoundedUp());
+                    }
                 }
             }
 
