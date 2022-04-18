@@ -126,6 +126,10 @@ class ProcessOrderJob extends Job implements ShouldQueue
         }
         catch (Exception $e) {
 
+            Log::info(' ---- JOB FAILED ------ ');
+            Log::info( ' Message: ' . $e->getMessage());
+            Log::info( ' File: ' . $e->getFile());
+            Log::info( ' Trace: ' . json_encode($e->getTrace(), JSON_PRETTY_PRINT));
             Log::info(' ---- FAILED JOB ------ ');
 
             if ($e->getCode() == 429) {
