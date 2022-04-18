@@ -48,9 +48,9 @@ class ProcessOrderJob extends Job implements ShouldQueue
      */
     public function handle()
     {
+        $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
 
         try {
-            $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
             $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
 
             if (is_null($this->orderData)) {
@@ -123,6 +123,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
         catch (Exception $e) {
 
             if ($e->getCode() == 429) {
+                Log::info('[LSAPI] Rate Limit hit for store ' . $apiCredentials->businessUUID);
                 Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
             }else{
                 //release back to the queue if failed
