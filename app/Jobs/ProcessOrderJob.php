@@ -48,6 +48,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
      */
     public function handle()
     {
+        Log::info(' ---- STARTING JOB ------ ');
         $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
 
         try {
@@ -120,8 +121,12 @@ class ProcessOrderJob extends Job implements ShouldQueue
                 }
             }
 
+            Log::info(' ---- SUCCESS JOB ------ ');
+
         }
         catch (Exception $e) {
+
+            Log::info(' ---- FAILED JOB ------ ');
 
             if ($e->getCode() == 429) {
                 Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
@@ -131,5 +136,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
                 $this->release(QueueHelperClass::getNearestTimeRoundedUp());
             }
         }
+
+        Log::info(' ---- ENDING JOB ------ ');
     }
 }
