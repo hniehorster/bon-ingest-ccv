@@ -123,7 +123,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
         catch (Exception $e) {
 
             if ($e->getCode() == 429) {
-                Log::info('[LSAPI] Rate Limit hit for store ' . $apiCredentials->businessUUID);
+                Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
                 Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
             }else{
                 //release back to the queue if failed
