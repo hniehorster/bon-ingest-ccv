@@ -104,6 +104,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
                 $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
 
                 if(!is_null($transformedProduct['image'])){
+
                     $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
                     Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
 

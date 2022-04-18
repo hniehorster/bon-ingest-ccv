@@ -58,15 +58,17 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 $this->orderData = $webshopAppClient->orders->get($this->shipmentData['order']['resource']['id']);
             }
 
+            Log::info('[BON - SHIPMENT] ' . json_encode($this->shipmentData, JSON_PRETTY_PRINT));
+
             $transformedShipment = (new Transformer($apiCredentials->businessUUID, $this->shipmentData, $apiCredentials->defaults))->shipment->transform();
 
-            Log::info('Transformed Shipment: ' . json_encode($transformedShipment, JSON_PRETTY_PRINT));
+            //Log::info('Transformed Shipment: ' . json_encode($transformedShipment, JSON_PRETTY_PRINT));
 
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiCredentials->internalApiKey, $apiCredentials->internalApiSecret, $apiCredentials->language);
 
             $orderGID = (new BonSDKGID)->encode(env('PLATFORM_TEXT'), 'order', $apiCredentials->businessUUID, $transformedShipment['external_order_id']);
 
-            Log::info('GID: ' . $orderGID->getGID());
+            //Log::info('GID: ' . $orderGID->getGID());
 
             $bonOrderCheck = $bonApi->orders->get(null, [ 'gid' => $orderGID ->getGID() ]);
 
@@ -106,6 +108,8 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                     $shipmentTracking['status'] = 'NEW';
                     $bonShipmentTracking = $bonApi->shipmentTrackings->create($shipmentTracking);
                 }
+
+                Log::info('[BON] Shipment Tracking ' .  json_encode($bonShipmentTrackingCheck, JSON_PRETTY_PRINT));
 
                 //Shipment Line Items
                 $shipmentProducts = $webshopAppClient->shipmentsProducts->get($this->externalShipmentId, null, ['limit' => 250]);

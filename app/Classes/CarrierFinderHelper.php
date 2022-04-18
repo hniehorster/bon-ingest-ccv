@@ -20,7 +20,9 @@ class CarrierFinderHelper {
     public function obtainCarrierDetails(array $shipmentData, array $orderData) : array {
 
         $this->carrierString = $orderData['shipmentId'] . $orderData['shipmentTitle'] . $orderData['shipmentData']['method'];
-        $this->trackingCode = $shipmentData['trackingCode'];
+        $this->trackingCode  = $shipmentData['trackingCode'];
+
+        Log::info('Tracking Code found: ' . $this->trackingCode);
 
         $carrierName = $this->findCarrier();
 
