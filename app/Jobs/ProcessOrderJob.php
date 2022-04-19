@@ -146,17 +146,18 @@ class ProcessOrderJob extends Job implements ShouldQueue
             Log::info(' ---- JOB FAILED ------ ');
             Log::info( ' Message: ' . $e->getMessage());
             Log::info( ' File: ' . $e->getFile());
-            Log::info( ' Trace: ' . json_encode($e->getTrace(), JSON_PRETTY_PRINT));
             Log::info(' ---- FAILED JOB ------ ');
 
             if ($e->getCode() == 429) {
                 Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
                 //Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
                 $this->release(QueueHelperClass::getNearestTimeRoundedUp());
+                Log::info('RELEASED BACK TO QUEUE');
             }else{
                 //release back to the queue if failed
                 Log::info('Releasing back to queue for other reason');
                 $this->release(QueueHelperClass::getNearestTimeRoundedUp());
+                Log::info('RELEASED BACK TO QUEUE');
             }
         }
 
