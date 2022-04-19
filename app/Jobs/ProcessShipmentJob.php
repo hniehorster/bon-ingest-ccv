@@ -115,7 +115,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 //Shipment Line Items
                 $shipmentProducts = $webshopAppClient->shipmentsProducts->get($this->externalShipmentId, null, ['limit' => 250]);
 
-                Log::info("[BONAPI] External found " . count($shipmentProducts) . " products in the shipments";
+                Log::info("[BONAPI] External found " . count($shipmentProducts) . " products in the shipments");
 
                 foreach($shipmentProducts as $shipmentProduct) {
                     $transformedShipmentProduct = (new Transformer($apiCredentials->businessUUID, $shipmentProduct, $apiCredentials->defaults))->shipmentProduct->transform();
