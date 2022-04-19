@@ -33,7 +33,6 @@ class ProcessOrderJob extends Job implements ShouldQueue
         $this->externalOrderId    = $externalOrderId;
         $this->externalIdentifier = $externalIdentifier;
         $this->orderData          = $orderData;
-
         $this->queueName          = 'default';
 
         if(!is_null($queueName)) {
@@ -71,7 +70,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
             if ($bonOrderCheck->meta->count > 0) {
                //Update the order
                 $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, $transformedOrder);
-                Log::info('[BONAPI] UPDATE order ' . $transformedOrder['gid']);
+                Log::info('[BONAPI] UPDATE order ' . $transformedOrder['gid'] . ' ' . $bonOrderCheck->data[0]->uuid);
             }else{
                 $bonOrder = $bonApi->orders->create($transformedOrder);
                 Log::info('[BONAPI] CREATE order ' . $transformedOrder['gid']);
@@ -119,7 +118,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
                     }elseif ($e->getCode() == 429) {
 
                         Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
-                        Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
+                        //Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
+                        $this->release(QueueHelperClass::getNearestTimeRoundedUp());
 
                     }else{
 
@@ -151,7 +151,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
             if ($e->getCode() == 429) {
                 Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
-                Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
+                //Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
+                $this->release(QueueHelperClass::getNearestTimeRoundedUp());
             }else{
                 //release back to the queue if failed
                 Log::info('Releasing back to queue for other reason');
