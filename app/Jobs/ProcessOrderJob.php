@@ -154,6 +154,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
                 Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
             }else{
                 //release back to the queue if failed
+                Log::info('Releasing back to queue for other reason');
                 $this->release(QueueHelperClass::getNearestTimeRoundedUp());
             }
         }
