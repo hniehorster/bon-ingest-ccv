@@ -59,8 +59,6 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 $this->orderData = $webshopAppClient->orders->get($this->shipmentData['order']['resource']['id']);
             }
 
-            Log::info('[BON - SHIPMENT] ' . json_encode($this->shipmentData, JSON_PRETTY_PRINT));
-
             $transformedShipment = (new Transformer($apiCredentials->businessUUID, $this->shipmentData, $apiCredentials->defaults))->shipment->transform();
 
             //Log::info('Transformed Shipment: ' . json_encode($transformedShipment, JSON_PRETTY_PRINT));
@@ -124,7 +122,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
                     $shipmentLineItemCheck = $bonApi->shipmentLineItems->get($bonShipmentsCheck->data[0]->uuid, null, ['external_id' => $transformedShipmentProduct['external_id']]);
 
-                    Log::info("Shipment LineItems found: " . $shipmentLineItemCheck->meta->count);
+                    Log::info("Shipment LineItems found: " .json_encode($shipmentLineItemCheck, JSON_PRETTY_PRINT));
 
                     if($shipmentLineItemCheck->meta->count > 0){
 
