@@ -35,6 +35,9 @@ class FetchOrders extends Command
         $queueName = $this->argument('queueName');
 
         $this->output->writeln('--- Start Fetching Historical Orders ---');
+        $this->output->writeln(' External Identifier: ' . $externalIdentifier);
+        $this->output->writeln(' CreatedAtMax: ' . $createdAtMax);
+        $this->output->writeln(' queueName: ' . $queueName);
 
         $apiCredentials = AuthenticationHelper::getAPICredentials($externalIdentifier);
 
