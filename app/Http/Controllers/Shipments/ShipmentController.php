@@ -21,7 +21,7 @@ class ShipmentController extends BaseController {
         $webhook = new WebhookRequestHelperClass($request);
         $queueData = $webhook->getQueuePreparedData();
 
-        dispatch(new ProcessShipmentJob($queueData->headers['x-shipment-id'], $queueData->headers['x-shop-id'], $queueData->content['shipment']));
+        dispatch(new ProcessShipmentJob($queueData->headers['x-shipment-id'], $queueData->headers['x-shop-id'], $queueData->content['shipment']))->onQueue('direct');
 
         return response()->json(['message' => 'accepted'], 200);
     }
