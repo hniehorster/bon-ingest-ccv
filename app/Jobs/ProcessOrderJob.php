@@ -8,13 +8,14 @@ use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Transformers\Transformer;
 use BonSDK\ApiIngest\BonIngestAPI;
 use Exception;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
 
-class ProcessOrderJob extends Job implements ShouldQueue
+class ProcessOrderJob extends Job implements ShouldQueue, ShouldBeUnique
 {
     public $tries = 100;
 
@@ -107,7 +108,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
                         $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
                         Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
-                        
+
                     }
                 } catch (Exception $e) {
 
