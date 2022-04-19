@@ -152,7 +152,9 @@ class ProcessShipmentJob extends Job implements ShouldQueue
             Log::info('Trace: ' . $e->getTraceAsString());
 
             if ($e->getCode() == 429) {
-                Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessShipmentJob($this->externalShipmentId, $this->externalIdentifier, $this->shipmentData));
+                //Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessShipmentJob($this->externalShipmentId, $this->externalIdentifier, $this->shipmentData));
+                $this->release(QueueHelperClass::getNearestTimeRoundedUp());
+
             }else{
                 //release back to the queue if failed
                 $this->release(QueueHelperClass::getNearestTimeRoundedUp());
