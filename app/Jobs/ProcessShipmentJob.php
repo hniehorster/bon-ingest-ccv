@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Sentry\Util\JSON;
 
-class ProcessShipmentJob extends Job implements ShouldQueue, ShouldBeUnique
+class ProcessShipmentJob extends Job implements ShouldQueue
 {
 
     public $tries = 30;

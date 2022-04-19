@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
 
-class ProcessOrderJob extends Job implements ShouldQueue, ShouldBeUnique
+class ProcessOrderJob extends Job implements ShouldQueue
 {
     public $tries = 100;
 
