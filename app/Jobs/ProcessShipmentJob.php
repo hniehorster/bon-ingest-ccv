@@ -43,6 +43,7 @@ class ProcessShipmentJob extends Job implements ShouldQueue
      */
     public function handle()
     {
+        Log::info(' ---- STARTING JOB ------ ');
         try {
             Log::info('Processing shipment: ' . $this->externalShipmentId);
 
@@ -104,17 +105,17 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 if ($bonShipmentTrackingCheck->meta->count > 0) {
 
                     $bonShipmentTracking = $bonApi->shipmentTrackings->update($bonShipmentTrackingCheck->data[0]->uuid, $shipmentTracking);
+                    Log::info('[BONAPI] Tracking found sending update ' . $bonShipmentTrackingCheck->data[0]->uuid);
                 } else {
                     $shipmentTracking['status'] = 'NEW';
                     $bonShipmentTracking = $bonApi->shipmentTrackings->create($shipmentTracking);
+                    Log::info('[BONAPI] Tracking not found sending create');
                 }
-
-                Log::info('[BON] Shipment Tracking ' .  json_encode($bonShipmentTrackingCheck, JSON_PRETTY_PRINT));
 
                 //Shipment Line Items
                 $shipmentProducts = $webshopAppClient->shipmentsProducts->get($this->externalShipmentId, null, ['limit' => 250]);
 
-                Log::info("External ShipmentProducts " . json_encode($shipmentProducts, JSON_PRETTY_PRINT));
+                Log::info("[BONAPI] External found " . count($shipmentProducts) . " products in the shipments";
 
                 foreach($shipmentProducts as $shipmentProduct) {
                     $transformedShipmentProduct = (new Transformer($apiCredentials->businessUUID, $shipmentProduct, $apiCredentials->defaults))->shipmentProduct->transform();
@@ -127,21 +128,22 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
                     if($shipmentLineItemCheck->meta->count > 0){
 
-                        Log::info("Shipment LineItems UPDATED");
+                        Log::info("   Shipment LineItems UPDATED " . $transformedShipmentProduct['external_id']);
                         $bonApi->shipmentLineItems->update($bonShipmentsCheck->data[0]->uuid, $shipmentLineItemCheck->data[0]->uuid, $transformedShipmentProduct);
 
                     }else{
 
-                        Log::info("Shipment LineItems CREATED");
+                        Log::info("   Shipment LineItems CREATED " . $transformedShipmentProduct['external_id']);
                         $bonApi->shipmentLineItems->create($bonShipmentsCheck->data[0]->uuid, $transformedShipmentProduct);
 
                     }
                 }
             }else{
+                Log::info(' ---- ORDER NOT FOUND ------ ');
                 throw new ObjectDoesNotExistException();
             }
 
-
+            Log::info(' ---- JOB SUCCEEDED ------ ');
         }
         catch (Exception $e) {
 
@@ -160,5 +162,6 @@ class ProcessShipmentJob extends Job implements ShouldQueue
                 $this->release(QueueHelperClass::getNearestTimeRoundedUp());
             }
         }
+        Log::info(' ---- ENDED JOB ------ ');
     }
 }

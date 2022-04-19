@@ -22,7 +22,7 @@ class OrderController extends BaseController {
         $webhook = new WebhookRequestHelperClass($request);
         $queueData = $webhook->getQueuePreparedData();
 
-        dispatch(new ProcessOrderJob($queueData->headers['x-order-id'], $queueData->headers['x-shop-id'], $queueData->content['order']))->onQueue('direct');
+        dispatch(new ProcessOrderJob($queueData->headers['x-order-id'], $queueData->headers['x-shop-id'], $queueData->content['order'], 'direct'))->onQueue('direct');
 
         return response()->json(['message' => 'accepted'], 200);
     }
