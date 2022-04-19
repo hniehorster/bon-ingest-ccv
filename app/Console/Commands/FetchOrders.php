@@ -19,7 +19,7 @@ class FetchOrders extends Command
      *
      * @var string
      */
-    protected $signature = 'orders:fetch_history {externalIdentifier} {createdAtMax} {queueName}';
+    protected $signature = 'orders:fetch_history {externalIdentifier} {createdAtMax} {queueName} {amountOfPages}';
 
     /**
      * The console command description.
@@ -31,8 +31,9 @@ class FetchOrders extends Command
     public function handle()
     {
         $externalIdentifier = $this->argument('externalIdentifier');
-        $createdAtMax = $this->argument('createdAtMax');
-        $queueName = $this->argument('queueName');
+        $createdAtMax       = $this->argument('createdAtMax');
+        $queueName          = $this->argument('queueName');
+        $amountOfPages      = $this->argument('amountOfPages');
 
         $this->output->writeln('--- Start Fetching Historical Orders ---');
         $this->output->writeln(' External Identifier: ' . $externalIdentifier);
@@ -47,12 +48,19 @@ class FetchOrders extends Command
 
         $this->output->writeln('Found ' . $orderCount . ' order to be processed');
 
-        $orders = $webshopAppClient->orders->get(null, ['created_at_max' => $createdAtMax, 'limit' => 250]);
+        $currentPage = 1;
 
-        foreach ($orders as $order) {
+        for ($currentPage = 0; $currentPage <= $amountOfPages; $currentPage++) {
 
-            Queue::later(QueueHelperClass::getNearestTimeRoundedUp(5, true), new ProcessOrderJob($order['id'], $apiCredentials->externalIdentifier), null, $queueName);
-            $this->output->writeln(' - Order ' . $order['id'] . ' has been queued on queue ' . $queueName);
+            $this->output->writeln(' - Processing page ' . $currentPage);
+
+            $orders = $webshopAppClient->orders->get(null, ['created_at_max' => $createdAtMax, 'limit' => 250, 'page' => $currentPage]);
+
+            foreach ($orders as $order) {
+
+                Queue::later(QueueHelperClass::getNearestTimeRoundedUp(5, true), new ProcessOrderJob($order['id'], $apiCredentials->externalIdentifier), null, $queueName);
+                $this->output->writeln(' - Order ' . $order['id'] . ' has been queued on queue ' . $queueName);
+            }
         }
 
         $this->output->writeln('--- Done ---');
