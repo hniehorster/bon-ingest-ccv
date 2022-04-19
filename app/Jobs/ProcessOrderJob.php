@@ -105,23 +105,9 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
                     if(!is_null($transformedProduct['image'])){
 
-                        Log::info('[BONAPI] CHECKING orderLineItemImage ' . $bonLineItem->uuid);
-
-                        try{
-                            $bonLineItemImage = $bonApi->orderLineItemImages->get($bonLineItem->uuid);
-                            Log::info('[BONAPI] SKIP orderLineItemImage ' . $bonLineItem->uuid);
-
-                        } catch (Exception $e) {
-
-                            Log::info('Error Discovered: ' . $e->getMessage());
-                            Log::info('Error Code: ' . $e->getCode());
-
-                            if($e->getCode() == 404){
-                                $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
-                                Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
-                            }
-
-                        }
+                        $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
+                        Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
+                        
                     }
                 } catch (Exception $e) {
 
