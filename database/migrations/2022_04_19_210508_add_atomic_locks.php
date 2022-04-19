@@ -13,6 +13,12 @@ class AddAtomicLocks extends Migration
      */
     public function up()
     {
+        Schema::create('cache', function ($table) {
+            $table->string('key')->unique();
+            $table->text('value');
+            $table->integer('expiration');
+        });
+        
         Schema::create('cache_locks', function ($table) {
             $table->string('key')->primary();
             $table->string('owner');
@@ -27,6 +33,7 @@ class AddAtomicLocks extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('cache');
         Schema::dropIfExists('cache_locks');
     }
 }
