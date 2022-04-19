@@ -120,19 +120,19 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
                     $transformedShipmentProduct['shipment_uuid'] = $bonShipment->uuid;
 
-                    $shipmentLineItemCheck = $bonApi->shipmentLineItems->get($bonShipmentsCheck->data[0]->uuid, null, ['external_id' => $transformedShipmentProduct['external_id']]);
+                    $shipmentLineItemCheck = $bonApi->shipmentLineItems->get($bonShipment->uuid, null, ['external_id' => $transformedShipmentProduct['external_id']]);
 
                     Log::info("Shipment LineItems found: " .json_encode($shipmentLineItemCheck, JSON_PRETTY_PRINT));
 
                     if($shipmentLineItemCheck->meta->count > 0){
 
                         Log::info("   Shipment LineItems UPDATED " . $transformedShipmentProduct['external_id']);
-                        $bonApi->shipmentLineItems->update($bonShipmentsCheck->data[0]->uuid, $shipmentLineItemCheck->data[0]->uuid, $transformedShipmentProduct);
+                        $bonApi->shipmentLineItems->update($bonShipment->uuid, $shipmentLineItemCheck->data[0]->uuid, $transformedShipmentProduct);
 
                     }else{
 
                         Log::info("   Shipment LineItems CREATED " . $transformedShipmentProduct['external_id']);
-                        $bonApi->shipmentLineItems->create($bonShipmentsCheck->data[0]->uuid, $transformedShipmentProduct);
+                        $bonApi->shipmentLineItems->create($bonShipment->uuid, $transformedShipmentProduct);
 
                     }
                 }
