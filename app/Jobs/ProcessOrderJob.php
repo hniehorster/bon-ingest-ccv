@@ -38,9 +38,6 @@ class ProcessOrderJob extends Job implements ShouldQueue
         if(!is_null($queueName)) {
             $this->queueName = $queueName;
         }
-
-        Log::info(' --- QUEUE NAME FOUND [ ' . $this->queueName . ']--- ');
-
     }
 
     /**
@@ -49,7 +46,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
      */
     public function handle()
     {
-        Log::info(' ---- STARTING JOB ------ ');
+        Log::info(' ---- STARTING JOB ON QUEUE ' . $this->queueName . '------ ');
         $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
 
         try {
