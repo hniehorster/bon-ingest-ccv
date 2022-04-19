@@ -39,6 +39,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
             $this->queueName = $queueName;
         }
 
+        Log::info(' --- QUEUE NAME FOUND [ ' . $this->queueName . ']--- ');
+
     }
 
     /**
