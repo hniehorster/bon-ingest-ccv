@@ -63,7 +63,7 @@ class CarrierFinderHelper {
             }
 
             //Hack for finding the instabox
-            if(!$carrierFound && Str::startsWith($this->trackingCode, 'R')){
+            if(Str::startsWith($this->trackingCode, 'R')){
                 $this->carrierName      = 'instabox';
                 $this->trackingEnabled  = true;
                 $carrierFound           = true;

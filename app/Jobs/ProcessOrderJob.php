@@ -29,16 +29,11 @@ class ProcessOrderJob extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(string $externalOrderId, string $externalIdentifier, array $orderData = null, string $queueName = null)
+    public function __construct(string $externalOrderId, string $externalIdentifier, array $orderData = null)
     {
         $this->externalOrderId    = $externalOrderId;
         $this->externalIdentifier = $externalIdentifier;
         $this->orderData          = $orderData;
-        $this->queueName          = 'default';
-
-        if(!is_null($queueName)) {
-            $this->queueName = $queueName;
-        }
     }
 
     /**
@@ -113,6 +108,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
                 } catch (Exception $e) {
 
                     if($e->getCode() == 404){
+
                         Log::info('[LSAPI] Product not found, but process order');
 
                     }elseif ($e->getCode() == 429) {
