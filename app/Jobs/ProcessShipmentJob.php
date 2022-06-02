@@ -54,10 +54,14 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
             if (is_null($this->shipmentData)) {
                 $this->shipmentData = $webshopAppClient->shipments->get($this->externalShipmentId);
+                Log::info('[LSAPI] GET shipment ' . $this->externalShipmentId);
+
             }
 
             if (is_null($this->orderData)) {
                 $this->orderData = $webshopAppClient->orders->get($this->shipmentData['order']['resource']['id']);
+                Log::info('[LSAPI] GET order ' . $this->shipmentData['order']['resource']['id']);
+
             }
 
             $transformedShipment = (new Transformer($apiCredentials->businessUUID, $this->shipmentData, $apiCredentials->defaults))->shipment->transform();
@@ -113,6 +117,8 @@ class ProcessShipmentJob extends Job implements ShouldQueue
 
                 //Shipment Line Items
                 $shipmentProducts = $webshopAppClient->shipmentsProducts->get($this->externalShipmentId, null, ['limit' => 250]);
+                Log::info('[LSAPI] GET ShipmentLineItems ' . $this->externalShipmentId);
+
 
                 Log::info("[BONAPI] External found " . count($shipmentProducts) . " products in the shipments");
 
