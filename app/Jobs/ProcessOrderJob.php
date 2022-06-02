@@ -23,6 +23,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
     public $externalOrderId;
     public $externalIdentifier;
     public $queueName;
+    public $reRelease = false;
 
     /**
      * Create a new job instance.
@@ -115,11 +116,15 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
                         Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
                         //Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
+                        $this->reRelease = true;
                         $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
+                        break;
 
                     }else{
 
+                        $this->reRelease = true;
                         $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
+                        break;
 
                     }
                 }
