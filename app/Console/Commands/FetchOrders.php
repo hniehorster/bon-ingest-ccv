@@ -46,7 +46,12 @@ class FetchOrders extends Command
 
         $orderCount = $webshopAppClient->orders->count(['created_at_max' => $createdAtMax]);
 
+        if($amountOfPages > ($orderCount/self::PAGE_SIZE)){
+            $amountOfPages = ($orderCount/self::PAGE_SIZE);
+        }
+
         $this->output->writeln('Found ' . $orderCount . ' order to be processed');
+        $this->output->writeln('Spread over  ' . $amountOfPages . ' pages');
 
         $currentPage = 1;
 
@@ -54,7 +59,7 @@ class FetchOrders extends Command
 
             $this->output->writeln(' - Processing page ' . $currentPage);
 
-            $orders = $webshopAppClient->orders->get(null, ['created_at_max' => $createdAtMax, 'limit' => 250, 'page' => $currentPage]);
+            $orders = $webshopAppClient->orders->get(null, ['created_at_max' => $createdAtMax, 'limit' => self::PAGE_SIZE, 'page' => $currentPage]);
 
             foreach ($orders as $order) {
 

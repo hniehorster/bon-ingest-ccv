@@ -68,7 +68,6 @@ class OrderTransformer {
             'address_shipping_country_title'    => 'addressShippingCountry.title',
             'shop_created_at'                   => 'createdAt',
             'shop_updated_at'                   => 'updatedAt',
-
         ];
     }
 }

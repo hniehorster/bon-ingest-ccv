@@ -259,7 +259,10 @@ class InstallController extends Controller {
             return response("Success!");
 
         } else{
-            return response('Your browser doesn\'t support the use of cookies', 400);
+
+            //Reidrect to Apple Store
+
+            return redirect('https://apps.apple.com/nl/app/bon-merchant-connect-and-grow/id1610694285');
         }
     }
 
