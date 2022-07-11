@@ -106,6 +106,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
                         $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
                         Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
 
+                    }else{
+                        Log::info('No product image found');
                     }
                 } catch (Exception $e) {
 
@@ -122,6 +124,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
                         break;
 
                     }else{
+
+                        Log::info('No product image found');
 
                         $this->reRelease = true;
                         $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
