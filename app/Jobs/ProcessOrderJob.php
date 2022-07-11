@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
+use Sentry\Util\JSON;
 
 
 class ProcessOrderJob extends Job implements ShouldQueue
@@ -100,6 +101,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
                     $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
 
                     $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
+
+                    Log::info('Product Image Info: ' . json_encode($transformedProduct, JSON_PRETTY_PRINT));
 
                     if(!is_null($transformedProduct['image'])){
 
