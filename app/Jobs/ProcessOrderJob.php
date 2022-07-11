@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
+use Monolog\Handler\LogglyHandler;
 use Sentry\Util\JSON;
 
 
@@ -131,6 +132,9 @@ class ProcessOrderJob extends Job implements ShouldQueue
                     }else{
 
                         Log::info('No product image found');
+                        Log::info('Error message: ' . $e->getMessage());
+                        Log::info('Error message: ' . $e->getFile());
+                        Log::info('Error message: ' . $e->getLine());
 
                         $this->reRelease = true;
                         $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
