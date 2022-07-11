@@ -135,6 +135,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
                         Log::info('Error message: ' . $e->getMessage());
                         Log::info('Error message: ' . $e->getFile());
                         Log::info('Error message: ' . $e->getLine());
+                        Log::info('Error message: ' . $e->getTrace());
 
                         $this->reRelease = true;
                         $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
