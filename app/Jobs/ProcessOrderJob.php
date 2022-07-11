@@ -95,7 +95,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
                 }
 
-                /*
+
                 try{
                     $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
 
@@ -128,7 +128,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
                         break;
 
                     }
-                }*/
+                }
             }
 
             $orderCreatedAt = new Carbon($this->orderData['createdAt']);
