@@ -94,47 +94,49 @@ class ProcessOrderJob extends Job implements ShouldQueue
 
                 }
 
+                $orderCreatedAt = new Carbon($this->orderData['createdAt']);
 
-                try{
-                    $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
+                if($orderCreatedAt->diff(Carbon::now())->days < 15){
 
-                    $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
+                    try{
+                        $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
 
-                    if(!is_null($transformedProduct['image'])){
+                        $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
 
-                        $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
-                        Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
+                        if(!is_null($transformedProduct['image'])){
 
-                    }else{
-                        Log::info('No product image found');
-                    }
-                } catch (Exception $e) {
+                            $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $transformedProduct['image']]);
+                            Log::info('[BONAPI] CREATE orderLineItemImage ' . $bonLineItem->uuid);
 
-                    if($e->getCode() == 404){
+                        }else{
+                            Log::info('No product image found');
+                        }
+                    } catch (Exception $e) {
 
-                        Log::info('[LSAPI] Product not found, but process order');
+                        if($e->getCode() == 404){
 
-                    }elseif ($e->getCode() == 429) {
+                            Log::info('[LSAPI] Product not found, but process order');
 
-                        Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
-                        //Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
-                        $this->reRelease = true;
-                        $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
-                        break;
+                        }elseif ($e->getCode() == 429) {
 
-                    }else{
+                            Log::info('[LSAPI] Rate Limit hit for order ' . $this->externalOrderId . ' with store ' . $apiCredentials->businessUUID);
+                            //Queue::later(QueueHelperClass::getNearestTimeRoundedUp(), new ProcessOrderJob($this->externalOrderId, $this->externalIdentifier, $this->orderData), null, $this->queueName);
+                            $this->reRelease = true;
+                            $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
+                            break;
 
-                        Log::info('No product image found');
+                        }else{
 
-                        $this->reRelease = true;
-                        $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
-                        break;
+                            Log::info('No product image found');
 
+                            $this->reRelease = true;
+                            $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
+                            break;
+
+                        }
                     }
                 }
             }
-
-            $orderCreatedAt = new Carbon($this->orderData['createdAt']);
 
             /*
             //Only process the shipment if younger then 15 days old.
