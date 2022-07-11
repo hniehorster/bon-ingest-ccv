@@ -8,13 +8,10 @@ use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Transformers\Transformer;
 use BonSDK\ApiIngest\BonIngestAPI;
 use Exception;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Queue;
-use Monolog\Handler\LogglyHandler;
-use Sentry\Util\JSON;
+
 
 
 class ProcessOrderJob extends Job implements ShouldQueue
@@ -47,6 +44,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
     {
         Log::info(' ---- STARTING JOB ON QUEUE ' . $this->queueName . ' ------- ');
         $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
+
+        Log::info('API Credentials: ' . json_encode($apiCredentials, JSON_PRETTY_PRINT));
 
         try {
             $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
