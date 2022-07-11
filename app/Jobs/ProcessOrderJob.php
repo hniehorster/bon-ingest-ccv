@@ -100,6 +100,8 @@ class ProcessOrderJob extends Job implements ShouldQueue
                 try{
                     $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
 
+                    Log::info('Shop Product Image Info: ' . json_encode($shopProduct, JSON_PRETTY_PRINT));
+
                     $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
 
                     Log::info('Product Image Info: ' . json_encode($transformedProduct, JSON_PRETTY_PRINT));
