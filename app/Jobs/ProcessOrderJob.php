@@ -45,8 +45,6 @@ class ProcessOrderJob extends Job implements ShouldQueue
         Log::info(' ---- STARTING JOB ON QUEUE ' . $this->queueName . ' ------- ');
         $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
 
-        Log::info('API Credentials: ' . json_encode($apiCredentials, JSON_PRETTY_PRINT));
-
         try {
             $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
 
@@ -100,11 +98,7 @@ class ProcessOrderJob extends Job implements ShouldQueue
                 try{
                     $shopProduct = $webshopAppClient->products->get($transformedLineItem['product_id']);
 
-                    Log::info('Shop Product Image Info: ' . json_encode($shopProduct, JSON_PRETTY_PRINT));
-
                     $transformedProduct = (new Transformer($apiCredentials->businessUUID, $shopProduct, $apiCredentials->defaults))->product->transform();
-
-                    Log::info('Product Image Info: ' . json_encode($transformedProduct, JSON_PRETTY_PRINT));
 
                     if(!is_null($transformedProduct['image'])){
 
@@ -131,11 +125,6 @@ class ProcessOrderJob extends Job implements ShouldQueue
                     }else{
 
                         Log::info('No product image found');
-                        Log::info('Error message: ' . $e->getMessage());
-                        Log::info('Error message: ' . $e->getFile());
-                        Log::info('Error message: ' . $e->getLine());
-                        Log::info('Error message: ' . $e->getCode());
-                        Log::info('Error message: ' . $e->getTraceAsString());
 
                         $this->reRelease = true;
                         $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
