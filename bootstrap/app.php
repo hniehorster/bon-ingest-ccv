@@ -80,9 +80,9 @@ $app->middleware([
     App\Http\Middleware\TrustedProxies::class
  ]);
 
-// $app->routeMiddleware([
-//     'auth' => App\Http\Middleware\Authenticate::class,
-// ]);
+$app->routeMiddleware([
+    'service.authentication' => App\Http\Middleware\AuthenticateAccess::class,
+]);
 
 /*
 |--------------------------------------------------------------------------

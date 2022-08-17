@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\FetchOrders;
+use App\Console\Commands\TimeTest;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -14,7 +15,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = array(
-        FetchOrders::class
+        FetchOrders::class,
+        TimeTest::class
     );
 
     /**

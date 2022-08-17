@@ -65,7 +65,7 @@ class QueueHelperClass {
         $secondSup = 0;
 
         if($randomOffset){
-            $secondSup = $seconds+rand(10,60);
+            $secondSup = $seconds+rand(10,360);
         }
 
         return Carbon::createFromTimestamp((round(time() / $seconds) * $seconds))->addSeconds($secondSup);
