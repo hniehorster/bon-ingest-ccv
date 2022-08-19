@@ -19,7 +19,20 @@ class CarrierFinderHelper {
      */
     public function obtainCarrierDetails(array $shipmentData, array $orderData) : array {
 
-        $this->carrierString = $orderData['shipmentId'] . $orderData['shipmentTitle'] . $orderData['shipmentData']['method'];
+        $this->carrierString = "";
+
+        if(isset($orderData['shipmentId'])) {
+            $this->carrierString .= $orderData['shipmentId'];
+        }
+
+        if(isset($orderData['shipmentTitle'])){
+            $this->carrierString .= $orderData['shipmentTitle'];
+        }
+
+        if(isset($orderData['shipmentData']['method'])){
+            $this->carrierString .= $orderData['shipmentData']['method'];
+        }
+
         $this->trackingCode  = $shipmentData['trackingCode'];
 
         Log::info('Tracking Code found: ' . $this->trackingCode);
@@ -62,13 +75,30 @@ class CarrierFinderHelper {
                 }
             }
 
+            //Check for PostNL
+            if(Str::startsWith($this->trackingCode, '3S')) {
+                //Must be POSTNL or DHL
+                $validateCode = substr($this->trackingCode, 2);
+
+                preg_match_all('/[A-Za-z,]/', $validateCode, $characterCount);
+
+                if(count($characterCount[0]) == 3){
+                    $this->carrierName      = 'dhl';
+                    $this->trackingEnabled  = true;
+                    $carrierFound           = true;
+                }elseif(count($characterCount[0]) == 4){
+                    $this->carrierName      = 'postnl';
+                    $this->trackingEnabled  = true;
+                    $carrierFound           = true;
+                }
+            }
+
             //Hack for finding the instabox
-            if(Str::startsWith($this->trackingCode, 'R')){
+            if(Str::startsWith($this->trackingCode, 'R') && !$carrierFound){
                 $this->carrierName      = 'instabox';
                 $this->trackingEnabled  = true;
                 $carrierFound           = true;
             }
-
 
         } else {
             return false;
