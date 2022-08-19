@@ -1,54 +1,41 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Jobs;
 
 use App\Classes\AuthenticationHelper;
-use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
-use App\Jobs\ProcessOrderJob;
-use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
-class TimeTest extends Command
+class FetchAllOrdersJob extends Job
 {
-
     public $startTime;
 
     public $externalIdentifier;
     public $createdAtMax;
+
     protected int $maxPageNumber;
     protected int $pageNumber;
 
     const QUEUE_NAME = "initial";
     const JOB_INTERVAL = 2;
 
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'timetest {externalIdentifier} {createdAtMax}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Download the historical orders';
-
-    public function __construct()
+    public function __construct(int $externalIdentifier, string $createdAtMax)
     {
-        parent::__construct();
-        $this->startTime = Carbon::now();
+        $this->createdAtMax = $createdAtMax;
+        $this->externalIdentifier = $externalIdentifier;
+
+        Log::info('Fetch all orders has started for store: ' . $this->externalIdentifier);
     }
 
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
     public function handle()
     {
-        $this->externalIdentifier = $this->argument('externalIdentifier');
-        $this->createdAtMax = $this->argument('createdAtMax');
-
         try {
 
             $orderCount = 0;

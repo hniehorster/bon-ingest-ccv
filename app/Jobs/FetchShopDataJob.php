@@ -34,6 +34,7 @@ class FetchShopDataJob extends Job implements ShouldQueue
     {
         Log::info('Initial Job Pushed');
 
-        dispatch(new InitialFetchOrdersJob($this->externalIdentifier, $this->createdAtMax));
+        //dispatch(new InitialFetchOrdersJob($this->externalIdentifier, $this->createdAtMax));
+        dispatch(new FetchAllOrdersJob($this->externalIdentifier, $this->createdAtMax));
     }
 }
