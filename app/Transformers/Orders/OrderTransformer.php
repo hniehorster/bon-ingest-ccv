@@ -41,6 +41,7 @@ class OrderTransformer {
             'phone'                             => 'phone',
             'email'                             => 'email',
             'browser_ip'                        => 'remoteIp',
+            'discount_code'                     => 'discountCouponCode',
             'currency_code'                     => 'bon_default:currency',
             'payment_status'                    => 'paymentStatus',
             'shipment_status'                   => 'shipmentStatus',
