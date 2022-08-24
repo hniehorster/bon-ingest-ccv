@@ -54,7 +54,7 @@ class CouponController extends Controller {
             }
 
             $discountParams = [
-                'isActive'          => $request->is_active,
+                'isActive'          => (bool) $request->is_active,
                 'code'              => $request->code,
                 'minimumAmount'     => $request->minimum_amount,
                 'startDate'         => Carbon::parse($request->valid_from)->format('Y-m-d'),
