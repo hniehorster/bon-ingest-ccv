@@ -49,6 +49,10 @@ class CouponController extends Controller {
 
             $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
 
+            if($request->type == 'percentage') {
+                $request->amount = $request->amount*100;
+            }
+
             $discountParams = [
                 'isActive'          => $request->is_active,
                 'code'              => $request->code,
