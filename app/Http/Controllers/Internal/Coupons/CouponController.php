@@ -49,7 +49,7 @@ class CouponController extends Controller {
 
             $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
 
-            $coupon = $webshopAppClient->discounts->create([
+            $discountParams = [
                 'isActive'          => $request->is_active,
                 'code'              => $request->code,
                 'minimumAmount'     => $request->minimum_amount,
@@ -58,7 +58,11 @@ class CouponController extends Controller {
                 'discount'          => $request->amount,
                 'type'              => $request->type,
                 'usageLimit'        => $usageLimit
-            ]);
+            ];
+
+            Log::info('Creating the external coupon with params: ' , $discountParams);
+
+            $coupon = $webshopAppClient->discounts->create($discountParams);
 
             return $this->successResponse($coupon, Response::HTTP_CREATED);
 
