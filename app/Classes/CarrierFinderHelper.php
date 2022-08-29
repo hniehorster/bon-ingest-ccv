@@ -86,7 +86,7 @@ class CarrierFinderHelper {
                     $this->carrierName      = 'dhl';
                     $this->trackingEnabled  = true;
                     $carrierFound           = true;
-                }elseif(count($characterCount[0]) == 4){
+                }elseif(count($characterCount[0]) >= 4){
                     $this->carrierName      = 'postnl';
                     $this->trackingEnabled  = true;
                     $carrierFound           = true;

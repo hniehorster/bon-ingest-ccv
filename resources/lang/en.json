@@ -1,3 +1,7 @@
 {
-    "pre_install.header" : "What is the ShopId / ShopNumber you want to connect?"
+    "pre_install.header" : "What is the ShopId / ShopNumber you want to connect?",
+    "pre_install.help_title": "How to find your shop Id?",
+    "pre_install.help_button" : "Need help finding your shop Id?",
+    "pre_install.help_text": "You can find your shop Id, by clicking the your domain at the top left corner in the Lightspeed backoffice.",
+    "pre_install.close_help": "Close Info"
 }
