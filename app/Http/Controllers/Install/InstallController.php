@@ -16,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class InstallController extends Controller {
@@ -33,10 +34,31 @@ class InstallController extends Controller {
 
         $this->validate($request, $rules);
 
+        Log::info('WHAT?');
+
         return view('shopnumber', [
             'user_uuid' => $request->user_uuid,
             'apiLocale' => $this->apiLocale
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\View\View|\Laravel\Lumen\Application
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function confirmSubscription(Request $request) {
+        $this->validate($request, [
+            'shop_number' => 'required|integer',
+            'user_uuid'   => 'required|uuid'
+        ]);
+
+        return view('confirm', [
+            'shop_number' => $request->shop_number,
+            'user_uuid' => $request->user_uuid,
+            'apiLocale' => $this->apiLocale
+        ]);
+
     }
 
     /**

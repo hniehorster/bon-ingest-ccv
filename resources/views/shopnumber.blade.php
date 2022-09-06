@@ -19,7 +19,8 @@
             filter: alpha(opacity=50);
             z-index: 1000;
         }
-
+        strong { color: #fff;}
+        p { margin: 5px 0 0 0}
         #modal-content {
             background-color: white;
             border-radius: 10px;
@@ -50,47 +51,47 @@
     <div class="container">
         <div class="columns">
             <div class="column is-full">
-                <div class="card mb-3">
-                    <div class="card-image">
-                        <figure class="image has-text-centered">
-                            <img src="https://bon-business-images.ams3.digitaloceanspaces.com/lightspeed_800.png" style="max-width: 350px; width: auto; height: auto;" />
-                        </figure>
-                    </div>
-                    <div class="card-header">
-                        <p class="card-header-title">
-                            {{ __('pre_install.header') }}
-                        </p>
-
-                    </div>
-                    <form method="POST" action="{{ route('redirectPage', ['user_uuid' => $user_uuid, 'apiLocale' => $apiLocale]) }}" id="shopnumber-form">
-                        <div class="card-content is-shadowless">
-                            <div class="content">
-                                <div class="field">
-                                    <div class="control">
-                                        <input class="input" type="text" name="shop_number" placeholder="213123">
-                                    </div>
-                                </div>
-                                <div class="field is-grouped">
-                                    <div class="control">
-                                        <button class="button is-primary has-text-weight-bold" name="submit" value="formSubmit" type="submit">Submit</button>
-                                    </div>
-                                </div>
-                                <p>
-                                    <a style="font-weight: normal;" id="modal-launcher">{{ __('pre_install.help_button') }}</a>
-                                </p>
-                            </div>
+                <div class="card" style="background-color: transparent !important;">
+                    <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important;">
+                        <div class="card-image" style="background-color: transparent !important;">
+                            <figure class="image has-text-centered mb-5">
+                                <img src="https://bon-business-images.ams3.digitaloceanspaces.com/lightspeed_800.png" style="max-width: 200px; width: auto; height: auto;" />
+                            </figure>
                         </div>
-                    </form>
-
-                    <div id="modal-background"></div>
-                    <div id="modal-content">
-                        <p><strong>{{ __('pre_install.help_title') }}</strong></p>
-                        <p>
-                            {{ __('pre_install.help_text') }}
-                            <img src="https://bon-core-files.ams3.digitaloceanspaces.com/lightspeed_shop_id.png" alt="Shop ID" class="helpImage" style="margin: 15px 0px;"/>
-                        </p>
-                        <button id="modal-close" class="button is-primary has-text-weight-bold">{{ __('pre_install.close_help') }}</button>
                     </div>
+                </div>
+                <form method="POST" action="{{ route('confirmSubscription', ['user_uuid' => $user_uuid, 'apiLocale' => $apiLocale]) }}" id="shopnumber">
+                    <div class="card" style="border-radius: 10px;">
+
+                            <div class="card-content is-shadowless border-rounded" style="border-radius: 10px;">
+                                <div class="content">
+                                    <strong>{{ __('pre_install.header') }}</strong>
+                                    <div class="field">
+                                        <div class="control">
+                                            <input class="input" type="text" name="shop_number" placeholder="213123">
+                                        </div>
+                                    </div>
+                                    <p>
+                                        <a style="font-weight: normal;" id="modal-launcher">{{ __('pre_install.help_button') }}</a>
+                                    </p>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="card" style="background-color: transparent !important;">
+                        <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important;">
+                            <button type="submit" form="shopnumber" value="submit" class="button is-primary has-text-weight-bold">{{ __('pre_install.submit') }}</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="modal-background"></div>
+                <div id="modal-content">
+                    <p><strong>{{ __('pre_install.help_title') }}</strong></p>
+                    <p>
+                        {{ __('pre_install.help_text') }}
+                        <img src="https://bon-core-files.ams3.digitaloceanspaces.com/lightspeed_shop_id.png" alt="Shop ID" class="helpImage" style="margin: 15px 0px;"/>
+                    </p>
+                    <button id="modal-close" class="button is-primary has-text-weight-bold">{{ __('pre_install.close_help') }}</button>
                 </div>
             </div>
         </div>
