@@ -58,7 +58,7 @@
         <div class="columns">
             <div class="column is-full">
                 <div class="card" style="background-color: transparent !important;">
-                    <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important;">
+                    <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important; padding: 5px 24px 24px 24px">
                         <div class="card-image" style="background-color: transparent !important;">
                             <figure class="image has-text-centered mb-5">
                                 <img src="https://bon-core-files.ams3.digitaloceanspaces.com/bon_logo_red_300.webp" style="max-width: 80px; width: auto; height: auto;" />
