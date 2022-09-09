@@ -45,7 +45,7 @@ class FetchAllOrdersJob extends Job
             //3. Queue each order with a backoff
             //4. Limit is 12000 per hour / 2.7 requests per second. 10 requests per 5 seconds. Each order is at least 3 API calls
 
-            $timeStart = $this->startTime;
+            $this->startTime = Carbon::now();
 
             $apiCredentials = AuthenticationHelper::getAPICredentials($this->externalIdentifier);
 
@@ -77,7 +77,7 @@ class FetchAllOrdersJob extends Job
 
             $endTime = Carbon::now();
 
-            $duration = $endTime->diffInSeconds($timeStart);
+            $duration = $endTime->diffInSeconds($this->startTime);
 
             $perOrder = $duration/$orderCount;
 
