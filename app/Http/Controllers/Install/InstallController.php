@@ -150,6 +150,8 @@ class InstallController extends Controller {
 
                 $externalLanguages = $shopApi->languages->get();
 
+                $defaultLanguage = 'en';
+
                 foreach($externalLanguages as $language) {
                     $defaultLanguage = $language['code'];
 
