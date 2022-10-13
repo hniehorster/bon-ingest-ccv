@@ -148,6 +148,17 @@ class InstallController extends Controller {
 
                 //3. Create the business
 
+                $externalLanguages = $shopApi->languages->get();
+
+                foreach($externalLanguages as $language) {
+                    $defaultLanguage = $language['code'];
+
+                    if($language['isDefault']){
+                        $defaultLanguage = $language['code'];
+                        break;
+                    }
+                }
+
                 $businessData = [
                     'account_uuid'       => $newAccount->uuid,
                     'gid'                => $GID,
@@ -164,7 +175,11 @@ class InstallController extends Controller {
                     'country'            => $externalAccountDetails['country']['title'],
                     'country_code'       => $externalAccountDetails['country']['code'],
                     'region'             => $externalAccountDetails['region'],
+                    'default_locale'     => $defaultLanguage,
+                    'default_currency'   => $businessDetails['currency']['shortcode']
                 ];
+
+                Log::info('Business Data: ' . json_encode($businessData, JSON_PRETTY_PRINT));
 
                 $newBusiness = json_decode((new BusinessService())->createBusiness($request->get('language'), $businessData));
 
@@ -176,8 +191,6 @@ class InstallController extends Controller {
                 $businessAuth = json_decode((new BusinessAuthService())->createBusinessAuth($request->get('language'), $businessAuthData));
 
                 $defaults = (new Transformer($newBusiness->uuid, $businessDetails, ))->shop->transform();
-
-                $externalLanguages = $shopApi->languages->get();
 
                 foreach($externalLanguages as $externalLanguage){
                     $defaults['languages'][] = (new Transformer($newBusiness->uuid, $externalLanguage))->language->transform();
