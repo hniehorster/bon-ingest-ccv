@@ -21,6 +21,8 @@ class AddHandShakes extends Migration
             $table->string('api_root')->nullable();
             $table->string('return_url')->nullable();
             $table->timestamps();
+
+            $table->index('api_public');
         });
     }
 

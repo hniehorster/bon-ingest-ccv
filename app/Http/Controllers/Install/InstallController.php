@@ -5,6 +5,7 @@ use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Http\Controllers\Controller;
 use App\Jobs\FetchShopDataJob;
 use App\Models\BusinessToken;
+use App\Models\Handshake;
 use App\Transformers\Transformer;
 use BonSDK\Classes\BonSDKGID;
 use BonSDK\SDKIngest\Services\Accounts\AccountService;
@@ -15,11 +16,14 @@ use BonSDK\SDKIngest\Services\Communications\AuthPlatformSelectedService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 
 class InstallController extends Controller {
+
 
     /**
      * @param Request $request
@@ -28,18 +32,57 @@ class InstallController extends Controller {
      */
     public function preInstall(Request $request) {
 
-        $rules = [
-            'user_uuid' => 'required|uuid'
-        ];
+        Log::info('-------- INCOMING INSTALL --------');
+        Log::info('All request data: '. $request->getContent());
+        Log::info('All request URL: ' .  URL::current());
 
-        $this->validate($request, $rules);
+        $handShakeData[] = URL::current();;
+        $handShakeData[] = $request->public_key;;
 
-        Log::info('WHAT?');
+        $handShakeString = implode('|', $handShakeData);
+        $handShakeSecret = env('CCV_SECRET_KEY');
 
-        return view('shopnumber', [
-            'user_uuid' => $request->user_uuid,
-            'apiLocale' => $this->apiLocale
-        ]);
+        $sHash = hash_hmac('sha512', $handShakeString, $handShakeSecret);
+
+        Log::info('Local hash made: ' . $sHash);
+        Log::info('Remote hash made: ' . $request->header('x-hash'));
+
+        if($sHash === $request->header('x-hash')) {
+
+            $apiUser = Handshake::where('api_public', $request->public_key)->first();
+
+            //Let's patch the user
+            $apiId = env('ccv_app_id');
+
+            $formParams     = ['is_installed' => true];
+            $Uri            = '/api/rest/v1/apps/' . $apiId;
+
+            $aDataToHash    = [];
+            $aDataToHash[]  = $request->public_key;
+            $aDataToHash[]  = 'PATCH';
+            $aDataToHash[]  = $Uri;
+            $aDataToHash[]  = $formParams;
+            $aDataToHash[]  = date('c');
+
+            $sStringToHash = implode('|', $aDataToHash);
+            $sHash = hash_hmac('sha512', $sStringToHash, $apiUser->api_secret);
+
+            $response = Http::withHeaders([
+                'x-date' => 'foo',
+                'x-hash' => 'bar',
+                'x-public' => $request->public_key
+            ])->patch($apiUser->api_root.$Uri, $formParams);
+
+            if($response->successful()){
+                echo 'App Successful updated';
+            }else{
+                echo 'Something went wrong';
+            }
+
+        }else{
+            throw new Exception('Invalid Request');
+        }
+
     }
 
     /**
@@ -47,10 +90,11 @@ class InstallController extends Controller {
      * @return \Illuminate\View\View|\Laravel\Lumen\Application
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function confirmSubscription(Request $request) {
+    public function confirmSubscription(Request $request)
+    {
         $this->validate($request, [
             'shop_number' => 'required|integer',
-            'user_uuid'   => 'required|uuid'
+            'user_uuid' => 'required|uuid'
         ]);
 
         return view('confirm', [
@@ -59,35 +103,6 @@ class InstallController extends Controller {
             'apiLocale' => $this->apiLocale
         ]);
 
-    }
-
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse|\Laravel\Lumen\Http\Redirector
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function generateRedirect(Request $request) {
-
-        $rules = [
-            'shop_number'   => 'required|integer',
-            'user_uuid'     => 'required|uuid'
-        ];
-
-        $this->validate($request, $rules);
-
-        $platform       = "eu1";
-        $baseURL        = "https://api.webshopapp.com";
-        $platformKey    = env('LIGHTSPEED_API_KEY_EU1');
-
-        if($request->shop_number > 600000) {
-            $platform   = "us1";
-            $baseURL    = "https://api.shoplightspeed.com";
-            $platformKey = env('LIGHTSPEED_API_KEY_US1');
-        }
-
-        $fullURL = $baseURL . '/' . $this->apiLocale . '/apps/install?api_key=' . $platformKey .'&shop_id=' . $request->input('shop_number') . '&cluster=' . $platform . '&user_uuid=' . $request->input('user_uuid');;
-
-        return RedirectResponse::create($fullURL)->withCookie(new Cookie('user_uuid', $request->input('user_uuid')));
     }
 
     /**
