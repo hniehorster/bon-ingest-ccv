@@ -15,7 +15,6 @@ class AddHandShakes extends Migration
     {
         Schema::create('handshakes', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid');
             $table->string('hash')->nullable();
             $table->string('api_public')->nullable();
             $table->string('api_secret')->nullable();

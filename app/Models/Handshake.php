@@ -33,7 +33,6 @@ use Illuminate\Database\Eloquent\Model;
 class Handshake extends Model
 {
     protected $fillable = [
-        'uuid',
         'hash',
         'api_public',
         'api_secret',
@@ -42,7 +41,6 @@ class Handshake extends Model
     ];
 
     protected $casts = [
-        'uuid'          => 'string',
         'hash'          => 'string',
         'api_public'    => 'string',
         'api_secret'    => 'string',
