@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae5aeba442fb680600b5e9b5469eaabf",
+    "content-hash": "3db87dcaf02aac786890ce0d26ec758c",
     "packages": [
         {
             "name": "brick/math",
@@ -2490,6 +2490,63 @@
                 "source": "https://github.com/laravel/framework"
             },
             "time": "2022-04-14T13:47:10+00:00"
+        },
+        {
+            "name": "jacobdekeizer/ccvshop-client",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jacobdekeizer/ccvshop-client.git",
+                "reference": "94f42a035c180158ae64ec2fc9c163ccaa740ef9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jacobdekeizer/ccvshop-client/zipball/94f42a035c180158ae64ec2fc9c163ccaa740ef9",
+                "reference": "94f42a035c180158ae64ec2fc9c163ccaa740ef9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "guzzlehttp/guzzle": "^6.5|^7.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "doctrine/inflector": "^2.0",
+                "squizlabs/php_codesniffer": "^3.5",
+                "symfony/css-selector": "^5.3",
+                "symfony/dom-crawler": "^5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JacobDeKeizer\\Ccv\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jacob de Keizer"
+                }
+            ],
+            "description": "CCV shop API client for PHP",
+            "homepage": "https://github.com/jacobdekeizer/ccvshop-client",
+            "keywords": [
+                "api",
+                "ccv shop",
+                "ccvshop",
+                "client",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/jacobdekeizer/ccvshop-client/issues",
+                "source": "https://github.com/jacobdekeizer/ccvshop-client/tree/v1.1.0"
+            },
+            "time": "2022-06-13T18:52:28+00:00"
         },
         {
             "name": "jean85/pretty-package-versions",

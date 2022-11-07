@@ -2,10 +2,16 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
+
+$router->get('/handshake', 'Install\HandshakeController@accept');
+
 $router->group([
     'prefix' => '{apiLocale}',
     'where' => ['locale' => '[a-zA-Z]{2}'],
 ], function ($apiLocale) use ($router) {
+
+    //Accept the handshake
+
 
     //Show the shopId form
     $router->get('/install', 'Install\InstallController@preInstall');
