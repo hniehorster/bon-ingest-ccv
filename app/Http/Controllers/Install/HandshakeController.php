@@ -30,6 +30,9 @@ class HandshakeController extends Controller {
 
         $sHash = hash_hmac('sha512', $handShakeString, $handShakeSecret);
 
+        Log::info('Local hash made: ' . $sHash);
+        Log::info('Remote hash made: ' . $request->header('x-hash'));
+
         if($sHash === $request->header('x-hash')) {
 
             $handshake = new Handshake();
