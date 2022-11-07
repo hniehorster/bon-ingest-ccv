@@ -63,20 +63,21 @@ class InstallController extends Controller {
 
             $formParams     = ['is_installed' => true];
             $Uri            = '/api/rest/v1/apps/' . $apiId;
+            $sDate          = date('c');
 
             $aDataToHash    = [];
             $aDataToHash[]  = $request->public_key;
             $aDataToHash[]  = 'PATCH';
             $aDataToHash[]  = $Uri;
             $aDataToHash[]  = $formParams;
-            $aDataToHash[]  = date('c');
+            $aDataToHash[]  = $sDate;
 
             $sStringToHash = implode('|', $aDataToHash);
             $sHash = hash_hmac('sha512', $sStringToHash, $apiUser->api_secret);
 
             $response = Http::withHeaders([
-                'x-date' => 'foo',
-                'x-hash' => 'bar',
+                'x-date' => $sDate,
+                'x-hash' => $sHash,
                 'x-public' => $request->public_key
             ])->patch($apiUser->api_root.$Uri, $formParams);
 
