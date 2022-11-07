@@ -99,6 +99,10 @@ $app->routeMiddleware([
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
+if ($app->environment() === 'dev') {
+    $app->register(Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+}
+
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register('Sentry\Laravel\ServiceProvider');
 

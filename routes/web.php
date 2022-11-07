@@ -2,8 +2,9 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
-
-$router->get('/handshake', 'Install\HandshakeController@accept');
+$router->get('/', function() {
+    return redirect('https://www.getbonhq.eu');
+});
 
 $router->group([
     'prefix' => '{apiLocale}',
@@ -11,6 +12,8 @@ $router->group([
 ], function ($apiLocale) use ($router) {
 
     //Accept the handshake
+    $router->get('/handshake', 'Install\HandshakeController@accept');
+    $router->post('/handshake', 'Install\HandshakeController@accept');
 
 
     //Show the shopId form

@@ -1,23 +1,13 @@
 <?php
 namespace App\Http\Controllers\Install;
 
-use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Http\Controllers\Controller;
-use App\Jobs\FetchShopDataJob;
-use App\Models\BusinessToken;
-use App\Transformers\Transformer;
-use BonSDK\Classes\BonSDKGID;
-use BonSDK\SDKIngest\Services\Accounts\AccountService;
-use BonSDK\SDKIngest\Services\Businesses\BusinessAdminService;
-use BonSDK\SDKIngest\Services\Businesses\BusinessAuthService;
-use BonSDK\SDKIngest\Services\Businesses\BusinessService;
-use BonSDK\SDKIngest\Services\Communications\AuthPlatformSelectedService;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Handshake;
+use Exception;
+use http\Client\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use Psr\Log\LoggerAwareInterface;
-use Symfony\Component\HttpFoundation\Cookie;
+use Illuminate\Support\Facades\URL;
 
 class HandshakeController extends Controller {
 
@@ -28,8 +18,31 @@ class HandshakeController extends Controller {
     public function accept(Request $request) {
 
         Log::info('-------- INCOMING HANDSHAKE --------');
-        Log::info('All request data', $request->all());
+        Log::info('All request data: '. $request->getContent());
+        Log::info('All request URL: ' .  URL::current());
 
+        $handShakeData[] = URL::current();;
+        $handShakeData[] = $request->getContent();;
+
+        $handShakeString = implode('|', $handShakeData);
+
+        $handShakeSecret = env('CCV_SECRET_KEY');
+
+        $sHash = hash_hmac('sha512', $handShakeString, $handShakeSecret);
+
+        if($sHash === $request->header('x-hash')) {
+
+            $handshake = new Handshake();
+            $handshake->hash        = $sHash;
+            $handshake->api_public  = $request->api_public;
+            $handshake->api_secret  = $request->api_secret;
+            $handshake->api_root    = $request->api_root;
+            $handshake->return_url  = $request->return_url;
+            $handshake->save();
+
+            return "ok";
+        }else{
+            throw new Exception('Invalid Request');
+        }
     }
-
 }
