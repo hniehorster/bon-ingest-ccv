@@ -13,6 +13,7 @@ use BonSDK\SDKIngest\Services\Businesses\BusinessAdminService;
 use BonSDK\SDKIngest\Services\Businesses\BusinessAuthService;
 use BonSDK\SDKIngest\Services\Businesses\BusinessService;
 use BonSDK\SDKIngest\Services\Communications\AuthPlatformSelectedService;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -29,6 +30,12 @@ class InstallController extends Controller {
      * @param Request $request
      * @return \Illuminate\View\View|\Laravel\Lumen\Application
      * @throws \Illuminate\Validation\ValidationException
+     *
+     * https://ccv.ingest.getbonhq.eu/en/install?
+     * api_public=e_27%5EttmcoI6cFMiGEbjNN0yKxUVKqbQ
+     * &language=nl
+     * &x-hash=ea1c4d1f95a745c9e8c0b04b454b33673d9e574660586626219a8c10230e316dfdea1e8caf7eaba5a09d8fc6d59e06fe5caf13d17bcdd76619cead811d4389a8
+     *
      */
     public function preInstall(Request $request) {
 
