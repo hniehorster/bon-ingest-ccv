@@ -50,6 +50,8 @@ $router->group([
 
 });
 
-$router->post('/webhooks/orders', ['as' => 'ordersWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
-$router->post('/webhooks/shipments', ['as' => 'shipmentsWebhook', 'uses' => 'Shipments\ShipmentController@acceptWebhook']);
+$router->post('/webhooks/orders/created', ['as' => 'orderCreatedWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
+$router->post('/webhooks/orders/is_paid', ['as' => 'orderIsPaidWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
+$router->post('/webhooks/orders/status_change', ['as' => 'orderStatusChangedWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
+$router->post('/webhooks/orders/track_and_trace', ['as' => 'orderTrackAndTraceWebhook', 'uses' => 'Shipments\ShipmentController@acceptWebhook']);
 

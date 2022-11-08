@@ -1,19 +1,29 @@
 <?php
 
 return [
-    'platform_name' => 'LightspeedEcom',
+    'platform_name' => 'CCV',
     'has_webhooks' => true,
     'has_shop_scripts' => true,
     'webhooks' => [
-        'orders' => [
-            'itemGroup'     => 'orders',
-            'itemAction'   => '*',
-            'url'           => 'ordersWebhook',
+        [
+            'event'     => 'orders.created',
+            'address'   => 'orderCreatedWebhook',
+            'is_active' => true,
         ],
-        'shipments' => [
-            'itemGroup'     => 'shipments',
-            'itemAction'   => '*',
-            'url'           => 'shipmentsWebhook',
+        [
+            'event'     => 'orders.ispaid',
+            'address'   => 'orderIsPaidWebhook',
+            'is_active' => true,
+        ],
+        [
+            'event'     => 'orders.status',
+            'address'   => 'orderStatusChangedWebhook',
+            'is_active' => true,
+        ],
+        [
+            'event'     => 'orders.trackandtrace',
+            'address'   => 'orderTrackAndTraceWebhook',
+            'is_active' => true,
         ]
     ]
 ];

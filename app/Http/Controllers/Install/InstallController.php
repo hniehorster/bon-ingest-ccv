@@ -42,48 +42,66 @@ class InstallController extends Controller {
         Log::info('-------- INCOMING INSTALL --------');
         Log::info('All request data: '. $request->getContent());
         Log::info('All request URL: ' .  URL::current());
+        Log::info('ApiPublic: ' . $request->api_public);
+        Log::info('Requested Hash: ' . $request->get('x-hash'));
 
-        $handShakeData[] = URL::current();;
-        $handShakeData[] = $request->public_key;;
+        $handShakeData[] = 'https://ccv.ingest.getbonhq.eu/en/install';
+        $handShakeData[] = $request->api_public;;
 
         $handShakeString = implode('|', $handShakeData);
         $handShakeSecret = env('CCV_SECRET_KEY');
 
         $sHash = hash_hmac('sha512', $handShakeString, $handShakeSecret);
 
-        Log::info('Local hash made: ' . $sHash);
-        Log::info('Remote hash made: ' . $request->header('x-hash'));
+        Log::info('Hashed String: ' . $handShakeString);
+        Log::info('Hash: ' . $sHash);
+        Log::info('-------');
 
-        if($sHash === $request->header('x-hash')) {
+        if($sHash === $request->get('x-hash')) {
 
-            $apiUser = Handshake::where('api_public', $request->public_key)->first();
+            $apiUser = Handshake::where('api_public', $request->api_public)->first();
 
             //Let's patch the user
-            $apiId = env('ccv_app_id');
+            $apiId = env('CCV_APP_ID');
 
             $formParams     = ['is_installed' => true];
             $Uri            = '/api/rest/v1/apps/' . $apiId;
             $sDate          = date('c');
 
             $aDataToHash    = [];
-            $aDataToHash[]  = $request->public_key;
+            $aDataToHash[]  = $request->api_public;
             $aDataToHash[]  = 'PATCH';
-            $aDataToHash[]  = $Uri;
-            $aDataToHash[]  = $formParams;
+            $aDataToHash[]  = $apiUser->api_root . $Uri;
+            $aDataToHash[]  = json_encode($formParams);
             $aDataToHash[]  = $sDate;
 
             $sStringToHash = implode('|', $aDataToHash);
-            $sHash = hash_hmac('sha512', $sStringToHash, $apiUser->api_secret);
 
-            $response = Http::withHeaders([
+            Log::info('User Details', $apiUser->toArray());
+            Log::info('Secret String: ' .  $apiUser->api_secret);
+
+            $sHash = hash_hmac('sha512', $sStringToHash, $apiUser->api_secret);
+            Log::info('Hashed String: ' . $sStringToHash);
+            Log::info('Hash: ' . $sHash);
+
+
+            $response = Http::withOptions(['debug' => true])->withHeaders([
                 'x-date' => $sDate,
-                'x-hash' => $sHash,
-                'x-public' => $request->public_key
-            ])->patch($apiUser->api_root.$Uri, $formParams);
+                'x-public' => $request->api_public,
+                'x-hash' => $sHash
+            ])->patch($apiUser->api_root.$Uri, json_encode($formParams));
+
+            $client = new \JacobDeKeizer\Ccv\Client();
+            $client->setBaseUrl('https://bonapp1.ccvshop.nl');
+            $client->setPublicKey($request->api_public);
+            $client->setPrivateKey($apiUser->api_secret);
+
+            $result = $client->root()->all();
 
             if($response->successful()){
-                echo 'App Successful updated';
+                return redirect($apiUser->return_url);
             }else{
+                echo $response->body();
                 echo 'Something went wrong';
             }
 
@@ -93,24 +111,9 @@ class InstallController extends Controller {
 
     }
 
-    /**
-     * @param Request $request
-     * @return \Illuminate\View\View|\Laravel\Lumen\Application
-     * @throws \Illuminate\Validation\ValidationException
-     */
+
     public function confirmSubscription(Request $request)
     {
-        $this->validate($request, [
-            'shop_number' => 'required|integer',
-            'user_uuid' => 'required|uuid'
-        ]);
-
-        return view('confirm', [
-            'shop_number' => $request->shop_number,
-            'user_uuid' => $request->user_uuid,
-            'apiLocale' => $this->apiLocale
-        ]);
-
     }
 
     /**
