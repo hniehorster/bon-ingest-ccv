@@ -64,14 +64,14 @@ class InstallController extends Controller {
             //Let's patch the user
             $apiId = env('CCV_APP_ID');
 
-            $formParams     = ['is_installed' => true];
+            $formParams     = ['is_installed' => (bool) true];
             $Uri            = '/api/rest/v1/apps/' . $apiId;
             $sDate          = date('c');
 
             $aDataToHash    = [];
             $aDataToHash[]  = $request->api_public;
             $aDataToHash[]  = 'PATCH';
-            $aDataToHash[]  = $apiUser->api_root . $Uri;
+            $aDataToHash[]  = $Uri;
             $aDataToHash[]  = json_encode($formParams);
             $aDataToHash[]  = $sDate;
 
@@ -88,8 +88,9 @@ class InstallController extends Controller {
             $response = Http::withOptions(['debug' => true])->withHeaders([
                 'x-date' => $sDate,
                 'x-public' => $request->api_public,
-                'x-hash' => $sHash
-            ])->patch($apiUser->api_root.$Uri, json_encode($formParams));
+                'x-hash' => $sHash,
+                'x-debug' => $sStringToHash
+            ])->patch($apiUser->api_root.$Uri, $formParams);
 
             $client = new \JacobDeKeizer\Ccv\Client();
             $client->setBaseUrl('https://bonapp1.ccvshop.nl');
@@ -112,8 +113,7 @@ class InstallController extends Controller {
     }
 
 
-    public function confirmSubscription(Request $request)
-    {
+    public function confirmSubscription(Request $request) {
     }
 
     /**
