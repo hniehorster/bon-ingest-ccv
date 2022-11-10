@@ -1,11 +1,14 @@
 <?php
 namespace App\Http\Controllers\Install;
 
+use App\Classes\CCVApi\CCVApi;
+use App\Classes\InstallHelper;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Http\Controllers\Controller;
 use App\Jobs\FetchShopDataJob;
 use App\Models\BusinessToken;
 use App\Models\Handshake;
+use App\Models\ManualLinkToken;
 use App\Transformers\Transformer;
 use BonSDK\Classes\BonSDKGID;
 use BonSDK\SDKIngest\Services\Accounts\AccountService;
@@ -14,18 +17,15 @@ use BonSDK\SDKIngest\Services\Businesses\BusinessAuthService;
 use BonSDK\SDKIngest\Services\Businesses\BusinessService;
 use BonSDK\SDKIngest\Services\Communications\AuthPlatformSelectedService;
 use Exception;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
-use Psr\Log\LoggerAwareInterface;
-use Symfony\Component\HttpFoundation\Cookie;
+use Illuminate\Support\Str;
 
 class InstallController extends Controller {
 
-
+    const API_KEY = 'jK9Eqw9f187KOi^pCe9BLZnAjtscy52m';
     /**
      * @param Request $request
      * @return \Illuminate\View\View|\Laravel\Lumen\Application
@@ -59,52 +59,11 @@ class InstallController extends Controller {
 
         if($sHash === $request->get('x-hash')) {
 
-            $apiUser = Handshake::where('api_public', $request->api_public)->first();
+            //1. Create Account
+            //2. Create Business
+                //3. Grab the webshop
 
-            //Let's patch the user
-            $apiId = env('CCV_APP_ID');
-
-            $formParams     = ['is_installed' => (bool) true];
-            $Uri            = '/api/rest/v1/apps/' . $apiId;
-            $sDate          = date('c');
-
-            $aDataToHash    = [];
-            $aDataToHash[]  = $request->api_public;
-            $aDataToHash[]  = 'PATCH';
-            $aDataToHash[]  = $Uri;
-            $aDataToHash[]  = json_encode($formParams);
-            $aDataToHash[]  = $sDate;
-
-            $sStringToHash = implode('|', $aDataToHash);
-
-            Log::info('User Details', $apiUser->toArray());
-            Log::info('Secret String: ' .  $apiUser->api_secret);
-
-            $sHash = hash_hmac('sha512', $sStringToHash, $apiUser->api_secret);
-            Log::info('Hashed String: ' . $sStringToHash);
-            Log::info('Hash: ' . $sHash);
-
-
-            $response = Http::withOptions(['debug' => true])->withHeaders([
-                'x-date' => $sDate,
-                'x-public' => $request->api_public,
-                'x-hash' => $sHash,
-                'x-debug' => $sStringToHash
-            ])->patch($apiUser->api_root.$Uri, $formParams);
-
-            $client = new \JacobDeKeizer\Ccv\Client();
-            $client->setBaseUrl('https://bonapp1.ccvshop.nl');
-            $client->setPublicKey($request->api_public);
-            $client->setPrivateKey($apiUser->api_secret);
-
-            $result = $client->root()->all();
-
-            if($response->successful()){
-                return redirect($apiUser->return_url);
-            }else{
-                echo $response->body();
-                echo 'Something went wrong';
-            }
+            return true;
 
         }else{
             throw new Exception('Invalid Request');
@@ -112,8 +71,151 @@ class InstallController extends Controller {
 
     }
 
+    public function testWebhoks(Request $request) {
 
-    public function confirmSubscription(Request $request) {
+        $apiUser = Handshake::where('api_public', self::API_KEY)->first();
+
+        $webhooksClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
+
+        $platformWebhooks = config('platform_config.webhooks');
+
+        foreach($platformWebhooks as $webhook) {
+
+            Log::info('Webhook Event: ' . $webhook['event'] . ' Address : ' . $webhook['address']);
+            $webhooksClient->webhooks->create([
+                'event' => $webhook['event'],
+                'address' => route($webhook['address']),
+                'is_active' => $webhook['is_active'],
+            ]);
+        }
+        $webhooks = $webhooksClient->webhooks->get();
+
+        dd($webhooks);
+
+    }
+
+    public function grabOrder(Request $request) {
+
+        $apiUser = Handshake::where('api_public', self::API_KEY)->first();
+
+        $client = new \JacobDeKeizer\Ccv\Client();
+        $client->setBaseUrl('https://bonapp1.ccvshop.nl');
+        $client->setPublicKey(self::API_KEY);
+        $client->setPrivateKey($apiUser->api_secret);
+
+        $order = $client->orders()->get($request->order_id);
+
+        dd($order);
+
+    }
+
+    public function grabAllOrders() {
+
+        $apiUser = Handshake::where('api_public', self::API_KEY)->first();
+
+        echo "<pre>" . json_encode($apiUser, JSON_PRETTY_PRINT) . "</pre>";
+
+        $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
+        $webshops = $ccvClient->webshops->get();
+
+        $webshopId = $webshops->items[0]->id;
+
+        $apiUser->external_identifier = $webshopId;
+        $apiUser->save();
+
+        echo "Webshop ID found: " . $webshopId;
+
+        $merchantDetails = $ccvClient->merchant->get($webshopId);
+
+        $shortGID = (new BonSDKGID())->encodeShortHand(env('PLATFORM_TEXT'), 'business', $webshopId)->getGID();
+        $domainInfo = $ccvClient->domains->get($webshopId);
+
+        dump($domainInfo);
+
+        $businesses = json_decode((new BusinessService())->obtainBusinesses('en', ['gid_short' => $shortGID]));
+
+        $installHelper = new InstallHelper();
+
+        if($businesses->meta->count == 0) {
+
+            $accountDetails = [
+                'name'                => $merchantDetails->company,
+                'address_1'           => $merchantDetails->address_line,
+                'address_2'           => null,
+                'number'              => null,
+                'number_extension'    => null,
+                'zipcode'             => $merchantDetails->zipcode,
+                'city'                => $merchantDetails->city,
+                'country'             => $merchantDetails->country,
+                'country_code'        => $merchantDetails->country_code,
+                'region'              => null,
+                'coc_number'          => $merchantDetails->coc_number,
+                'coc_location'        => null,
+                'vat_number'          => $merchantDetails->tax_number,
+                'national_id'         => null,
+            ];
+
+            $newAccount = json_decode((new AccountService())->createAccount('en', $accountDetails));
+            $GID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'business', $newAccount->uuid, $webshopId)->getGID();
+
+            dump($domainInfo->items[0]);
+
+            $businessData = [
+                'account_uuid'      => $newAccount->uuid,
+                'gid'               => $GID,
+                'gid_short'         => $shortGID,
+                'name'              => $newAccount->name,
+                'website'           => $installHelper->determineDomainnameURL($domainInfo->items[0]->domainname, $domainInfo->items[0]->ssldomain),
+                'type'              => "digital",
+                'address_1'         => $merchantDetails->street,
+                'address_2'         => "",
+                'number'            => "",
+                'number_extension'  => "",
+                'zipcode'           => $merchantDetails->zipcode,
+                'city'              => $merchantDetails->city,
+                'country'           => $merchantDetails->country,
+                'country_code'      => $merchantDetails->country_code,
+                'region'            => "",
+                'default_locale'    => $domainInfo->items[0]->language,
+                'default_currency'  => 'EUR'
+            ];
+
+            $newBusiness = json_decode((new BusinessService())->createBusiness($domainInfo->items[0]->language, $businessData));
+
+            $businessAuthData['business_uuid']  = $newBusiness->uuid;
+            $businessAuthData['type']           = "internal";
+            $businessAuthData['description']    = "ccv-ingest";
+
+            $businessAuth = json_decode((new BusinessAuthService())->createBusinessAuth($businessData['default_locale'], $businessAuthData));
+
+            $apiUser->internal_api_key      = $businessAuth->api_key;
+            $apiUser->internal_api_secret   = $businessAuth->api_secret;
+            $apiUser->save();
+
+            dump($newBusiness);
+
+            $businessUUID = $newBusiness->uuid;
+
+        }else{
+            $businessUUID = $businesses->data[0]->uuid;
+        }
+
+        $apiUser->business_uuid = $businessUUID;
+        $apiUser->save();
+
+        $newManualLinkToken = new ManualLinkToken();
+        $newManualLinkToken->business_uuid = $businessUUID;
+        $newManualLinkToken->token_1 = Str::upper(Str::random(4));
+        $newManualLinkToken->token_2 = Str::upper(Str::random(4));
+        $newManualLinkToken->save();
+
+        $installHelper->installWebhooks($apiUser->api_public);
+
+        //Todo:
+        // [] Show confirm page first
+        // [] Show the page with QR to download the merchant App.
+        // [] Start process of downloading all orders
+        // [] Send email with install instructions
     }
 
     /**

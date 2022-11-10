@@ -11,17 +11,17 @@ return [
             'is_active' => true,
         ],
         [
-            'event'     => 'orders.ispaid',
+            'event'     => 'orders.updated.ispaid',
             'address'   => 'orderIsPaidWebhook',
             'is_active' => true,
         ],
         [
-            'event'     => 'orders.status',
+            'event'     => 'orders.updated.status',
             'address'   => 'orderStatusChangedWebhook',
             'is_active' => true,
         ],
         [
-            'event'     => 'orders.trackandtrace',
+            'event'     => 'orders.updated.trackandtrace',
             'address'   => 'orderTrackAndTraceWebhook',
             'is_active' => true,
         ]

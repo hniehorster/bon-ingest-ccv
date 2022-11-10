@@ -4,8 +4,10 @@ namespace App\Transformers;
 use App\Exceptions\Transformers\InvalidTransformerObjectTypeException;
 use App\Transformers\Language\LanguageTransformer;
 use App\Transformers\Orders\OrderLineItemTransformer;
+use App\Transformers\Orders\OrderRowTransformer;
 use App\Transformers\Orders\OrderShipmentTransformer;
 use App\Transformers\Orders\OrderTransformer;
+use App\Transformers\Products\ProductPhotoTransformer;
 use App\Transformers\Products\ProductTransformer;
 use App\Transformers\Shipments\ShipmentProductTransformer;
 use App\Transformers\Shipments\ShipmentTransformer;
@@ -47,11 +49,12 @@ class Transformer
      */
     public function registerResources(){
         $this->order                = new OrderTransformer($this);
-        $this->orderLineItem        = new OrderLineItemTransformer($this);
+        $this->orderRow             = new OrderRowTransformer($this);
         $this->orderShipment        = new OrderShipmentTransformer($this);
         $this->shop                 = new ShopTransformer($this);
         $this->language             = new LanguageTransformer($this);
         $this->product              = new ProductTransformer($this);
+        $this->productPhoto         = new ProductPhotoTransformer($this);
         $this->shipment             = new ShipmentTransformer($this);
         $this->shipmentProduct      = new ShipmentProductTransformer($this);
     }
@@ -152,6 +155,12 @@ class Transformer
         elseif(Str::is($value, 'BON_BUSINESSUUID')){
             return $this->getBonBusinessUUIDFromString();
         }
+        elseif(Str::startsWith($value,'SUB|')) {
+            return $this->getSubtract($value, $externalData);
+        }
+        elseif(Str::startsWith($value,'DTAX|')) {
+            return $this->getTaxDeducted($value, $externalData);
+        }
         else{
             return $externalData[$value];
         }
@@ -246,6 +255,54 @@ class Transformer
         }
 
         return $returnValue;
+    }
+
+    /**
+     * @param string $values
+     * @param array $array
+     * @return float
+     * @throws \BonSDK\ApiClient\BonException
+     */
+    private function getSubtract(string $values, array $array) : float {
+
+        $values = explode(':', $values);
+
+        foreach($values as $key => $value) {
+
+            $subValue = (float) $this->transformKey($value, $array);
+
+            if($key == 0){
+                $returnValue = $subValue;
+            }else{
+                $returnValue = $returnValue-$subValue;
+            }
+
+        }
+
+        return $returnValue;
+    }
+
+    /**
+     * @param string $values
+     * @param array $array
+     * @return float
+     * @throws \BonSDK\ApiClient\BonException
+     */
+    private function getTaxDeducted(string $values, array $array) : float {
+
+        $values = explode(':', $values);
+
+        $mainPrice  = (float) $this->transformKey($values[0], $array);
+        $taxRate    = (float) $this->transformKey($values[1], $array);
+
+        if($taxRate > 1){
+            $taxRate = $taxRate/100;
+        }
+
+        $mainPriceExcl = $mainPrice-($mainPrice*$taxRate);
+
+        return $mainPriceExcl;
+
     }
 
 }

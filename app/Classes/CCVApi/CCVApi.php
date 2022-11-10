@@ -1,0 +1,160 @@
+<?php
+namespace App\Classes\CCVApi;
+
+use App\Classes\CCVApi\Resources\Domains;
+use App\Classes\CCVApi\Resources\Merchant;
+use App\Classes\CCVApi\Resources\OrderRows;
+use App\Classes\CCVApi\Resources\Orders;
+use App\Classes\CCVApi\Resources\ProductPhotos;
+use App\Classes\CCVApi\Resources\Products;
+use App\Classes\CCVApi\Resources\Webhooks;
+use App\Classes\CCVApi\Resources\Webshops;
+use DateTime;
+use DateTimeInterface;
+use DateTimeZone;
+use Illuminate\Support\Facades\Http;
+
+class CCVApi {
+
+    /**
+     * @var string
+     */
+    protected $apiKey;
+
+    /**
+     * @var string
+     */
+    protected $baseURL;
+    protected $apiSecret;
+    protected $version;
+    protected $hasNextPage;
+    protected $fullAPIURL;
+    protected $hashURL;
+    protected $responseBody;
+
+    /**
+     * @param string $baseURL
+     * @param string $apiKey
+     * @param string $apiSecret
+     * @param string $version
+     */
+    public function __construct(string $baseURL, string $apiKey, string $apiSecret, string $version = '1'){
+
+        $this->baseURL      = $baseURL;
+        $this->apiKey       = $apiKey;
+        $this->apiSecret    = $apiSecret;
+        $this->version      = $version;
+
+        $this->registerResources();
+
+    }
+
+    /**
+     * @return void
+     */
+    private function registerResources()
+    {
+        $this->domains          = new Domains($this);
+        $this->orders           = new Orders($this);
+        $this->orderRows        = new OrderRows($this);
+        $this->products         = new Products($this);
+        $this->productPhotos    = new ProductPhotos($this);
+        $this->merchant         = new Merchant($this);
+        $this->webhooks         = new Webhooks($this);
+        $this->webshops         = new Webshops($this);
+
+    }
+
+    /**
+     * @param string $url
+     * @return void
+     */
+    public function generateURL(string $url) : void {
+        $this->hashURL    = '/api/rest/v' . $this->version . '/' . $url;
+        $this->fullAPIURL = $this->baseURL . $this->hashURL;
+    }
+
+    /**
+     * @param $url
+     * @param $method
+     * @param $payload
+     * @param $options
+     * @return mixed
+     * @throws \Exception
+     */
+    public function sendRequest($url, $method, $payload = null, $options = []) {
+
+        $this->hasNextPage = false;
+
+        $this->generateURL($url);
+
+        $timestamp = (new DateTime('now', new DateTimeZone('UTC')))->format(DateTimeInterface::ISO8601);
+
+        $postData = $payload !== null ? json_encode($payload) : null;
+
+        $hashString = sprintf(
+            '%s|%s|%s|%s|%s',
+            $this->apiKey,
+            $method,
+            $this->hashURL,
+            $postData,
+            $timestamp
+        );
+
+        $requestHeaders['x-hash']   = hash_hmac('sha512', $hashString, $this->apiSecret);
+        $requestHeaders['x-public'] = $this->apiKey;
+        $requestHeaders['x-date']   = $timestamp;
+        $requestHeaders['Accept']   = 'application/json';
+
+        $request = Http::withHeaders($requestHeaders);
+
+        switch($method) {
+            case 'GET':
+                $response = $request->get($this->fullAPIURL);
+                break;
+            case 'POST':
+                $response = $request->post($this->fullAPIURL, $payload);
+                break;
+            case 'PATCH':
+                $response = $request->patch($this->fullAPIURL, $payload);
+                break;
+            case 'PUT':
+                $response = $request->put($this->fullAPIURL, $payload);
+                break;
+            case 'DELETE':
+                $response = $request->delete($this->fullAPIURL);
+                break;
+            default:
+                throw new \Exception('[CCVAPI] Method not supported');
+        }
+
+        if($response->successful()){
+
+            $this->responseBody = json_decode($response->body());
+
+            if(isset($body->next)){
+                $this->hasNextPage = true;
+            }
+
+            return $this->responseBody;
+
+        }else{
+            throw new \Exception('[CCVAPI - ERROR] ' . $response->body());
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function toArray() {
+        return json_decode(json_encode($this->responseBody), true);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasNextPage() : bool {
+        return $this->hasNextPage;
+    }
+
+}

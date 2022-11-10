@@ -18,6 +18,7 @@ $router->group([
 
     //Show the shopId form
     $router->get('/install', 'Install\InstallController@preInstall');
+    $router->get('/install/webhooks', 'Install\InstallController@testWebhoks');
 
     //Show the subscription form
     $router->post('/install/subscription_confirm', ['as' => 'confirmSubscription', 'uses' => 'Install\InstallController@confirmSubscription']);
@@ -33,6 +34,13 @@ $router->group([
     $router->get('/test', function() {
         echo route('ordersWebhook');
     });
+
+    /****
+     * DEBUG API
+     */
+    $router->get('/install/order', 'Install\InstallController@grabOrder');
+    $router->get('/install/orders', 'Install\InstallController@grabAllOrders');
+    $router->get('/install/webhooks', 'Install\InstallController@testWebhoks');
 
 });
 
@@ -50,8 +58,8 @@ $router->group([
 
 });
 
-$router->post('/webhooks/orders/created', ['as' => 'orderCreatedWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
-$router->post('/webhooks/orders/is_paid', ['as' => 'orderIsPaidWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
-$router->post('/webhooks/orders/status_change', ['as' => 'orderStatusChangedWebhook', 'uses' => 'Orders\OrderController@acceptWebhook']);
-$router->post('/webhooks/orders/track_and_trace', ['as' => 'orderTrackAndTraceWebhook', 'uses' => 'Shipments\ShipmentController@acceptWebhook']);
+$router->post('/webhooks/orders/created/{shopId}', ['as' => 'orderCreatedWebhook', 'uses' => 'Webhooks\WebhookController@orderCreated']);
+$router->post('/webhooks/orders/is_paid/{shopId}', ['as' => 'orderIsPaidWebhook', 'uses' => 'Webhooks\WebhookController@orderIsPaid']);
+$router->post('/webhooks/orders/status_change/{shopId}', ['as' => 'orderStatusChangedWebhook', 'uses' => 'Webhooks\WebhookController@orderStatusChanged']);
+$router->post('/webhooks/orders/track_and_trace/{shopId}', ['as' => 'orderTrackAndTraceWebhook', 'uses' => 'Webhooks\WebhookController@orderTrackAndTrace']);
 
