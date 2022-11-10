@@ -14,7 +14,7 @@ class AddBusinessUUIDToHandshakes extends Migration
     public function up()
     {
         Schema::table('handshakes', function (Blueprint $table) {
-            $table->uuid('business_uuid')->after('external_identifier');
+            $table->uuid('business_uuid')->after('external_identifier')->nullable();
         });
     }
 
