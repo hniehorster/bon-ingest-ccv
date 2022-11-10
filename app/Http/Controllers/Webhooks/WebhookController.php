@@ -28,7 +28,7 @@ class WebhookController extends Controller
      * @param Request $request
      * @return void
      */
-    public function orderCreated(Request $request) {
+    public function orderCreated(int $shopId, Request $request) {
 
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
@@ -41,7 +41,7 @@ class WebhookController extends Controller
      * @param Request $request
      * @return void
      */
-    public function orderIsPaid(Request $request) {
+    public function orderIsPaid(int $shopId, Request $request) {
 
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
@@ -53,7 +53,7 @@ class WebhookController extends Controller
      * @param Request $request
      * @return void
      */
-    public function orderStatusChanged(Request $request) {
+    public function orderStatusChanged(int $shopId, Request $request) {
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
 
@@ -64,7 +64,7 @@ class WebhookController extends Controller
      * @param Request $request
      * @return void
      */
-    public function orderTrackAndTrace(Request $request) {
+    public function orderTrackAndTrace(int $shopId, Request $request) {
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
 

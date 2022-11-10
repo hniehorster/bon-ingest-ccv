@@ -73,25 +73,9 @@ class InstallController extends Controller {
 
     public function testWebhoks(Request $request) {
 
-        $apiUser = Handshake::where('api_public', self::API_KEY)->first();
-
-        $webhooksClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
-
-        $platformWebhooks = config('platform_config.webhooks');
-
-        foreach($platformWebhooks as $webhook) {
-
-            Log::info('Webhook Event: ' . $webhook['event'] . ' Address : ' . $webhook['address']);
-            $webhooksClient->webhooks->create([
-                'event' => $webhook['event'],
-                'address' => route($webhook['address']),
-                'is_active' => $webhook['is_active'],
-            ]);
-        }
-        $webhooks = $webhooksClient->webhooks->get();
+        $webhooks = (new InstallHelper())->installWebhooks($_GET['api_public']);
 
         dd($webhooks);
-
     }
 
     public function grabOrder(Request $request) {
@@ -111,7 +95,7 @@ class InstallController extends Controller {
 
     public function grabAllOrders() {
 
-        $apiKey = $_GET['api_key'];
+        $apiKey = $_GET['api_public'];
 
         $apiUser = Handshake::where('api_public', $apiKey)->first();
 
