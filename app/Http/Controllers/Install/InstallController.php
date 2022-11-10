@@ -111,7 +111,9 @@ class InstallController extends Controller {
 
     public function grabAllOrders() {
 
-        $apiUser = Handshake::where('api_public', self::API_KEY)->first();
+        $apiKey = $_GET['api_key'];
+
+        $apiUser = Handshake::where('api_public', $apiKey)->first();
 
         echo "<pre>" . json_encode($apiUser, JSON_PRETTY_PRINT) . "</pre>";
 

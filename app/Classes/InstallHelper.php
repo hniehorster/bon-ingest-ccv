@@ -27,7 +27,7 @@ class InstallHelper {
             foreach($platformWebhooks as $webhook) {
                 $ccvClient->webhooks->create([
                     'event' => $webhook['event'],
-                    'address' => route($webhook['address'], ['shopId']),
+                    'address' => route($webhook['address'], ['shopId' => $apiUser->external_indentifier]),
                     'is_active' => $webhook['is_active'],
                 ]);
             }
