@@ -25,7 +25,7 @@ use Illuminate\Support\Str;
 
 class InstallController extends Controller {
 
-    const API_KEY = 'jK9Eqw9f187KOi^pCe9BLZnAjtscy52m';
+    const API_KEY = 'R^atJ4JC2bhQKLi36uekMZAPAfN^547J';
     /**
      * @param Request $request
      * @return \Illuminate\View\View|\Laravel\Lumen\Application
