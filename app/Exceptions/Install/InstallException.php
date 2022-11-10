@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Log;
 
 class InstallException extends Exception
 {
-    public function render()
+    public function render($message)
     {
-        return response(['error' => 'UNABLE TO CREATE EXTERNAL WEBHOOKS'], 500);
+        return response(['error' => 'UNABLE TO CREATE EXTERNAL WEBHOOKS', 'message' => $message], 500);
     }
 }

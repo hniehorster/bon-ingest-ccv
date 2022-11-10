@@ -34,7 +34,7 @@ class InstallHelper {
 
             return true;
         }catch (Exception $e) {
-            throw new InstallException();
+            throw new InstallException($e->getMessage());
         }
     }
 
