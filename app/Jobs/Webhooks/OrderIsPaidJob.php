@@ -44,7 +44,7 @@ class OrderIsPaidJob extends Job implements ShouldQueue
         if ($bonOrderCheck->meta->count > 0) {
             //Update the order
 
-            if($this->orderData->paid){
+            if($this->orderData['paid']){
                 $paid = "paid";
             }else{
                 $paid = "not_paid";

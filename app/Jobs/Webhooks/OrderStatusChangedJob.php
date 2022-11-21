@@ -52,6 +52,9 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                 $bonShipmentCheck = $bonApi->shipments->get(null, ['gid' => $shipmentGID]);
                 if ($bonShipmentCheck->meta->count == 0) {
                     //Create the shipment
+
+
+
                 }
             }
 
