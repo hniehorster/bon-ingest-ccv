@@ -9,9 +9,10 @@ use App\Jobs\Webhooks\OrderStatusChangedJob;
 use App\Jobs\Webhooks\OrderTrackAndTraceJob;
 use BonSDK\SDKIngest\Traits\ApiResponder;
 use Illuminate\Http\Request;
+use Laravel\Lumen\Routing\Controller as BaseController;
 
 
-class WebhookController extends Controller
+class WebhookController extends BaseController
 {
     use ApiResponder;
 
