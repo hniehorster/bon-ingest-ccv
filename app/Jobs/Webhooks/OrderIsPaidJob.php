@@ -38,6 +38,8 @@ class OrderIsPaidJob extends Job implements ShouldQueue
 
         $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
 
+        var_dump($bonOrderCheck);
+
         Log::info('[BONAPI] GET order ' . $orderGID);
 
         if ($bonOrderCheck->meta->count > 0) {
@@ -50,6 +52,8 @@ class OrderIsPaidJob extends Job implements ShouldQueue
             }
 
             $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, ['is_paid' => $paid]);
+
+            var_dump($bonOrder);
 
         } else{
             Log::info('[]');
