@@ -51,8 +51,6 @@ class OrderIsPaidJob extends Job implements ShouldQueue
 
             $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, ['is_paid' => $paid]);
 
-            Log::info('[BONAPI] UPDATE order ' .  json_decode(json_encode($bonOrder), true));
-
         } else{
             Log::info('[]');
             $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
