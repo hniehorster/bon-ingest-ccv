@@ -50,19 +50,14 @@ class OrderIsPaidJob extends Job implements ShouldQueue
                 $paid = "paid";
             }else{
                 Log::info('Order not paid ');
-
                 $paid = "not_paid";
             }
-
-            Log::info('OrderData coverted: ' . $paid);
-
 
             $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, ['is_paid' => $paid]);
 
             var_dump($bonOrder);
 
         } else{
-            Log::info('[]');
             $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
         }
 
