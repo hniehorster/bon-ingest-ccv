@@ -38,11 +38,6 @@ class OrderIsPaidJob extends Job implements ShouldQueue
 
         $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
 
-        var_dump("Check if the orders exist");
-        var_dump($bonOrderCheck);
-
-        Log::info('[BONAPI] Order Count ' . $bonOrderCheck->meta->count);
-
         if ($bonOrderCheck->meta->count > 0) {
 
             //Update the order
@@ -56,14 +51,9 @@ class OrderIsPaidJob extends Job implements ShouldQueue
                 $paid = "not_paid";
             }
 
-            $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, ['is_paid' => $paid]);
-
-            var_dump("Updated order");
-            var_dump($bonOrder);
+            $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, ['payment_status' => $paid]);
 
         } else{
-
-            var_dump("Order not found");
 
             $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
         }
