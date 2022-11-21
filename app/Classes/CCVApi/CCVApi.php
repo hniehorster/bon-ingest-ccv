@@ -117,6 +117,7 @@ class CCVApi {
         $requestHeaders['Accept']   = 'application/json';
 
         Log::info('[DEBUG-HASH]: ' . $hashString);
+        Log::info('[DEBUG-API]: ', $requestHeaders);
 
         $request = Http::withHeaders($requestHeaders);
 
