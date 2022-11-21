@@ -1,24 +1,15 @@
 <?php
 namespace App\Http\Controllers\Webhooks;
 
-use App\Classes\AuthenticationHelper;
 use App\Classes\WebhookRequestHelperClass;
-use App\Classes\WebshopAppApi\WebshopappApiClient;
-use App\Exceptions\Internal\Coupons\UnableToCreateExternalCouponException;
 use App\Http\Controllers\Controller;
-use App\Jobs\OrderCreatedJob;
-use App\Jobs\OrderIsPaidJob;
-use App\Jobs\OrderStatusChangedJob;
-use App\Jobs\OrderTrackAndTraceJob;
-use App\Models\BusinessToken;
-use BonSDK\Classes\BonSDKGID;
+use App\Jobs\Webhooks\OrderCreatedJob;
+use App\Jobs\Webhooks\OrderIsPaidJob;
+use App\Jobs\Webhooks\OrderStatusChangedJob;
+use App\Jobs\Webhooks\OrderTrackAndTraceJob;
 use BonSDK\SDKIngest\Traits\ApiResponder;
-use Carbon\Carbon;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
-use Exception;
+
 
 class WebhookController extends Controller
 {

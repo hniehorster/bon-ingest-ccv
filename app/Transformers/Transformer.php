@@ -140,6 +140,7 @@ class Transformer
      * @throws \BonSDK\ApiClient\BonException
      */
     public function transformKey(string $value, array $externalData) {
+
         if(Str::startsWith($value,'gid:')) {
             return $this->getGidTransformFromString($value, $externalData);
         }
@@ -155,11 +156,14 @@ class Transformer
         elseif(Str::is($value, 'BON_BUSINESSUUID')){
             return $this->getBonBusinessUUIDFromString();
         }
-        elseif(Str::startsWith($value,'SUB|')) {
+        elseif(Str::startsWith($value,'SUB@')) {
             return $this->getSubtract($value, $externalData);
         }
-        elseif(Str::startsWith($value,'DTAX|')) {
+        elseif(Str::startsWith($value,'DTAX@')) {
             return $this->getTaxDeducted($value, $externalData);
+        }
+        elseif(empty($value)){
+            return '';
         }
         else{
             return $externalData[$value];
@@ -265,6 +269,8 @@ class Transformer
      */
     private function getSubtract(string $values, array $array) : float {
 
+        $values = substr($values, 4);
+
         $values = explode(':', $values);
 
         foreach($values as $key => $value) {
@@ -289,6 +295,8 @@ class Transformer
      * @throws \BonSDK\ApiClient\BonException
      */
     private function getTaxDeducted(string $values, array $array) : float {
+
+        $values = substr($values, 5);
 
         $values = explode(':', $values);
 

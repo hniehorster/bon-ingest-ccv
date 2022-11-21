@@ -12,8 +12,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
-
-
 class ProcessOrderJob extends Job implements ShouldQueue
 {
     public $tries = 100;

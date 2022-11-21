@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Webhooks;
 
 use App\Classes\AuthenticationHelper;
 use App\Classes\CCVApi\CCVApi;
 use App\Classes\DataHelper;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
+use App\Jobs\Job;
 use App\Models\Handshake;
 use App\Transformers\Transformer;
 use BonSDK\ApiIngest\BonIngestAPI;
@@ -34,17 +35,18 @@ class OrderCreatedJob extends Job implements ShouldQueue
     }
 
     public function handle() {
+
         Log::info(' ---- STARTING ' . static::class . ' ON QUEUE ' . $this->queueName . ' ------- ');
 
         try {
 
-            $apiUser = Handshake::where('shop_id', $this->externalIdentifier)->first();
+            $apiUser = Handshake::where('external_identifier', $this->externalIdentifier)->first();
 
             $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
 
             $orderDetails = $ccvClient->orders->get($this->externalOrderId);
 
-            $transformedOrder = (new Transformer($apiUser->business_uuid, $orderDetails, $apiUser->defaults))->order->transform();
+            $transformedOrder = (new Transformer($apiUser->business_uuid, json_decode(json_encode($orderDetails), true), $apiUser->defaults))->order->transform();
 
             $transformedOrder['payment_status'] = $orderDetails->paid ? 'paid' : 'not_paid';
             $transformedOrder['shipment_status'] = 'not_shipped';
@@ -82,7 +84,8 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
                     //Let's create the row items
                     foreach ($orderRows->items as $orderRowDetails) {
-                        $transformedOrderRow = (new Transformer($bonOrder->business_uuid, $orderRowDetails, $apiUser->defaults))->orderRow->transform();
+
+                        $transformedOrderRow = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($orderRowDetails), true), $apiUser->defaults))->orderRow->transform();
                         $transformedOrderRow['order_uuid'] = $bonOrder->uuid;
 
                         $countAttributes = count($orderRowDetails->attributes);
@@ -129,11 +132,15 @@ class OrderCreatedJob extends Job implements ShouldQueue
                             try{
                                 $orderRowImages = $ccvClient->productPhotos->get($transformedOrderRow['product_id']);
 
-                                foreach ($orderRowDetails->items as $productPhotos) {
+                                foreach ($orderRowImages->items as $productPhotos) {
 
-                                    $productPhotos = (new Transformer($bonOrder->business_uuid, $productPhotos, $apiUser->defaults))->productPhoto->transform();
+                                    $productPhotos = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($productPhotos), true), $apiUser->defaults))->productPhoto->transform();
+
+                                    Log::info('Product Photo: ', $productPhotos);
 
                                     $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $productPhotos['image']]);
+
+                                    Log::info('Product Photo BON: ', json_decode(json_encode($bonLineItemImage), true));
                                 }
                             } catch (Exception $e) {
                                 if ($e->getCode() == 429) {
@@ -143,6 +150,8 @@ class OrderCreatedJob extends Job implements ShouldQueue
                                 }else{
                                     //release back to the queue if failed
                                     Log::info('Releasing back to queue for other reason');
+                                    Log::info('Reason: ' . $e->getMessage() . ' online ' . $e->getLine());
+                                    Log::info('Trace: ' . $e->getTraceAsString());
                                     $this->release(QueueHelperClass::getNearestTimeRoundedUp(1, true));
                                     Log::info('RELEASED BACK TO QUEUE');
                                 }
@@ -170,6 +179,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
             Log::info(' ---- JOB FAILED ------ ');
             Log::info( ' Message: ' . $e->getMessage());
             Log::info( ' File: ' . $e->getFile());
+            Log::info( ' Trace: ' . $e->getTraceAsString());
             Log::info(' ---- FAILED JOB ------ ');
 
             if ($e->getCode() == 429) {

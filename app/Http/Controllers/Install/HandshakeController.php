@@ -37,6 +37,7 @@ class HandshakeController extends Controller {
 
             $handshake = new Handshake();
             $handshake->hash        = $sHash;
+            $handshake->language    = $request->language;
             $handshake->api_public  = $request->api_public;
             $handshake->api_secret  = $request->api_secret;
             $handshake->api_root    = $request->api_root;

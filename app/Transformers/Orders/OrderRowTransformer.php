@@ -40,15 +40,15 @@ class OrderRowTransformer {
             'product_title'     => 'product_name',
 
             'quantity'          => 'count',
-            'quantity_returned' => 0,
+
             'sku'               => 'sub_sku_number',
             'ean'               => 'sub_ean_number',
             'article_code'      => 'product_number',
             'weight'            => 'weight',
-            'volume'            => 0,
-            'base_price_excl'   => 'DTAX|price_without_discount:tax',
+
+            'base_price_excl'   => 'DTAX@price_without_discount:tax',
             'base_price_incl'   => 'price_without_discount',
-            'price_excl'        => 'DTAX|total_price:tax',
+            'price_excl'        => 'DTAX@total_price:tax',
             'price_incl'        => 'total_price',
             'supplier_title'    => 'supplier'
         ];

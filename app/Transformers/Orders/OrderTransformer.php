@@ -33,7 +33,7 @@ class OrderTransformer {
             'number'                            => 'ordernumber_full',
             'locale'                            => 'orderedinlng',
             'price_incl'                        => 'total_price',
-            'price_excl'                        => 'SUB|total_price:total_tax',
+            'price_excl'                        => 'SUB@total_price:total_tax',
             'weight'                            => 'total_weight',
             'first_name'                        => 'customer.billingaddress.first_name',
             'last_name'                         => 'customer.billingaddress.lastname',

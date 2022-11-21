@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Webhooks;
 
 use App\Classes\AuthenticationHelper;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
+use App\Jobs\Job;
+use App\Models\Handshake;
 use App\Transformers\Transformer;
 use BonSDK\ApiIngest\BonIngestAPI;
+use BonSDK\Classes\BonSDKGID;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
@@ -32,7 +35,30 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
     public function handle() {
         Log::info(' ---- STARTING ' . static::class . ' ON QUEUE ' . $this->queueName . ' ------- ');
 
+        $apiUser = Handshake::where('external_identifier', $this->externalIdentifier)->first();
+        $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
 
+        $orderGID    = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $this->externalIdentifier, $this->externalOrderId)->getGID();
+        $shipmentGID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $this->externalIdentifier, $this->externalOrderId)->getGID();
+
+        $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
+        Log::info('[BONAPI] GET order ' . $orderGID);
+
+        if ($bonOrderCheck->meta->count > 0) {
+
+            if($this->orderData->status == 5) {
+                //Something changed and the order seems to be shipped
+                //check for a shipment
+                $bonShipmentCheck = $bonApi->shipments->get(null, ['gid' => $shipmentGID]);
+                if ($bonShipmentCheck->meta->count == 0) {
+                    //Create the shipment
+                }
+            }
+
+        } else{
+            Log::info('[]');
+            $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
+        }
 
         Log::info(' ---- ENDING ' . static::class . ' ON QUEUE ' . $this->queueName . ' ------- ');
     }

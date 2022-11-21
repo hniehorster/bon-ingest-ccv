@@ -17,17 +17,8 @@ $router->group([
 
 
     //Show the shopId form
-    $router->get('/install', 'Install\InstallController@preInstall');
-    $router->get('/install/webhooks', 'Install\InstallController@testWebhoks');
-
-    //Show the subscription form
-    $router->post('/install/subscription_confirm', ['as' => 'confirmSubscription', 'uses' => 'Install\InstallController@confirmSubscription']);
-
-    //Generate the redirect
-    $router->post('/install', ['as' => 'redirectPage', 'uses' => 'Install\InstallController@generateRedirect']);
-
-    //Show the confirmed screen (no screen but socket).
-    $router->get('/install/confirmed', ['as' => 'confirmedPage', 'uses' => 'Install\InstallController@postInstall']);
+    $router->get('/install', ['as' => 'confirmInstall', 'uses' => 'Install\InstallController@confirm']);
+    $router->post('/install/finalize', ['as' => 'finalizeInstall', 'uses' => 'Install\InstallController@finalize']);
 
     $router->get('/time', 'TimeController@get');
 

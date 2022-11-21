@@ -1,6 +1,7 @@
 <?php
 namespace App\Classes\CCVApi;
 
+use App\Classes\CCVApi\Resources\Apps;
 use App\Classes\CCVApi\Resources\Domains;
 use App\Classes\CCVApi\Resources\Merchant;
 use App\Classes\CCVApi\Resources\OrderRows;
@@ -13,13 +14,20 @@ use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CCVApi {
+
+    const PAGE_SIZE = 25;
 
     /**
      * @var string
      */
     protected $apiKey;
+    protected $queryParams = [];
+    protected $sortOrder;
+
+    protected $pageNumber = 0;
 
     /**
      * @var string
@@ -54,6 +62,7 @@ class CCVApi {
      */
     private function registerResources()
     {
+        $this->apps             = new Apps($this);
         $this->domains          = new Domains($this);
         $this->orders           = new Orders($this);
         $this->orderRows        = new OrderRows($this);
@@ -70,7 +79,7 @@ class CCVApi {
      * @return void
      */
     public function generateURL(string $url) : void {
-        $this->hashURL    = '/api/rest/v' . $this->version . '/' . $url;
+        $this->hashURL    = '/api/rest/v' . $this->version . $url;
         $this->fullAPIURL = $this->baseURL . $this->hashURL;
     }
 
@@ -90,6 +99,7 @@ class CCVApi {
 
         $timestamp = (new DateTime('now', new DateTimeZone('UTC')))->format(DateTimeInterface::ISO8601);
 
+        //$postData = json_encode($this->getQueryParams($payload));
         $postData = $payload !== null ? json_encode($payload) : null;
 
         $hashString = sprintf(
@@ -106,22 +116,29 @@ class CCVApi {
         $requestHeaders['x-date']   = $timestamp;
         $requestHeaders['Accept']   = 'application/json';
 
+        Log::info('[DEBUG-HASH]: ' . $hashString);
+
         $request = Http::withHeaders($requestHeaders);
 
         switch($method) {
             case 'GET':
-                $response = $request->get($this->fullAPIURL);
+                Log::info('[REQUEST DEBUG GET]: ' . $this->fullAPIURL);
+                $response = $request->get($this->fullAPIURL, $payload);
                 break;
             case 'POST':
+                Log::info('[REQUEST DEBUG POST]: ' . $this->fullAPIURL);
                 $response = $request->post($this->fullAPIURL, $payload);
                 break;
             case 'PATCH':
+                Log::info('[REQUEST DEBUG PATCH]: ' . $this->fullAPIURL);
                 $response = $request->patch($this->fullAPIURL, $payload);
                 break;
             case 'PUT':
+                Log::info('[REQUEST DEBUG PUT]: ' . $this->fullAPIURL);
                 $response = $request->put($this->fullAPIURL, $payload);
                 break;
             case 'DELETE':
+                Log::info('[REQUEST DEBUG DELETE]: ' . $this->fullAPIURL);
                 $response = $request->delete($this->fullAPIURL);
                 break;
             default:
@@ -139,7 +156,7 @@ class CCVApi {
             return $this->responseBody;
 
         }else{
-            throw new \Exception('[CCVAPI - ERROR] ' . $response->body());
+            throw new \Exception('[CCVAPI - ERROR] ' . $this->fullAPIURL . '  ' . $response->body());
         }
     }
 
@@ -155,6 +172,35 @@ class CCVApi {
      */
     public function hasNextPage() : bool {
         return $this->hasNextPage;
+    }
+
+    /**
+     * @param int $pageNumber
+     * @return void
+     */
+    public function setPageNumber(int $pageNumber) {
+        $this->pageNumber = $pageNumber;
+    }
+
+    /**
+     * @param $array
+     */
+    protected function getQueryParams($array = []) {
+
+        if($this->pageNumber > 0) {
+            $array['start'] = $this->pageNumber*self::PAGE_SIZE;
+            $array['size']  = self::PAGE_SIZE;
+        }
+
+        if(is_null($this->sortOrder)){
+            $this->sortOrder = 'id_desc';
+        }
+
+        $array['orderby'] = $this->sortOrder;
+
+        $this->queryParams = array_merge($array, $this->queryParams);
+
+        return $this->queryParams;
     }
 
 }

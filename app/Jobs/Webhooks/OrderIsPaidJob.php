@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Webhooks;
 
-use App\Classes\AuthenticationHelper;
 use App\Classes\QueueHelperClass;
-use App\Classes\WebshopAppApi\WebshopappApiClient;
-use App\Transformers\Transformer;
+use App\Jobs\Job;
+use App\Models\Handshake;
 use BonSDK\ApiIngest\BonIngestAPI;
-use Exception;
+use BonSDK\Classes\BonSDKGID;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class OrderIsPaidJob extends Job implements ShouldQueue
@@ -21,6 +19,7 @@ class OrderIsPaidJob extends Job implements ShouldQueue
     public $externalIdentifier;
     public $queueName;
     public $reRelease = false;
+    protected $bonApi;
 
     public function __construct(string $externalOrderId, string $externalIdentifier, array $orderData = null)
     {
@@ -32,7 +31,49 @@ class OrderIsPaidJob extends Job implements ShouldQueue
     public function handle() {
         Log::info(' ---- STARTING ' . static::class . ' ON QUEUE ' . $this->queueName . ' ------- ');
 
+        $apiUser = Handshake::where('external_identifier', $this->externalIdentifier)->first();
+        $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
+
+        $businessUUID = $this->externalIdentifier;
+
+        $orderGID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $businessUUID, $this->externalOrderId)->getGID();
+
+        $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
+        Log::info('[BONAPI] GET order ' . $orderGID);
+
+        if ($bonOrderCheck->meta->count > 0) {
+            //Update the order
+
+            if($this->orderData->paid){
+                $paid = "paid";
+            }else{
+                $paid = "not_paid";
+            }
+
+            $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, ['is_paid' => $paid]);
+
+            Log::info('[BONAPI] UPDATE order ' .  json_decode(json_encode($bonOrder), true));
+
+        } else{
+            Log::info('[]');
+            $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
+        }
 
         Log::info(' ---- ENDING ' . static::class . ' ON QUEUE ' . $this->queueName . ' ------- ');
     }
 }
+
+/**
+ * {
+"triggered_at": "2022-11-17T14:40:41Z",
+"href": "https://bonapp1.ccvshop.nl/api/rest/v1/orders/340377945",
+"id": 340377945,
+"order_number": 24,
+"ordernumber_prefix": null,
+"ordernumber_full": "24",
+"total_price": 590,
+"paid": false, => true
+"customer_email": "h.niehorster@hjalding.nl",
+"customer_mobile": ""
+}
+ */

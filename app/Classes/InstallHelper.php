@@ -3,12 +3,18 @@ namespace App\Classes;
 
 use App\Classes\CCVApi\CCVApi;
 use App\Exceptions\Install\InstallException;
+use App\Jobs\Initial\InitialOrderFetch;
 use App\Models\Handshake;
+use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Log;
 
 class InstallHelper {
 
+    /**
+     * @param string $apiPublic
+     * @return bool
+     * @throws InstallException
+     */
     public function installWebhooks(string $apiPublic){
 
         $apiUser = Handshake::where('api_public', $apiPublic)->first();
@@ -38,6 +44,11 @@ class InstallHelper {
         }
     }
 
+    /**
+     * @param string $url
+     * @param bool $isSSL
+     * @return string
+     */
     public function determineDomainnameURL(string $url, bool $isSSL = false) {
 
         $host = "http://";
@@ -48,4 +59,13 @@ class InstallHelper {
 
         return $host . $url;
     }
+
+    /**
+     * @param string $apiPublic
+     * @return void
+     */
+    public function fireInitialOrderGrabEvent(string $apiPublic, Carbon $createdAtMax) {
+        dispatch(new InitialOrderFetch($apiPublic, $createdAtMax));
+    }
+
 }

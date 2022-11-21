@@ -66,7 +66,7 @@
                         </div>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('redirectPage', ['user_uuid' => $user_uuid, 'apiLocale' => $apiLocale]) }}" id="shopnumber-form">
+                <form method="POST" action="{{ route('finalizeInstall') }}" id="shopnumber-form">
                     <div class="card" style="border-radius: 10px;">
                         <div class="card-content is-shadowless border-rounded" style="border-radius: 10px;">
                              <div class="content">
@@ -116,12 +116,12 @@
                                     </svg>
                                     {{ __('pre_install.contract.3rd_purchase') }}
                                 </p>
-                                <p>
+                                {{--<p>
                                     <svg style="width:12px;height:12px" viewBox="0 0 24 24">
                                         <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
                                     </svg>
                                     {{ __('pre_install.contract.fixed_fee') }}
-                                </p>
+                                </p>--}}
                                 <p class="small">{{ __('pre_install.contract.vat_notice') }}</p>
                                 <span class="has-text-centered">
                                     <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
@@ -131,13 +131,14 @@
                                     <input class="apple-switch" name="terms" type="checkbox" id="terms-switch" style="float:left; margin-right: 10px;">
                                     {!!  __('pre_install.contract.terms') !!} <span style="color:#E9665B;">*</span>
                                 </label>
-                            </div>
+                             </div>
                         </div>
                     </div>
                     <div class="card" style="background-color: transparent !important;">
                         <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important;">
-                            <input type="hidden" name="shop_number" value="{{ $shop_number }}" />
-                            <input type="hidden" name="user_uuid" value="{{ $user_uuid }}" />
+                            <input type="hidden" name="api_public" value="{{ $api_public }}" />
+                            <input type="hidden" name="language" value="{{ $language }}" />
+                            <input type="hidden" name="x_hash" value="{{ $x_hash }}" />
                             <button type="submit" id="confirmContract" class="button is-primary has-text-weight-bold">{{ __('pre_install.contract.submit') }}</button>
                         </div>
                     </div>
