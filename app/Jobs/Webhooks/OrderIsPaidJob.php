@@ -40,16 +40,17 @@ class OrderIsPaidJob extends Job implements ShouldQueue
 
         var_dump($bonOrderCheck);
 
-        Log::info('[BONAPI] GET order ' . $orderGID);
+        Log::info('[BONAPI] Order Count ' . $bonOrderCheck->meta->count);
 
         if ($bonOrderCheck->meta->count > 0) {
             //Update the order
 
-            Log::info('OrderData throguh the job Data: ' . $this->orderData['paid']);
-
             if($this->orderData['paid']){
+                Log::info('Order paid ');
                 $paid = "paid";
             }else{
+                Log::info('Order not paid ');
+
                 $paid = "not_paid";
             }
 
