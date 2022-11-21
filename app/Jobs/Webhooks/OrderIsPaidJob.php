@@ -34,11 +34,10 @@ class OrderIsPaidJob extends Job implements ShouldQueue
         $apiUser = Handshake::where('external_identifier', $this->externalIdentifier)->first();
         $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
 
-        $businessUUID = $this->externalIdentifier;
-
         $orderGID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
 
         $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
+
         Log::info('[BONAPI] GET order ' . $orderGID);
 
         if ($bonOrderCheck->meta->count > 0) {
