@@ -82,7 +82,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                         foreach($bonOrderLineItems->data as $orderLineItem){
 
                             //check if there is a corresponding shipment item
-                            $bonShipmentLineItem = $bonApi->shipmentLineItems->get(null, ['business_uuid' => $apiUser->business_uuid, 'external_id' => $bonOrderCheck->data[0]->external_id]);
+                            $bonShipmentLineItem = $bonApi->shipmentLineItems->get($bonShipment->uuid);
 
                             if ($bonShipmentLineItem->meta->count == 0) {
                                 //Shipment Line Item doens't exist, create it.
@@ -145,6 +145,13 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
     }
 }
 
+/***
+ * DO NOT REMOVE
+ * Documentation Notes
+ *
+ * - CCV doesn't have the principle of seperated orders and shipmetns
+ * - So we are mimicing this here, adding an shipment has the same external_id as an order
+ */
 
 /* Webhook Payload
 {
