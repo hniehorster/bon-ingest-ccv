@@ -1,5 +1,5 @@
 {
-    "pre_install.header" : "Wat is uw shopId / shopnumber?",
+    "pre_install.header" : "Hoe verbind je jouw CCV winkel?",
     "pre_install.help_title": "Hoe kan je je shop Id vinden?",
     "pre_install.help_button" : "Hulp nodig bij het zoeken van je shop Id?",
     "pre_install.help_text": "Je kan je shop Id vinden door in de Lightspeed backoffice linksboven op je domein te klikken.",
@@ -13,5 +13,8 @@
     "pre_install.contract.fixed_fee": "€0.20 vaste fee per bestelling",
     "pre_install.contract.vat_notice": "Alle prijzen zijn exclusief BTW",
     "pre_install.contract.terms": "Ik ga akkoord met bovenstaande en heb de <a href=\"https://www.getbonhq.com/terms-and-conditions/\">algemene voorwaarden</a> en de <a href=\"https://www.getbonhq.com/privacy-policy/\">privacy voorwaarden</a> gelezen.",
-    "pre_install.contract.submit": "Bevestig"
+    "pre_install.contract.submit": "Bevestig",
+
+    "post_install.description" : "Je winkel is succesvol gekoppeld! <br /> We dashboard is elk moment zichtbaar. <br /> Als dit scherm niet automatisch sluit, sluit/sluit dan de app en open deze opnieuw",
+    "post_install.success" : "Hoppa, je winkel is gekoppeld!"
 }

@@ -3,62 +3,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://bon-core-files.ams3.digitaloceanspaces.com/bon_main.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
     <title>Confirm your platform</title>
     <style>
-        .border-rounded{
-            border-radius: 10px;
-            -webkit-border-radius: 10px;
-        }
-        label:hover, label:active, input:hover+label, input:active+label {
-            color: #efffff !important;
+        #modal-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: .1;
+            -webkit-opacity: .5;
+            -moz-opacity: .5;
+            filter: alpha(opacity=50);
+            z-index: 1000;
         }
         strong { color: #fff;}
         p { margin: 5px 0 0 0}
-        .small { font-size: 0.50em}
-        input.apple-switch {
-            position: relative;
-            -webkit-appearance: none;
-            outline: none;
-            width: 50px;
-            height: 30px;
-            background-color: #fff;
-            border: 1px solid #2A3140;
-            border-radius: 50px;
-            box-shadow: inset -20px 0 0 0 #2A3140;
+        h3 { font-size: 18px; font-weight: bold;}
+        #modal-content {
+            background-color: white;
+            border-radius: 10px;
+            color: #20294d;
+            -webkit-border-radius: 10px;
+            display: none;
+            left: 50%;
+            margin: -120px 0 0 -160px;
+            padding: 10px;
+            position: fixed;
+            top: 50%;
+            width: 320px;
+            z-index: 1000;
         }
 
-        input.apple-switch:after {
-            content: "";
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            background: transparent;
-            width: 26px;
-            height: 26px;
+        .helpImage {
+            border-radius: 10px;
+            -webkit-border-radius: 10px;
+        }
+
+        #modal-background.active, #modal-content.active {
+            display: block;
+        }
+        .badge {
+            background-color: #e9665b;
+            color: white;
+            padding: 4px 8px;
+            text-align: center;
             border-radius: 50%;
-            box-shadow: 2px 4px 6px rgba(0,0,0,0.2);
-        }
-
-        input.apple-switch:checked {
-            box-shadow: inset 20px 0 0 0 #4ed164;
-            border-color: #4ed164;
-        }
-
-        input.apple-switch:checked:after {
-            left: 20px;
-            box-shadow: -2px 4px 3px rgba(0,0,0,0.05);
         }
     </style>
 </head>
 <body>
-<section class="section" style="padding-top: 10px !important">
+<section class="section pt-1 pb-1">
     <div class="container">
         <div class="columns">
             <div class="column is-full">
                 <div class="card" style="background-color: transparent !important;">
-                    <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important; padding: 5px 24px 24px 24px">
+                    <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important;">
                         <div class="card-image" style="background-color: transparent !important;">
                             <figure class="image has-text-centered mb-5">
                                 <img src="https://bon-core-files.ams3.digitaloceanspaces.com/bon_logo_red_300.webp" style="max-width: 80px; width: auto; height: auto; margin-right: 40px" />
@@ -76,80 +78,49 @@
                         </div>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('finalizeInstall') }}" id="shopnumber-form">
+                <form method="POST" action="{{ route('connect.store') }}" id="shopnumber">
+                    <input type="hidden" name="user_uuid" value="{{ $user_uuid }} /"
                     <div class="card" style="border-radius: 10px;">
                         <div class="card-content is-shadowless border-rounded" style="border-radius: 10px;">
-                             <div class="content">
-                                <strong>{{ __('pre_install.contract.header') }}</strong>
-                                <span class="has-text-centered">
-                                    <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
-                                </span>
-                                <p>
-                                    <svg style="width:12px;height:12px" viewBox="0 0 24 24">
-                                        <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                                    </svg>
-                                    14-day Free Trail
-                                </p>
-
-                                <p>
-                                    <svg style="width:12px;height:12px" viewBox="0 0 24 24">
-                                        <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                                    </svg>
-                                    No monthly costs
-                                </p>
-
-                                <p>
-                                    <svg style="width:12px;height:12px" viewBox="0 0 24 24">
-                                        <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                                    </svg>
-                                    We boost your sales!
-                                </p>
-                                <span class="has-text-centered">
-                                    <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
-                                </span>
-                                <strong>{{ __('pre_install.contract.bon_generates_order') }}</strong>
-                                <p>
-                                    <svg style="width:12px;height:12px" viewBox="0 0 24 24">
-                                        <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                                    </svg>
-                                    {{ __('pre_install.contract.1st_purchase') }}
-                                </p>
-                                <p>
-                                    <svg style="width:12px;height:12px" viewBox="0 0 24 24">
-                                        <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                                    </svg>
-                                    {{ __('pre_install.contract.2nd_purchase') }}
-                                </p>
-                                <p>
-                                    <svg style="width:12px;height:12px" viewBox="0 0 24 24">
-                                        <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                                    </svg>
-                                    {{ __('pre_install.contract.3rd_purchase') }}
-                                </p>
-                                {{--<p>
-                                    <svg style="width:12px;height:12px" viewBox="0 0 24 24">
-                                        <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
-                                    </svg>
-                                    {{ __('pre_install.contract.fixed_fee') }}
-                                </p>--}}
-                                <p class="small">{{ __('pre_install.contract.vat_notice') }}</p>
+                            <div class="content">
+                                <h3>{{ __('pre_install.header') }}</h3>
                                 <span class="has-text-centered">
                                     <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
                                 </span>
 
-                                <label class="checkbox">
-                                    <input class="apple-switch" name="terms" type="checkbox" id="terms-switch" style="float:left; margin-right: 10px;">
-                                    {!!  __('pre_install.contract.terms') !!} <span style="color:#E9665B;">*</span>
-                                </label>
-                             </div>
+                                <p>
+                                    <span class="badge">1</span> Install the app in the CCV App Store<br />
+                                </p>
+                                <p style="margin-left: 25px;">
+                                    1. Log to the CCV Backoffice<br />
+                                    2. Go to app store<br />
+                                    3. Search for Bon (orange icon app)<br />
+                                    4. Click on install<br />
+                                    5. Follow the instructions until you see the manual linking codes<br />
+                                </p>
+                                <span class="has-text-centered">
+                                    <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
+                                </span>
+                                <p>
+                                    <span class="badge">2</span> Connect your store with the manual linking codes<br />
+                                </p>
+                                <div class="field" style="margin-top:15px">
+                                    <div class="control has-text-centered">
+                                        <input class="input" type="text" name="token_1" size="5" style="width:auto !important" maxlength="4" placeholder="CODE 1" /> - <input class="input" type="text" name="token_2" size="5" style="width:auto !important" maxlength="4" placeholder="CODE 2" />
+                                    </div>
+                                </div>
+                                <span class="has-text-centered">
+                                    <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
+                                </span>
+                                <p>
+                                    <span class="badge">3</span> Click confirm to connect your account<br />
+                                </p>
+                            </div>
                         </div>
                     </div>
                     <div class="card" style="background-color: transparent !important;">
                         <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important;">
-                            <input type="hidden" name="api_public" value="{{ $api_public }}" />
-                            <input type="hidden" name="language" value="{{ $language }}" />
-                            <input type="hidden" name="x_hash" value="{{ $x_hash }}" />
-                            <button type="submit" id="confirmContract" class="button is-primary has-text-weight-bold">{{ __('pre_install.contract.submit') }}</button>
+                            <button type="submit" form="shopnumber" value="submit" class="button is-primary has-text-weight-bold">{{ __('pre_install.submit') }}</button>
                         </div>
                     </div>
                 </form>
@@ -158,34 +129,14 @@
     </div>
 </section>
 <script>
-    $( document ).ready(function() {
-
-        $("#modal-launcher, #modal-background, #modal-close").click(function () {
-            console.log('Modal Launcher clicked');
-            $("#modal-content, #modal-background").toggleClass("active");
-        });
-
-        $('.apple-switch').click(function () {
-            var checkVal = $('.apple-switch').is(":checked");
-
-            if(checkVal) {
-                checkVal.checked = !checkVal.checked;
-            }else{
-                checkVal.checked = checkVal.checked;
-            }
+    $(document).ready(
+        $(function(){
+            $("#modal-launcher, #modal-background, #modal-close").click(function() {
+                console.log('Modal Launcher clicked');
+                $("#modal-content, #modal-background").toggleClass("active");
+            });
         })
-
-        $('#confirmContract').click(function (e) {
-            var checkVal = $('.apple-switch').is(":checked");
-
-            if(!checkVal){
-                e.preventDefault();
-
-                $('.checkbox').animate({backgroundColor: '#fb4f48'}, 'slow');
-                $('.checkbox').animate({backgroundColor: '#101828'}, 'slow');
-            }
-        });
-    });
+    );
 </script>
 </body>
 </html>

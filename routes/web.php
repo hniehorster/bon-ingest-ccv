@@ -33,6 +33,12 @@ $router->group([
     $router->get('/install/orders', 'Install\InstallController@grabAllOrders');
     $router->get('/install/webhooks', 'Install\InstallController@testWebhoks');
 
+    /**
+     * Connect
+     */
+    $router->get('/connect',  ['as' => 'connect.show', 'uses' => 'Connect\ConnectController@show']);
+    $router->get('/connect/error',  ['as' => 'connect.error', 'uses' => 'Connect\ConnectController@show']);
+    $router->post('/connect',  ['as' => 'connect.store', 'uses' => 'Connect\ConnectController@store']);
 });
 
 /**

@@ -1,5 +1,5 @@
 {
-    "pre_install.header" : "What is the ShopId / ShopNumber you want to connect?",
+    "pre_install.header" : "How to connect your CCV Store?",
     "pre_install.help_title": "How to find your shop Id?",
     "pre_install.help_button" : "Need help finding your shop Id?",
     "pre_install.help_text": "You can find your shop Id, by clicking the your domain at the top left corner in the Lightspeed backoffice.",
@@ -13,6 +13,9 @@
     "pre_install.contract.fixed_fee": "€0.20 fixed fee per order",
     "pre_install.contract.vat_notice": "All prices exclude VAT",
     "pre_install.contract.terms": "I agree to the above and have read and understood the <a href=\"https://www.getbonhq.com/terms-and-conditions/\">terms and conditions</a> and <a href=\"https://www.getbonhq.com/privacy-policy/\">privacy disclaimer</a>.",
-    "pre_install.contract.submit": "Confirm"
+    "pre_install.contract.submit": "Confirm",
+
+    "post_install.description" : "Your store has been linked successfully! <br /> We will redirect you to your dashboard. <br /> If this screen doesn't close automatically quit/close the app and reopen it.",
+    "post_install.success" : "Yes! Your store is ready to go"
 
 }
