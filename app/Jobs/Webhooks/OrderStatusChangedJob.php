@@ -133,6 +133,8 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                 }
             }
 
+            $updatedOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, ['shipment_status' => 'shipped']);
+
         } else{
             Log::info('Order not found, we have to add the order first');
             $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
