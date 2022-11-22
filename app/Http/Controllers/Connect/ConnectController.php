@@ -46,7 +46,7 @@ class ConnectController extends Controller {
         $tokenCheck = ManualLinkToken::where([
             'token_1' => $request->token_1,
             'token_2' => $request->token_2,
-        ])->findOrFail();
+        ])->firstOrFail();
 
         if($tokenCheck) {
 
