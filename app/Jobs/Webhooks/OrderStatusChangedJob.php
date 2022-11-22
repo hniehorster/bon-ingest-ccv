@@ -126,7 +126,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                     'shop_created_at'   => Carbon::now()->format('Y-m-d H:i:s')
                 ];
 
-                if ($bonShipmentTrackingCheck->meta->count == 0) {
+                if ($bonShipmentTrackingCheck->meta->count > 0) {
                     $bonShipment = $bonApi->shipmentTrackings->update($bonShipmentTrackingCheck->data[0]->uuid, $bonShipmentTrackingData);
                 } else {
                     $bonShipment = $bonApi->shipmentTrackings->create($bonShipmentTrackingData);
