@@ -141,6 +141,8 @@ class Transformer
      */
     public function transformKey(string $value, array $externalData) {
 
+        Log::info('Order Transformer: ' . $value);
+
         if(Str::startsWith($value,'gid:')) {
             return $this->getGidTransformFromString($value, $externalData);
         }
@@ -163,6 +165,9 @@ class Transformer
             return $this->getTaxDeducted($value, $externalData);
         }
         elseif(Str::startsWith($value,'if_empty:')) {
+
+            Log::info('If_empty found: ' . $value);
+
             return $this->getAlternateValueIfEmpty($value, $externalData);
         }
         elseif(empty($value)){
