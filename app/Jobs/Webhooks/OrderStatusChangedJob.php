@@ -102,7 +102,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                                     'quantity'      => $orderLineItem->quantity
                                 ];
 
-                                $bonShipment = $bonApi->shipmentLineItem->create($bonShipmentLineItemData);
+                                $bonShipment = $bonApi->shipmentLineItems->create( $bonShipment->uuid, $bonShipmentLineItemData);
                             }
                         }
                     }
