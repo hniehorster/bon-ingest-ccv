@@ -22,4 +22,5 @@ This repository is responsible for the integration with CCV Shop and communicate
 - `n/a`
 
 ### Known Limitations
-- `n/a`
+- If an order has been set to shipped and then is status changes to non-shipped. This is not incorporated. 
+- CCV Orders always have a single shipment (CCV Limitation).

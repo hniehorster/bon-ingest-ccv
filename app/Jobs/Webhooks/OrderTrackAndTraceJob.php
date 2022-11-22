@@ -3,11 +3,14 @@
 namespace App\Jobs\Webhooks;
 
 use App\Classes\AuthenticationHelper;
+use App\Classes\CCVApi\CCVApi;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Jobs\Job;
+use App\Models\Handshake;
 use App\Transformers\Transformer;
 use BonSDK\ApiIngest\BonIngestAPI;
+use BonSDK\Classes\BonSDKGID;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
@@ -33,7 +36,54 @@ class OrderTrackAndTraceJob extends Job implements ShouldQueue
     public function handle() {
         Log::info(' ---- STARTING ' . static::class . ' ON QUEUE ' . $this->queueName . ' ------- ');
 
+        $apiUser        = Handshake::where('external_identifier', $this->externalIdentifier)->first();
+        $bonApi         = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
 
+        $ccvClient      = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
+        $orderDetails   = $ccvClient->orders->get($this->externalOrderId);
+
+        $orderGID    = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
+        $shipmentGID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
+
+        $bonOrderCheck      = $bonApi->orders->get(null, ['gid' => $orderGID]);
+
+        if($bonOrderCheck->meta->count > 0) {
+
+            $bonShipmentCheck   = $bonApi->shipments->get(null, ['object_type' => 'order', 'object_uuid' => $bonOrderCheck->data[0]->uuid]);
+
+            if($bonShipmentCheck->meta->count > 0) {
+
+                $bonShipmentTrackingCheck = $bonApi->shipmentsTrackings->get(null, ['shipment_uuid' => $bonShipmentCheck->data[0]->uuid]);
+
+                $trackingEnabled = false;
+
+                if(!empty($orderDetails['track_and_trace_code']) && !empty($orderDetails['track_and_trace_carrier'])){
+                    $trackingEnabled = true;
+                }
+
+                $bonShipmentTrackingData = [
+                    'shipment_uuid'     => $bonShipmentCheck->data[0]->uuid,
+                    'tracking_code'     => $orderDetails['track_and_trace_code'],
+                    'tracking_enabled'  => $trackingEnabled,
+                    'carrier'           => $orderDetails['track_and_trace_carrier'],
+                    'shop_created_at'   => Carbon::now()->format('Y-m-d H:i:s')
+                ];
+
+                if ($bonShipmentTrackingCheck->meta->count == 0) {
+                    $bonShipment = $bonApi->shipmentTrackings->update($bonShipmentTrackingCheck->data[0]->uuid, $bonShipmentTrackingData);
+                } else {
+                    $bonShipment = $bonApi->shipmentTrackings->create($bonShipmentTrackingData);
+                }
+
+            }else{
+                Log::info('Shipment not found, we have to add the order first');
+                $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
+            }
+
+        }else{
+            Log::info('Order not found, we have to add the order first');
+            $this->release(QueueHelperClass::getNearestTimeRoundedUp(5, true));
+        }
 
         Log::info(' ---- ENDING ' . static::class . ' ON QUEUE ' . $this->queueName . ' ------- ');
     }
