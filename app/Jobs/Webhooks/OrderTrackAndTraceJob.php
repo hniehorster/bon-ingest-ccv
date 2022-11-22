@@ -3,6 +3,7 @@
 namespace App\Jobs\Webhooks;
 
 use App\Classes\AuthenticationHelper;
+use App\Classes\CarrierFinderHelper;
 use App\Classes\CCVApi\CCVApi;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
@@ -65,7 +66,7 @@ class OrderTrackAndTraceJob extends Job implements ShouldQueue
                     'shipment_uuid'     => $bonShipmentCheck->data[0]->uuid,
                     'tracking_code'     => $orderDetails->track_and_trace_code,
                     'tracking_enabled'  => $trackingEnabled,
-                    'carrier'           => $orderDetails->track_and_trace_carrier,
+                    'carrier'           => CarrierFinderHelper::getBonCarrier($orderDetails->track_and_trace_carrier),
                     'shop_created_at'   => Carbon::now()->format('Y-m-d H:i:s')
                 ];
 

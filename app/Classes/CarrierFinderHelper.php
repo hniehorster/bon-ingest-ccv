@@ -123,4 +123,32 @@ class CarrierFinderHelper {
         ];
     }
 
+    /**
+     * @param $carrier
+     * @return string
+     */
+    public static function getBonCarrier($carrier) : string {
+
+        $bonCarrier = '';
+
+        $carrierDictionary = [
+            'PostNL' => 'postnl',
+            'MyParcel' => 'myparcel',
+            'DHL_Parcel' => 'dhl',
+            'DPD' => 'dpd',
+            'GLS' => 'gls',
+            'FedEx' => 'fedex',
+            'UPS' => 'ups',
+            'Sandd' => 'sandd',
+            'Bpost' => 'bpost',
+        ];
+
+        if(in_array($carrier, $carrierDictionary)) {
+            return $carrierDictionary[$carrier];
+        }
+
+        return $bonCarrier;
+
+    }
+
 }
