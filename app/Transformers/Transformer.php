@@ -149,12 +149,6 @@ class Transformer
         elseif(Str::startsWith($value, 'bon_default:')){
             return $this->getMerchantDefault($value);
         }
-        elseif(Str::contains($value, '|')){
-            return $this->getMultipleValuesFromString($value, $externalData);
-        }
-        elseif(Str::contains($value, '.')) {
-            return $this->getValueFromMultiLevelString($value, $externalData);
-        }
         elseif(Str::is($value, 'BON_BUSINESSUUID')){
             return $this->getBonBusinessUUIDFromString();
         }
@@ -169,6 +163,14 @@ class Transformer
             Log::info('If_empty found: ' . $value);
 
             return $this->getAlternateValueIfEmpty($value, $externalData);
+        }
+        
+        //Common usage
+        elseif(Str::contains($value, '.')) {
+            return $this->getValueFromMultiLevelString($value, $externalData);
+        }
+        elseif(Str::contains($value, '|')){
+            return $this->getMultipleValuesFromString($value, $externalData);
         }
         elseif(empty($value)){
             return '';
