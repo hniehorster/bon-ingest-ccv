@@ -59,6 +59,9 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
 
                     $transformedShipment = (new Transformer($apiUser->business_uuid, json_decode(json_encode($orderDetails), true), $apiUser->defaults))->shipment->transform();
 
+                    $transformedShipment['object_type'] = 'order';
+                    $transformedShipment['object_uuid'] = $bonOrderCheck->data[0]->uuid;
+
                     $bonShipmentsCheck = $bonApi->shipments->get(null, ['gid' => $transformedShipment['gid']]);
 
                     if ($bonShipmentsCheck->meta->count > 0) {
