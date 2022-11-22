@@ -53,7 +53,7 @@ class OrderTrackAndTraceJob extends Job implements ShouldQueue
 
             if($bonShipmentCheck->meta->count > 0) {
 
-                $bonShipmentTrackingCheck = $bonApi->shipmentsTrackings->get(null, ['shipment_uuid' => $bonShipmentCheck->data[0]->uuid]);
+                $bonShipmentTrackingCheck = $bonApi->shipmentTrackings->get(null, ['shipment_uuid' => $bonShipmentCheck->data[0]->uuid]);
 
                 $trackingEnabled = false;
 
