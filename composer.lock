@@ -924,12 +924,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:hniehorster/bon-api-ingest.git",
-                "reference": "4a6a5c9e564b53a0f9590bb3a2b55815c9cad870"
+                "reference": "30345f52b1199f9cfcba673889fc51a0f1b707b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hniehorster/bon-api-ingest/zipball/4a6a5c9e564b53a0f9590bb3a2b55815c9cad870",
-                "reference": "4a6a5c9e564b53a0f9590bb3a2b55815c9cad870",
+                "url": "https://api.github.com/repos/hniehorster/bon-api-ingest/zipball/30345f52b1199f9cfcba673889fc51a0f1b707b6",
+                "reference": "30345f52b1199f9cfcba673889fc51a0f1b707b6",
                 "shasum": ""
             },
             "require": {
@@ -960,7 +960,7 @@
                 "source": "https://github.com/hniehorster/bon-api-ingest/tree/master",
                 "issues": "https://github.com/hniehorster/bon-api-ingest/issues"
             },
-            "time": "2022-11-22T19:28:00+00:00"
+            "time": "2022-11-22T21:43:35+00:00"
         },
         {
             "name": "hniehorster/bon-sdk-gid",
