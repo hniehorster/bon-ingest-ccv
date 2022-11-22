@@ -47,7 +47,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
 
         if ($bonOrderCheck->meta->count > 0) {
 
-            if($this->orderData->status == 5) {
+            if($this->orderData['status'] == 5) {
                 //Something changed and the order seems to be shipped
                 //check for a shipment
                 $bonShipmentCheck = $bonApi->shipments->get(null, ['gid' => $shipmentGID]);
