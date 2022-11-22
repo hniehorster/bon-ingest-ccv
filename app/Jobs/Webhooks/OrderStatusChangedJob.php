@@ -123,9 +123,9 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
 
                 $bonShipmentTrackingData = [
                     'shipment_uuid'     => $bonShipment->uuid,
-                    'tracking_code'     => $orderDetails['track_and_trace_code'],
+                    'tracking_code'     => $orderDetails->track_and_trace_code,
                     'tracking_enabled'  => $trackingEnabled,
-                    'carrier'           => $orderDetails['track_and_trace_carrier'],
+                    'carrier'           => $orderDetails->track_and_trace_carrier,
                     'shop_created_at'   => Carbon::now()->format('Y-m-d H:i:s')
                 ];
 
