@@ -82,7 +82,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                         foreach($bonOrderLineItems->data as $orderLineItem){
 
                             //check if there is a corresponding shipment item
-                            $bonShipmentLineItem = $bonApi->shipmentLineItems->get($bonShipment->uuid);
+                            $bonShipmentLineItem = $bonApi->shipmentLineItems->get($bonShipment->uuid, null, []);
 
                             if ($bonShipmentLineItem->meta->count == 0) {
                                 //Shipment Line Item doens't exist, create it.
