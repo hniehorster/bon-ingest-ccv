@@ -39,8 +39,8 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
         $apiUser = Handshake::where('external_identifier', $this->externalIdentifier)->first();
         $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
 
-        $orderGID    = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $this->externalIdentifier, $this->externalOrderId)->getGID();
-        $shipmentGID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $this->externalIdentifier, $this->externalOrderId)->getGID();
+        $orderGID    = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
+        $shipmentGID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
 
         $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
         Log::info('[BONAPI] GET order ' . $orderGID);
@@ -67,6 +67,39 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                         $bonShipment = $bonApi->shipments->create($transformedShipment);
                     }
 
+                    //Check if line items have been shipped.
+
+                    $bonOrderLineItems = $bonApi->orderLineItems->get(null, ['business_uuid' => $apiUser->business_uuid, 'order_uuid' => $bonOrderCheck->data[0]->uuid ]);
+
+                    if ($bonOrderLineItems->meta->count > 0) {
+
+                        foreach($bonOrderLineItems->data as $orderLineItem){
+
+                            //check if there is a corresponding shipment item
+                            $bonShipmentLineItem = $bonApi->shipmentLineItems->get(null, ['business_uuid' => $apiUser->business_uuid, 'external_id' => $bonOrderCheck->data[0]->external_id]);
+
+                            if ($bonShipmentLineItem->meta->count == 0) {
+                                //Shipment Line Item doens't exist, create it.
+
+                                $bonShipmentLineItemData = [
+                                    'shipment_uuid' => $bonShipment->uuid,
+                                    'business_uuid' => $apiUser->business_uuid,
+                                    'variant_id'    => $orderLineItem->variant_id,
+                                    'variant_gid'   => $orderLineItem->variant_gid,
+                                    'variant_title' => $orderLineItem->variant_title,
+                                    'product_id'    => $orderLineItem->product_id,
+                                    'product_gid'   => $orderLineItem->product_gid,
+                                    'product_title' => $orderLineItem->product_title,
+                                    'ean'           => $orderLineItem->ean,
+                                    'sku'           => $orderLineItem->sku,
+                                    'article_code'  => $orderLineItem->article_code,
+                                    'quantity'      => $orderLineItem->quantity
+                                ];
+
+                                $bonShipment = $bonApi->shipmentLineItem->create($bonShipmentLineItemData);
+                            }
+                        }
+                    }
                 }
             }
 

@@ -164,7 +164,6 @@ class Transformer
 
             return $this->getAlternateValueIfEmpty($value, $externalData);
         }
-        
         //Common usage
         elseif(Str::contains($value, '.')) {
             return $this->getValueFromMultiLevelString($value, $externalData);
