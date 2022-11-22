@@ -156,11 +156,14 @@ class Transformer
         elseif(Str::is($value, 'BON_BUSINESSUUID')){
             return $this->getBonBusinessUUIDFromString();
         }
-        elseif(Str::startsWith($value,'SUB@')) {
+        elseif(Str::startsWith($value,'sub:')) {
             return $this->getSubtract($value, $externalData);
         }
-        elseif(Str::startsWith($value,'DTAX@')) {
+        elseif(Str::startsWith($value,'dtax:')) {
             return $this->getTaxDeducted($value, $externalData);
+        }
+        elseif(Str::startsWith($value,'if_empty:')) {
+            return $this->getAlternateValueIfEmpty($value, $externalData);
         }
         elseif(empty($value)){
             return '';
@@ -313,4 +316,30 @@ class Transformer
 
     }
 
+    /**
+     * @param string $values
+     * @param array $array
+     * @return void
+     */
+    private function getAlternateValueIfEmpty(string $values, array $array) {
+
+        $values = substr($values, strlen('if_empty:'));
+
+        $arrayItems = explode(':', $values);
+
+        $returnValue = "";
+
+        foreach($arrayItems as $arrayItem) {
+
+            $transformedArrayItem = $this->transformKey($arrayItem, $array);
+
+            if(!empty($this->transformKey($arrayItem, $array))){
+                $returnValue = $transformedArrayItem;
+                break;
+            }
+        }
+
+        return $returnValue;
+
+    }
 }

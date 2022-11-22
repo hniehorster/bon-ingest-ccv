@@ -3,6 +3,7 @@
 namespace App\Jobs\Webhooks;
 
 use App\Classes\AuthenticationHelper;
+use App\Classes\CCVApi\CCVApi;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Jobs\Job;
@@ -53,7 +54,18 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                 if ($bonShipmentCheck->meta->count == 0) {
                     //Create the shipment
 
+                    $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
+                    $orderDetails = $ccvClient->orders->get($this->externalOrderId);
 
+                    $transformedShipment = (new Transformer($apiUser->business_uuid, json_decode(json_encode($orderDetails), true), $apiUser->defaults))->shipment->transform();
+
+                    $bonShipmentsCheck = $bonApi->shipments->get(null, ['gid' => $transformedShipment['gid']]);
+
+                    if ($bonShipmentsCheck->meta->count > 0) {
+                        $bonShipment = $bonApi->shipments->update($bonShipmentsCheck->data[0]->uuid, $transformedShipment);
+                    } else {
+                        $bonShipment = $bonApi->shipments->create($transformedShipment);
+                    }
 
                 }
             }

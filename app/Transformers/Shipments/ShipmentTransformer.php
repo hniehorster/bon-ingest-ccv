@@ -34,10 +34,10 @@ class ShipmentTransformer {
         return [
             'external_id'       => 'id',
             'gid'               => 'gid:shipment:id',
-            'number'            => 'number',
+            'number'            => 'ordernumber_full',
             'business_uuid'     => 'BON_BUSINESSUUID',
-            'external_order_id' => 'order.resource.id',
-            'tracking_code'     => 'trackingCode'
+            'external_order_id' => 'id',
+            'tracking_code'     => 'track_and_trace_code'
         ];
     }
 }

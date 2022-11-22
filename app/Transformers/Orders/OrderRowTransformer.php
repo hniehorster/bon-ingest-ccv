@@ -46,9 +46,9 @@ class OrderRowTransformer {
             'article_code'      => 'product_number',
             'weight'            => 'weight',
 
-            'base_price_excl'   => 'DTAX@price_without_discount:tax',
+            'base_price_excl'   => 'dtax:price_without_discount:tax',
             'base_price_incl'   => 'price_without_discount',
-            'price_excl'        => 'DTAX@total_price:tax',
+            'price_excl'        => 'dtax:total_price:tax',
             'price_incl'        => 'total_price',
             'supplier_title'    => 'supplier'
         ];
