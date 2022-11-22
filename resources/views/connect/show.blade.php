@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 <form method="POST" action="{{ route('connect.store') }}" id="shopnumber">
-                    <input type="hidden" name="user_uuid" value="{{ $user_uuid }} /"
+                    <input type="hidden" name="user_uuid" value="{{ $user_uuid }}" />
                     <div class="card" style="border-radius: 10px;">
                         <div class="card-content is-shadowless border-rounded" style="border-radius: 10px;">
                             <div class="content">
