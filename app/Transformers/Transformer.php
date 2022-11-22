@@ -323,17 +323,28 @@ class Transformer
      */
     private function getAlternateValueIfEmpty(string $values, array $array) {
 
+        Log::info('IF EMPTY Triggered');
+
         $values = substr($values, strlen('if_empty:'));
 
         $arrayItems = explode(':', $values);
+
+        Log::info('Items to check: ', $arrayItems);
 
         $returnValue = "";
 
         foreach($arrayItems as $arrayItem) {
 
+            Log::info('Checking Item:' . $arrayItem);
+
             $transformedArrayItem = $this->transformKey($arrayItem, $array);
 
-            if(!empty($this->transformKey($arrayItem, $array))){
+            Log::info('Transformed Item:' . $transformedArrayItem);
+
+            if(!empty($transformedArrayItem)){
+
+                Log::info('Item is not empty, lets use this:' . $transformedArrayItem);
+
                 $returnValue = $transformedArrayItem;
                 break;
             }
