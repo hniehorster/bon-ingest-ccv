@@ -55,12 +55,12 @@
     </style>
 </head>
 <body>
-<section class="section pt-1 pb-1">
+<section class="section" style="padding: 0px">
     <div class="container">
         <div class="columns">
             <div class="column is-full">
                 <div class="card" style="background-color: transparent !important;">
-                    <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important;">
+                    <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important; padding:15px 5px">
                         <div class="card-image" style="background-color: transparent !important;">
                             <figure class="image has-text-centered mb-5">
                                 <img src="https://bon-core-files.ams3.digitaloceanspaces.com/bon_logo_red_300.webp" style="max-width: 80px; width: auto; height: auto; margin-right: 40px" />
