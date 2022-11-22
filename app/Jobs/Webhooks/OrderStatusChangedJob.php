@@ -57,9 +57,6 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                 if ($bonShipmentCheck->meta->count == 0) {
                     //Create the shipment
 
-                    $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
-                    $orderDetails = $ccvClient->orders->get($this->externalOrderId);
-
                     $transformedShipment = (new Transformer($apiUser->business_uuid, json_decode(json_encode($orderDetails), true), $apiUser->defaults))->shipment->transform();
 
                     $transformedShipment['object_type'] = 'order';
@@ -117,7 +114,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
 
                 $trackingEnabled = false;
 
-                if(!empty($orderDetails['track_and_trace_code']) && !empty($orderDetails['track_and_trace_carrier'])){
+                if(!empty($orderDetails->track_and_trace_code) && !empty($orderDetails->track_and_trace_carrier)){
                     $trackingEnabled = true;
                 }
 
