@@ -50,13 +50,6 @@
             left: 20px;
             box-shadow: -2px 4px 3px rgba(0,0,0,0.05);
         }
-        .badge {
-            background-color: #e9665b;
-            color: white;
-            padding: 4px 8px;
-            text-align: center;
-            border-radius: 50%;
-        }
     </style>
 </head>
 <body>

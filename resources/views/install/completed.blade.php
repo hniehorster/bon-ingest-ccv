@@ -63,6 +63,13 @@
             width: 300px;
             margin: 0px auto;
         }
+        .badge {
+            background-color: #e9665b;
+            color: white;
+            padding: 4px 8px;
+            text-align: center;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -104,10 +111,16 @@
                             <p>
                                 <span class="badge">6</span> {!! __('post_install.connect.step_6') !!} <br />
                             </p>
+                            <span class="has-text-centered">
+                                <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
+                            </span>
                             <div class="qr-code">
                                 <img src="data:image/png;base64, {!! base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(250)->generate('https://bonmerchant.page.link/merchant_download')) !!} ">
                             </div>
-                            <div class="codes">
+                            <span class="has-text-centered">
+                                <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
+                            </span>
+                            <div class="codes has-text-centered" style="margin-top: 15px;">
                                 <div class="field">
                                     <div class="control">
                                         <input class="input" type="text" name="token_1" size="4" style="width:auto !important; text-align:center;" value="{{ $manualToken->token_1 }}" /> - <input class="input" type="text" name="token_2" size="4" style="width:auto !important; text-align: center;" value="{{ $manualToken->token_2 }}" />

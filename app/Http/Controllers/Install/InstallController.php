@@ -31,7 +31,7 @@ class InstallController extends BaseController {
      */
     public function finalize(Request $request) {
 
-        App::setLocale($request->langauge);
+        App::setLocale($request->language);
 
         $apiKey = $request->api_public;
 
