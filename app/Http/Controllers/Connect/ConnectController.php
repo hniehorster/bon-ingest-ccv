@@ -48,6 +48,8 @@ class ConnectController extends Controller {
             'token_2' => $request->token_2,
         ])->firstOrFail();
 
+        dump($tokenCheck);
+
         if($tokenCheck) {
 
             //Create the Admin
@@ -58,6 +60,9 @@ class ConnectController extends Controller {
             ];
 
             $apiUser = Handshake::where('business_uuid', $tokenCheck->business_uuid)->first();
+
+            dump($apiUser);
+
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
 
             $bonApi->businessesAdmins->create($adminData);
