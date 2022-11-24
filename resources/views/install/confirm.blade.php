@@ -76,7 +76,7 @@
                         </div>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('finalizeInstall') }}" id="shopnumber-form">
+                <form method="POST" action="{{ route('finalizeInstall', ['apiLocale' => request()->get('apiLocale')]) }}" id="shopnumber-form">
                     <div class="card" style="border-radius: 10px;">
                         <div class="card-content is-shadowless border-rounded" style="border-radius: 10px;">
                              <div class="content">
