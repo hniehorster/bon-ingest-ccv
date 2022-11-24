@@ -37,7 +37,7 @@ class InstallController extends Controller {
 
         $appApproval = $ccvClient->apps->update(env('CCV_APP_ID'), ['is_installed' => true]);
 
-        $defaults = $installHelper->grabLanguages($ccvClient, $apiUser->language);
+        $defaults = $installHelper->grabLanguages($ccvClient, $request->language);
         $defaults['status']     = 'live';
         $defaults['currency']   = 'EUR';
 
@@ -45,6 +45,7 @@ class InstallController extends Controller {
         $webshopId = $webshops->items[0]->id;
 
         $apiUser->external_identifier   = $webshopId;
+        $apiUser->language              = $request->language;
         $apiUser->defaults              = $defaults;
         $apiUser->save();
 

@@ -14,6 +14,7 @@ class HandshakeController extends Controller {
     /**
      * @param Request $request
      * @return void
+     *
      */
     public function accept(Request $request) {
 
