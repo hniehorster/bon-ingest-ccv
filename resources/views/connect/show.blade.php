@@ -106,7 +106,7 @@
                                 </p>
                                 <div class="field" style="margin-top:15px">
                                     <div class="control has-text-centered">
-                                        <input class="input" type="text" name="token_1" size="5" style="width:auto !important" maxlength="4" placeholder="CODE 1" /> - <input class="input" type="text" name="token_2" size="5" style="width:auto !important" maxlength="4" placeholder="CODE 2" />
+                                        <input class="input" type="text" name="token_1" size="5" style="width:auto !important" maxlength="4" placeholder="CODE 1" onkeyup="this.value = this.value.toUpperCase();" /> - <input class="input" type="text" name="token_2" size="5" style="width:auto !important" maxlength="4" placeholder="CODE 2" onkeyup="this.value = this.value.toUpperCase();" />
                                     </div>
                                 </div>
                                 <span class="has-text-centered">
