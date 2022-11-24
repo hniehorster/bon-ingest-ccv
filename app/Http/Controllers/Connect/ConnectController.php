@@ -67,6 +67,8 @@ class ConnectController extends Controller {
 
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
 
+            dump($bonApi);
+
             $bonApi->businessesAdmins->create($adminData);
 
             $socket = (new AuthPlatformSelectedService())->confirmAuthPlatformSelected('en', $request->user_uuid);
