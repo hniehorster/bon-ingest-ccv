@@ -17,10 +17,6 @@ class HandshakeController extends Controller {
      */
     public function accept(Request $request) {
 
-        Log::info('-------- INCOMING HANDSHAKE --------');
-        Log::info('All request data: '. $request->getContent());
-        Log::info('All request URL: ' .  URL::current());
-
         $handShakeData[] = URL::current();;
         $handShakeData[] = $request->getContent();;
 
@@ -29,9 +25,6 @@ class HandshakeController extends Controller {
         $handShakeSecret = env('CCV_SECRET_KEY');
 
         $sHash = hash_hmac('sha512', $handShakeString, $handShakeSecret);
-
-        Log::info('Local hash made: ' . $sHash);
-        Log::info('Remote hash made: ' . $request->header('x-hash'));
 
         if($sHash === $request->header('x-hash')) {
 
@@ -44,7 +37,8 @@ class HandshakeController extends Controller {
             $handshake->return_url  = $request->return_url;
             $handshake->save();
 
-            return "ok";
+            return "ok"; //Requirement from CCV
+
         }else{
             throw new Exception('Invalid Request');
         }

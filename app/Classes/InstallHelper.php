@@ -7,6 +7,7 @@ use App\Jobs\Initial\InitialOrderFetch;
 use App\Models\Handshake;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Str;
 
 class InstallHelper {
 
@@ -66,6 +67,37 @@ class InstallHelper {
      */
     public function fireInitialOrderGrabEvent(string $apiPublic, Carbon $createdAtMax) {
         dispatch(new InitialOrderFetch($apiPublic, $createdAtMax));
+    }
+
+    /**
+     * @param CCVApi $ccVClient
+     * @param string $apiLanguage
+     * @return array
+     * @throws Exception
+     */
+    public function grabLanguages(CCVApi $ccVClient, string $apiLanguage) : array
+    {
+        $languages = $ccVClient->languages->get();
+
+        $returnArray = [];
+
+        $index = 0;
+
+        foreach ($languages->items as $language) {
+
+            if($language->iso_code == $apiLanguage) {
+                $returnArray['languages'][$index]['is_default'] = true;
+            } else {
+                $returnArray['languages'][$index]['is_default'] = false;
+            }
+
+            $returnArray['languages'][$index]['is_active'] = $language->active;
+            $returnArray['languages'][$index]['code'] = $language->iso_code;
+            $returnArray['languages'][$index]['locale'] = $language->iso_code . '_' . Str::upper($language->iso_code);
+
+        }
+
+        return $returnArray;
     }
 
 }

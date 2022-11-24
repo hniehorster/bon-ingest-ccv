@@ -35,32 +35,29 @@ class InstallController extends Controller {
 
         $apiUser = Handshake::where('api_public', $apiKey)->first();
         $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
+        $installHelper = new InstallHelper();
 
         echo "<pre>" . json_encode($apiUser, JSON_PRETTY_PRINT) . "</pre>";
 
         $appApproval = $ccvClient->apps->update(env('CCV_APP_ID'), ['is_installed' => true]);
 
-        dump($appApproval);
+        $defaults = $installHelper->grabLanguages($ccvClient, $apiUser->language);
+        $defaults['status']     = 'live';
+        $defaults['currency']   = 'EUR';
 
         $webshops = $ccvClient->webshops->get();
-
         $webshopId = $webshops->items[0]->id;
 
-        $apiUser->external_identifier = $webshopId;
+        $apiUser->external_identifier   = $webshopId;
+        $apiUser->defaults              = $defaults;
         $apiUser->save();
-
-        echo "Webshop ID found: " . $webshopId;
 
         $merchantDetails = $ccvClient->merchant->get($webshopId);
 
         $shortGID = (new BonSDKGID())->encodeShortHand(env('PLATFORM_TEXT'), 'business', $webshopId)->getGID();
         $domainInfo = $ccvClient->domains->get($webshopId);
 
-        dump($domainInfo);
-
         $businesses = json_decode((new BusinessService())->obtainBusinesses('en', ['gid_short' => $shortGID]));
-
-        $installHelper = new InstallHelper();
 
         if($businesses->meta->count == 0) {
 
@@ -147,12 +144,6 @@ class InstallController extends Controller {
             'manualToken' => $newManualLinkToken,
             'business'      => (new BusinessService())->obtainBusiness('en', $businessUUID)
         ]);
-
-        //Todo:
-        // [z] Show confirm page first
-        // [x] Show the page with QR to download the merchant App.
-        // [x] Start process of downloading all orders
-        // [] Send email with install instructions
     }
 
     /**

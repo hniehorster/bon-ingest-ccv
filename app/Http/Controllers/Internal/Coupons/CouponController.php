@@ -2,10 +2,12 @@
 namespace App\Http\Controllers\Internal\Coupons;
 
 use App\Classes\AuthenticationHelper;
+use App\Classes\CCVApi\CCVApi;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Exceptions\Internal\Coupons\UnableToCreateExternalCouponException;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessToken;
+use App\Models\Handshake;
 use BonSDK\Classes\BonSDKGID;
 use BonSDK\SDKIngest\Traits\ApiResponder;
 use Carbon\Carbon;
@@ -19,6 +21,12 @@ class CouponController extends Controller {
 
     use ApiResponder;
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|Response|\Laravel\Lumen\Http\ResponseFactory
+     * @throws UnableToCreateExternalCouponException
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function create(Request $request) {
 
         $this->validate($request, [
@@ -35,38 +43,39 @@ class CouponController extends Controller {
 
         try {
 
-            $usageLimit = 1;
+            $calculatedDiscount = $request->amount;
 
-            if(isset($request->usage_limit)) {
-                $usageLimit = $request->usage_limit;
+            if($request->type == 'percentage') {
+                $calculatedDiscount = $request->amount*100;
             }
+
+            if($request->type == 'percentage') {
+                $discountTypeName = 'Procent';
+            } else {
+                $discountTypeName = 'Price';
+            }
+
+
+            $discountParams = [
+                'code'              => $request->code,
+                'discount'          => $calculatedDiscount,
+                'type'              => $discountTypeName,
+                'minimumprice'      => $request->minimum_amount,
+                'begindate'         => Carbon::parse($request->valid_from)->format('Y-m-d'),
+                'enddate'           => Carbon::parse($request->valid_till)->format('Y-m-d'),
+                'givesfreeshippin'  => false,
+                'onetimeuse'        => true,
+            ];
 
             $bonGID = (new BonSDKGID())->decode($request->connected_gid);
 
-            $businessDetails = BusinessToken::where('business_uuid', $bonGID->getBusinessUUID())->first();
+            $apiUser = Handshake::where('business_uuid', $bonGID->getBusinessUUID())->first();
 
-            $apiCredentials = AuthenticationHelper::getAPICredentials($businessDetails->external_identifier);
-
-            $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
-
-            if($request->type == 'percentage') {
-                $request->amount = $request->amount*100;
-            }
-
-            $discountParams = [
-                'isActive'          => (bool) $request->is_active,
-                'code'              => $request->code,
-                'minimumAmount'     => $request->minimum_amount,
-                'startDate'         => Carbon::parse($request->valid_from)->format('Y-m-d'),
-                'endDate'           => Carbon::parse($request->valid_till)->format('Y-m-d'),
-                'discount'          => $request->amount,
-                'type'              => $request->type,
-                'usageLimit'        => $usageLimit
-            ];
+            $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
 
             Log::info('Creating the external coupon with params: ' , $discountParams);
 
-            $coupon = $webshopAppClient->discounts->create($discountParams);
+            $coupon = $ccvClient->discountcoupons->create($discountParams);
 
             return $this->successResponse($coupon, Response::HTTP_CREATED);
 
@@ -85,7 +94,6 @@ class CouponController extends Controller {
      * @param string $businessUUID
      * @param string $couponId
      * @param Request $request
-     * @return void
      */
     public function delete(string $businessUUID, string $couponId, Request $request) {
 
@@ -97,14 +105,13 @@ class CouponController extends Controller {
             'coupon_id'         => 'required|string'
         ]);
 
-        $businessDetails = BusinessToken::where('business_uuid', $request->business_uuid)->first();
+        $apiUser = Handshake::where('business_uuid', $request->business_uuid)->first();
 
-        $apiCredentials = AuthenticationHelper::getAPICredentials($businessDetails->external_identifier);
+        $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
 
-        $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
+        $ccvClient->discountcoupons->delete($request->coupon_id);
 
-        $webshopAppClient->discounts->delete($request->coupon_id);
-
+        return $this->successResponse('COUPON_DELETED', Response::HTTP_NO_CONTENT);
     }
 
 }

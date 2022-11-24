@@ -2,7 +2,9 @@
 namespace App\Classes\CCVApi;
 
 use App\Classes\CCVApi\Resources\Apps;
+use App\Classes\CCVApi\Resources\DiscountCoupons;
 use App\Classes\CCVApi\Resources\Domains;
+use App\Classes\CCVApi\Resources\Languages;
 use App\Classes\CCVApi\Resources\Merchant;
 use App\Classes\CCVApi\Resources\OrderRows;
 use App\Classes\CCVApi\Resources\Orders;
@@ -15,6 +17,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use function PHPUnit\Framework\returnValue;
 
 class CCVApi {
 
@@ -63,12 +66,14 @@ class CCVApi {
     private function registerResources()
     {
         $this->apps             = new Apps($this);
+        $this->discountcoupons  = new DiscountCoupons($this);
         $this->domains          = new Domains($this);
+        $this->languages        = new Languages($this);
+        $this->merchant         = new Merchant($this);
         $this->orders           = new Orders($this);
         $this->orderRows        = new OrderRows($this);
         $this->products         = new Products($this);
         $this->productPhotos    = new ProductPhotos($this);
-        $this->merchant         = new Merchant($this);
         $this->webhooks         = new Webhooks($this);
         $this->webshops         = new Webshops($this);
 
@@ -186,7 +191,7 @@ class CCVApi {
     /**
      * @param $array
      */
-    protected function getQueryParams($array = []) {
+    public function getQueryParams($array = []) {
 
         if($this->pageNumber > 0) {
             $array['start'] = $this->pageNumber*self::PAGE_SIZE;
@@ -202,6 +207,10 @@ class CCVApi {
         $this->queryParams = array_merge($array, $this->queryParams);
 
         return $this->queryParams;
+    }
+
+    public function convertQueryParams(array $params = [] ) : string {
+        return '?' . $this->getQueryParams($params);
     }
 
 }
