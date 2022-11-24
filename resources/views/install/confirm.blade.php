@@ -50,6 +50,13 @@
             left: 20px;
             box-shadow: -2px 4px 3px rgba(0,0,0,0.05);
         }
+        .badge {
+            background-color: #e9665b;
+            color: white;
+            padding: 4px 8px;
+            text-align: center;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body>
@@ -76,7 +83,7 @@
                         </div>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('finalizeInstall', ['apiLocale' => request()->get('apiLocale')]) }}" id="shopnumber-form">
+                <form method="POST" action="{{ route('finalizeInstall', ['language' => $language, 'api_public' => $api_public]) }}" id="shopnumber-form">
                     <div class="card" style="border-radius: 10px;">
                         <div class="card-content is-shadowless border-rounded" style="border-radius: 10px;">
                              <div class="content">
@@ -126,12 +133,12 @@
                                     </svg>
                                     {{ __('pre_install.contract.3rd_purchase') }}
                                 </p>
-                                {{--<p>
+                                <p>
                                     <svg style="width:12px;height:12px" viewBox="0 0 24 24">
                                         <path fill="#0EAE86" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" />
                                     </svg>
                                     {{ __('pre_install.contract.fixed_fee') }}
-                                </p>--}}
+                                </p>
                                 <p class="small">{{ __('pre_install.contract.vat_notice') }}</p>
                                 <span class="has-text-centered">
                                     <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />

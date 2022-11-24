@@ -6,19 +6,20 @@ $router->get('/', function() {
     return redirect('https://www.getbonhq.eu');
 });
 
+//Accept the handshake
+$router->get('/handshake', 'Install\HandshakeController@accept');
+$router->post('/handshake', 'Install\HandshakeController@accept');
+
+
+//Show the shopId form
+$router->get('/install', ['as' => 'confirmInstall', 'uses' => 'Install\InstallController@confirm']);
+$router->post('/install/finalize', ['as' => 'finalizeInstall', 'uses' => 'Install\InstallController@finalize']);
+
+
 $router->group([
     'prefix' => '{apiLocale}',
     'where' => ['locale' => '[a-zA-Z]{2}'],
 ], function ($apiLocale) use ($router) {
-
-    //Accept the handshake
-    $router->get('/handshake', 'Install\HandshakeController@accept');
-    $router->post('/handshake', 'Install\HandshakeController@accept');
-
-
-    //Show the shopId form
-    $router->get('/install', ['as' => 'confirmInstall', 'uses' => 'Install\InstallController@confirm']);
-    $router->post('/install/finalize', ['as' => 'finalizeInstall', 'uses' => 'Install\InstallController@finalize']);
 
     $router->get('/time', 'TimeController@get');
 

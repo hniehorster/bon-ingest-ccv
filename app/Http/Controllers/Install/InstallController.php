@@ -12,9 +12,11 @@ use BonSDK\SDKIngest\Services\Businesses\BusinessAuthService;
 use BonSDK\SDKIngest\Services\Businesses\BusinessService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
+use Laravel\Lumen\Routing\Controller as BaseController;
 
-class InstallController extends Controller {
+class InstallController extends BaseController {
 
     /**
      * @param Request $request
@@ -28,6 +30,8 @@ class InstallController extends Controller {
      *
      */
     public function finalize(Request $request) {
+
+        App::setLocale($request->langauge);
 
         $apiKey = $request->api_public;
 
@@ -141,6 +145,8 @@ class InstallController extends Controller {
      * @param Request $request
      */
     public function confirm(Request $request) {
+
+        App::setLocale($request->language);
 
         return view('install.confirm', [
             'api_public' => $request->api_public,
