@@ -5,6 +5,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Handshake;
 use App\Models\ManualLinkToken;
 use BonSDK\ApiIngest\BonIngestAPI;
+use BonSDK\SDKIngest\Services\Businesses\BusinessAdminService;
+use BonSDK\SDKIngest\Services\Businesses\BusinessService;
 use BonSDK\SDKIngest\Services\Communications\AuthPlatformSelectedService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -58,18 +60,17 @@ class ConnectController extends Controller {
             $adminData = [
                 'business_uuid' => $tokenCheck->business_uuid,
                 'user_uuid'     => $tokenCheck->business_uuid,
-                'is_owner'      => true
+                'is_owner'      => true,
+                'is_active'     => true
             ];
 
             $apiUser = Handshake::where('business_uuid', $tokenCheck->business_uuid)->first();
 
             dump($apiUser);
 
-            $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
+            $businessAdmin = (new BusinessAdminService())->createBusinessAdmin('en', $adminData);
 
-            dump($bonApi);
-
-            $bonApi->businessesAdmins->create($adminData);
+            dump($businessAdmin);
 
             $socket = (new AuthPlatformSelectedService())->confirmAuthPlatformSelected('en', $request->user_uuid);
 
