@@ -59,7 +59,7 @@ class ConnectController extends Controller {
             //Create the Admin
             $adminData = [
                 'business_uuid' => $tokenCheck->business_uuid,
-                'user_uuid'     => $tokenCheck->business_uuid,
+                'user_uuid'     => $request->user_uuid,
                 'is_owner'      => true,
                 'is_active'     => true
             ];
