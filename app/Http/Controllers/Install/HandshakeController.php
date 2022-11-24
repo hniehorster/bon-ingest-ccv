@@ -1,15 +1,13 @@
 <?php
 namespace App\Http\Controllers\Install;
 
-use App\Http\Controllers\Controller;
 use App\Models\Handshake;
 use Exception;
-use http\Client\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
+use Laravel\Lumen\Routing\Controller as BaseController;
 
-class HandshakeController extends Controller {
+class HandshakeController extends BaseController {
 
     /**
      * @param Request $request
