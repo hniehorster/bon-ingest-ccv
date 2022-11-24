@@ -93,22 +93,22 @@
                             <span class="has-text-centered">
                                 <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
                             </span>
-                            <p>
+                            <p style="margin:10px 0px">
                                 <span class="badge">1</span> {!! __('post_install.connect.step_1') !!} <br />
                             </p>
-                            <p>
+                            <p style="margin:10px 0px">
                                 <span class="badge">2</span> {!! __('post_install.connect.step_2') !!} <br />
                             </p>
-                            <p>
+                            <p style="margin:10px 0px">
                                 <span class="badge">3</span> {!! __('post_install.connect.step_3') !!} <br />
                             </p>
-                            <p>
+                            <p style="margin:10px 0px">
                                 <span class="badge">4</span> {!! __('post_install.connect.step_4') !!} <br />
                             </p>
-                            <p>
+                            <p style="margin:10px 0px">
                                 <span class="badge">5</span> {!! __('post_install.connect.step_5') !!} <br />
                             </p>
-                            <p>
+                            <p style="margin:10px 0px">
                                 <span class="badge">6</span> {!! __('post_install.connect.step_6') !!} <br />
                             </p>
                             <span class="has-text-centered">
@@ -123,6 +123,7 @@
                             <div class="codes has-text-centered" style="margin-top: 15px;">
                                 <div class="field">
                                     <div class="control">
+                                        <p style="margin-bottom: 5px"><strong>{{ __('post_install.connect.codes_reference') }}</strong></p>
                                         <input class="input" type="text" name="token_1" size="4" style="width:auto !important; text-align:center;" value="{{ $manualToken->token_1 }}" /> - <input class="input" type="text" name="token_2" size="4" style="width:auto !important; text-align: center;" value="{{ $manualToken->token_2 }}" />
                                     </div>
                                 </div>

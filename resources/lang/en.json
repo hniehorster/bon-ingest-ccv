@@ -22,6 +22,7 @@
     "post_install.connect.step_4" : "Create an account",
     "post_install.connect.step_5" : "Select the CCV platform",
     "post_install.connect.step_6" : "Use to connect codes below to connect your account",
+    "post_install.connect.codes_reference" : "Note down the following Linking Codes",
 
     "connect_header_step_1" : "Install the app in the CCV App Store",
     "connect_step_1" : "Login to the CCV Backoffice",

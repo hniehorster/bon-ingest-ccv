@@ -22,6 +22,7 @@
     "post_install.connect.step_4" : "Maak een account",
     "post_install.connect.step_5" : "Selecteer het CCV platform",
     "post_install.connect.step_6" : "Gebruik onderstaande codes je account te koppelen",
+    "post_install.connect.codes_reference" : "Schrijf de volgende codes op",
 
     "connect_header_step_1" : "Installeer the Bon App in de CCV webwinkel",
     "connect_step_1" : "Login in je CCV Onderhoudstool",
