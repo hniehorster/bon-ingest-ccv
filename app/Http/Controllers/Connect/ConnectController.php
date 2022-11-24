@@ -52,8 +52,6 @@ class ConnectController extends Controller {
             'token_2' => $request->token_2,
         ])->firstOrFail();
 
-        dump($tokenCheck);
-
         if($tokenCheck) {
 
             //Create the Admin
@@ -66,17 +64,13 @@ class ConnectController extends Controller {
 
             $apiUser = Handshake::where('business_uuid', $tokenCheck->business_uuid)->first();
 
-            dump($apiUser);
-
             $businessAdmin = (new BusinessAdminService())->createBusinessAdmin('en', $adminData);
-
-            dump($businessAdmin);
 
             $socket = (new AuthPlatformSelectedService())->confirmAuthPlatformSelected('en', $request->user_uuid);
 
             $tokenCheck->delete();
 
-            return response("Success!");
+            return view('connect.success');
 
         } else {
             return view('connect.show', ['error', 'NO_TOKEN_FOUND']);
