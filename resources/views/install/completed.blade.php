@@ -82,22 +82,35 @@
                 <div class="card" style="border-radius: 10px;">
                     <div class="card-content is-shadowless border-rounded" style="border-radius: 10px;">
                         <div class="content">
-                            <strong>{{ __('pre_install.contract.header') }}</strong>
+                            <strong>{{ __('post_install.connect.header') }}</strong>
                             <span class="has-text-centered">
                                 <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
                             </span>
-
+                            <p>
+                                <span class="badge">1</span> {!! __('post_install.connect.step_1') !!} <br />
+                            </p>
+                            <p>
+                                <span class="badge">2</span> {!! __('post_install.connect.step_2') !!} <br />
+                            </p>
+                            <p>
+                                <span class="badge">3</span> {!! __('post_install.connect.step_3') !!} <br />
+                            </p>
+                            <p>
+                                <span class="badge">4</span> {!! __('post_install.connect.step_4') !!} <br />
+                            </p>
+                            <p>
+                                <span class="badge">5</span> {!! __('post_install.connect.step_5') !!} <br />
+                            </p>
+                            <p>
+                                <span class="badge">6</span> {!! __('post_install.connect.step_6') !!} <br />
+                            </p>
                             <div class="qr-code">
                                 <img src="data:image/png;base64, {!! base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(250)->generate('https://bonmerchant.page.link/merchant_download')) !!} ">
                             </div>
                             <div class="codes">
-                                <form>
-                                    <input type="text" size="4" value="XSRF" /> - <input type="text" size="4" value="ASDD" />
-                                </form>
-
                                 <div class="field">
                                     <div class="control">
-                                        <input class="input" type="text" name="shop_number" size="4" style="width:auto !important;" value="ASDD" /> - <input class="input" type="text" name="shop_number" size="4" style="width:auto !important;" value="XSRF" />
+                                        <input class="input" type="text" name="token_1" size="4" style="width:auto !important;" value="{{ $manualToken->token_1 }}" /> - <input class="input" type="text" name="token_2" size="4" style="width:auto !important;" value="{{ $manualToken->token_2 }}" />
                                     </div>
                                 </div>
                             </div>

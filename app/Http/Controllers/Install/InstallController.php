@@ -15,9 +15,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class InstallController extends Controller {
-
-    const API_KEY = 'R^atJ4JC2bhQKLi36uekMZAPAfN^547J';
-
+    
     /**
      * @param Request $request
      * @return \Illuminate\View\View|\Laravel\Lumen\Application
@@ -36,8 +34,6 @@ class InstallController extends Controller {
         $apiUser = Handshake::where('api_public', $apiKey)->first();
         $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
         $installHelper = new InstallHelper();
-
-        echo "<pre>" . json_encode($apiUser, JSON_PRETTY_PRINT) . "</pre>";
 
         $appApproval = $ccvClient->apps->update(env('CCV_APP_ID'), ['is_installed' => true]);
 
@@ -81,8 +77,6 @@ class InstallController extends Controller {
             $newAccount = json_decode((new AccountService())->createAccount('en', $accountDetails));
             $GID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'business', $newAccount->uuid, $webshopId)->getGID();
 
-            dump($domainInfo->items[0]);
-
             $businessData = [
                 'account_uuid'      => $newAccount->uuid,
                 'gid'               => $GID,
@@ -111,13 +105,9 @@ class InstallController extends Controller {
 
             $businessAuth = json_decode((new BusinessAuthService())->createBusinessAuth($businessData['default_locale'], $businessAuthData));
 
-            dump($businessAuth);
-
             $apiUser->internal_api_key      = $businessAuth->api_key;
             $apiUser->internal_api_secret   = $businessAuth->api_secret;
             $apiUser->save();
-
-            dump($newBusiness);
 
             $businessUUID = $newBusiness->uuid;
 

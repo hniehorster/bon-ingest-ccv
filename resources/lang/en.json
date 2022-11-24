@@ -15,6 +15,14 @@
     "pre_install.contract.terms": "I agree to the above and have read and understood the <a href=\"https://www.getbonhq.com/terms-and-conditions/\">terms and conditions</a> and <a href=\"https://www.getbonhq.com/privacy-policy/\">privacy disclaimer</a>.",
     "pre_install.contract.submit": "Confirm",
 
+    "post_install.connect.header" : "Your store has been connected to Bon! Follow the instructions below to connect your App.",
+    "post_install.connect.step_1" : "Grab your mobile device",
+    "post_install.connect.step_2" : "Scan the QR code with your camera App",
+    "post_install.connect.step_3" : "Download the <i>Bon Merchant: Connect and Growth</i> app to your mobile device",
+    "post_install.connect.step_4" : "Create an account",
+    "post_install.connect.step_5" : "Select the CCV platform",
+    "post_install.connect.step_6" : "Use to connect codes below to connect your account",
+
     "post_install.description" : "Your store has been linked successfully! <br /> We will redirect you to your dashboard. <br /> If this screen doesn't close automatically quit/close the app and reopen it.",
     "post_install.success" : "Yes! Your store is ready to go"
 

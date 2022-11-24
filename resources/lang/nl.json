@@ -15,6 +15,14 @@
     "pre_install.contract.terms": "Ik ga akkoord met bovenstaande en heb de <a href=\"https://www.getbonhq.com/terms-and-conditions/\">algemene voorwaarden</a> en de <a href=\"https://www.getbonhq.com/privacy-policy/\">privacy voorwaarden</a> gelezen.",
     "pre_install.contract.submit": "Bevestig",
 
+    "post_install.connect.header" : "De Bon App is geïnstalleerd! Volg de instructies om je account af te ronden.",
+    "post_install.connect.step_1" : "Pak je mobiele telefoon",
+    "post_install.connect.step_2" : "Scan de QR-code met de App van je telefoon",
+    "post_install.connect.step_3" : "Download de <i>Bon Merchant: Connect and Growth</i> app op je mobiele telefoon",
+    "post_install.connect.step_4" : "Maak een account",
+    "post_install.connect.step_5" : "Selecteer het CCV platform",
+    "post_install.connect.step_6" : "Gebruik onderstaande codes je account te koppelen",
+
     "post_install.description" : "Je winkel is succesvol gekoppeld! <br /> We dashboard is elk moment zichtbaar. <br /> Als dit scherm niet automatisch sluit, sluit/sluit dan de app en open deze opnieuw",
     "post_install.success" : "Hoppa, je winkel is gekoppeld!"
 }
