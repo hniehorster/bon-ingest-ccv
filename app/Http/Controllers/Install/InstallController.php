@@ -104,11 +104,15 @@ class InstallController extends BaseController {
 
             $newBusiness = json_decode((new BusinessService())->createBusiness($domainInfo->items[0]->language, $businessData));
 
+            dump($newBusiness);
+
             $businessAuthData['business_uuid']  = $newBusiness->uuid;
             $businessAuthData['type']           = "internal";
             $businessAuthData['description']    = "ccv-ingest";
 
-            $businessAuth = json_decode((new BusinessAuthService())->createBusinessAuth($businessData['default_locale'], $businessAuthData));
+            $businessAuth = json_decode((new BusinessAuthService())->createBusinessAuth('en', $businessAuthData));
+
+            dump($businessAuth);
 
             $apiUser->internal_api_key      = $businessAuth->api_key;
             $apiUser->internal_api_secret   = $businessAuth->api_secret;
