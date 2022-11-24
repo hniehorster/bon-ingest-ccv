@@ -23,6 +23,16 @@
     "post_install.connect.step_5" : "Selecteer het CCV platform",
     "post_install.connect.step_6" : "Gebruik onderstaande codes je account te koppelen",
 
+    "connect_header_step_1" : "Installeer the Bon App in de CCV webwinkel",
+    "connect_step_1" : "Login in je CCV Onderhoudstool",
+    "connect_step_2" : "Ga naar de App Store",
+    "connect_step_3" : "Zoek naar Bon (orange icon app)",
+    "connect_step_4" : "Klik op installeer",
+    "connect_step_5" : "Volg de instructies totdat je de \"Linking Codes\" ziet",
+    "connect_header_step_2" : "Verbind je webwinkel middels de \"Linking Codes\"",
+    "connect_header_step_3" : "Klik bevestig om je account te koppelen",
+    "connect.submit" : "Bevestig",
+
     "post_install.description" : "Je winkel is succesvol gekoppeld! <br /> We dashboard is elk moment zichtbaar. <br /> Als dit scherm niet automatisch sluit, sluit/sluit dan de app en open deze opnieuw",
     "post_install.success" : "Hoppa, je winkel is gekoppeld!"
 }

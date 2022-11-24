@@ -15,7 +15,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class InstallController extends Controller {
-    
+
     /**
      * @param Request $request
      * @return \Illuminate\View\View|\Laravel\Lumen\Application

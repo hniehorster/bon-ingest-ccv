@@ -23,6 +23,16 @@
     "post_install.connect.step_5" : "Select the CCV platform",
     "post_install.connect.step_6" : "Use to connect codes below to connect your account",
 
+    "connect_header_step_1" : "Install the app in the CCV App Store",
+    "connect_step_1" : "Login to the CCV Backoffice",
+    "connect_step_2" : "Go to App Store",
+    "connect_step_3" : "Search for Bon (orange icon app)",
+    "connect_step_4" : "Click on install",
+    "connect_step_5" : "Follow the instructions until you see the manual linking codes",
+    "connect_header_step_2" : "Connect your store with the manual linking codes",
+    "connect_header_step_3" : "Click confirm to connect your account",
+    "connect.submit" : "Confirm",
+
     "post_install.description" : "Your store has been linked successfully! <br /> We will redirect you to your dashboard. <br /> If this screen doesn't close automatically quit/close the app and reopen it.",
     "post_install.success" : "Yes! Your store is ready to go"
 

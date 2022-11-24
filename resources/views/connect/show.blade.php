@@ -89,20 +89,20 @@
                                 </span>
 
                                 <p>
-                                    <span class="badge">1</span> Install the app in the CCV App Store<br />
+                                    <span class="badge">1</span> {!! __('connect_header_step_1') !!} <br />
                                 </p>
                                 <p style="margin-left: 25px;">
-                                    1. Log to the CCV Backoffice<br />
-                                    2. Go to app store<br />
-                                    3. Search for Bon (orange icon app)<br />
-                                    4. Click on install<br />
-                                    5. Follow the instructions until you see the manual linking codes<br />
+                                    1. {!! __('connect_step_1') !!} <br />
+                                    2. {!! __('connect_step_2') !!}<br />
+                                    3. {!! __('connect_step_3') !!}<br />
+                                    4. {!! __('connect_step_4') !!}<br />
+                                    5. {!! __('connect_step_5') !!}<br />
                                 </p>
                                 <span class="has-text-centered">
                                     <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
                                 </span>
                                 <p>
-                                    <span class="badge">2</span> Connect your store with the manual linking codes<br />
+                                    <span class="badge">2</span> {!! __('connect_header_step_2') !!}<br />
                                 </p>
                                 <div class="field" style="margin-top:15px">
                                     <div class="control has-text-centered">
@@ -113,14 +113,14 @@
                                     <hr width="95%" style="background-color: transparent !important; margin:15px auto; border-top: 3px solid #2A3140;" />
                                 </span>
                                 <p>
-                                    <span class="badge">3</span> Click confirm to connect your account<br />
+                                    <span class="badge">3</span> {!! __('connect_header_step_3') !!}<br />
                                 </p>
                             </div>
                         </div>
                     </div>
                     <div class="card" style="background-color: transparent !important;">
                         <div class="card-content is-shadowless border-rounded" style="background-color: transparent !important;">
-                            <button type="submit" form="shopnumber" value="submit" class="button is-primary has-text-weight-bold">{{ __('pre_install.submit') }}</button>
+                            <button type="submit" form="shopnumber" value="submit" class="button is-primary has-text-weight-bold">{{ __('connect.submit') }}</button>
                         </div>
                     </div>
                 </form>
