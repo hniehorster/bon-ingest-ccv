@@ -7,6 +7,7 @@ use App\Models\ManualLinkToken;
 use BonSDK\ApiIngest\BonIngestAPI;
 use BonSDK\SDKIngest\Services\Communications\AuthPlatformSelectedService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class ConnectController extends Controller {
 
@@ -24,7 +25,8 @@ class ConnectController extends Controller {
         $this->validate($request, $rules);
 
         return view('connect.show', [
-            'user_uuid' => $request->user_uuid
+            'user_uuid' => $request->user_uuid,
+            'apiLocale' => App::getLocale()
         ]);
     }
 
