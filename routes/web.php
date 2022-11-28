@@ -11,9 +11,9 @@ $router->get('/handshake', 'Install\HandshakeController@accept');
 $router->post('/handshake', 'Install\HandshakeController@accept');
 
 
-//Show the shopId form
 $router->get('/install', ['as' => 'confirmInstall', 'uses' => 'Install\InstallController@confirm']);
 $router->post('/install/finalize', ['as' => 'finalizeInstall', 'uses' => 'Install\InstallController@finalize']);
+$router->post('/uninstall', ['as' => 'uninstallStore', 'uses' => 'Uninstall\UninstallController@uninstall']);
 
 
 $router->group([

@@ -1010,12 +1010,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:hniehorster/bon-sdk-ingest.git",
-                "reference": "33b68aa7762760c4079e03f213677e5fe26eff43"
+                "reference": "135e664fb0820d56c0462f92b4ebd478393bae32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hniehorster/bon-sdk-ingest/zipball/33b68aa7762760c4079e03f213677e5fe26eff43",
-                "reference": "33b68aa7762760c4079e03f213677e5fe26eff43",
+                "url": "https://api.github.com/repos/hniehorster/bon-sdk-ingest/zipball/135e664fb0820d56c0462f92b4ebd478393bae32",
+                "reference": "135e664fb0820d56c0462f92b4ebd478393bae32",
                 "shasum": ""
             },
             "require": {
@@ -1045,7 +1045,7 @@
                 "source": "https://github.com/hniehorster/bon-sdk-ingest/tree/master",
                 "issues": "https://github.com/hniehorster/bon-sdk-ingest/issues"
             },
-            "time": "2022-11-16T14:14:17+00:00"
+            "time": "2022-11-28T10:07:51+00:00"
         },
         {
             "name": "http-interop/http-factory-guzzle",
