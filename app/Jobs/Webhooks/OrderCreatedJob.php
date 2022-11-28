@@ -2,11 +2,8 @@
 
 namespace App\Jobs\Webhooks;
 
-use App\Classes\AuthenticationHelper;
 use App\Classes\CCVApi\CCVApi;
-use App\Classes\DataHelper;
 use App\Classes\QueueHelperClass;
-use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Jobs\Job;
 use App\Models\Handshake;
 use App\Transformers\Transformer;
@@ -16,6 +13,7 @@ use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 
 class OrderCreatedJob extends Job implements ShouldQueue
 {
@@ -53,9 +51,6 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
             if (in_array($orderDetails->status, [5, 6, 7])) {
                 $transformedOrder['shipment_status'] = 'shipped';
-
-                //Create the shipment for this order.
-                //TODO: Create the shipment
             }
 
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
@@ -171,6 +166,19 @@ class OrderCreatedJob extends Job implements ShouldQueue
                         $this->release(QueueHelperClass::getNearestTimeRoundedUp(1, true));
                         Log::info('RELEASED BACK TO QUEUE');
                     }
+                }
+            }
+
+            if($transformedOrder['shipment_status'] == 'shipped') {
+
+                $shopCreatedAt = Carbon::parse($transformedOrder['shop_created_at']);
+
+                if($shopCreatedAt->diff(Carbon::now())->days < 15){
+                    //Post Shipment Request
+
+                    $transformedOrder['previous_status'] = 1;
+                    $transformedOrder['status'] = 5;
+                    Queue::later(QueueHelperClass::getNearestTimeRoundedUp(5, true), new OrderStatusChangedJob($this->externalOrderId, $this->externalIdentifier, $transformedOrder), null, $this->queueName);
                 }
             }
 
