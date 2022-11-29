@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Install;
+namespace App\Http\Controllers\Uninstall;
 
 use App\Models\Handshake;
 use BonSDK\SDKIngest\Services\Businesses\BusinessUninstallService;
