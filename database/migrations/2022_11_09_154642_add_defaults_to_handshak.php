@@ -14,7 +14,6 @@ class AddDefaultsToHandshak extends Migration
     public function up()
     {
         Schema::table('handshakes', function (Blueprint $table) {
-            $table->text('external_identifier')->after('hash')->nullable();
             $table->text('language', 2)->after('external_identifier')->nullable();
             $table->text('defaults')->after('return_url')->nullable();
             $table->text('internal_api_key')->after('defaults')->nullable();
