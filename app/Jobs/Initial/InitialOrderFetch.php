@@ -4,7 +4,7 @@ namespace App\Jobs\Initial;
 
 use App\Classes\CCVApi\CCVApi;
 use App\Jobs\Job;
-use App\Jobs\Webhooks\OrderCreatedJob;
+use App\Jobs\Webhooks\Orders\OrderCreatedJob;
 use App\Models\Handshake;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
