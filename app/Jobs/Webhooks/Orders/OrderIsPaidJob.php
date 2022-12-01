@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Webhooks;
+namespace App\Jobs\Webhooks\Orders;
 
 use App\Classes\QueueHelperClass;
 use App\Jobs\Job;

@@ -1,18 +1,17 @@
 <?php
-namespace App\Http\Controllers\Webhooks;
+namespace App\Http\Controllers\Webhooks\Orders;
 
 use App\Classes\WebhookRequestHelperClass;
-use App\Http\Controllers\Controller;
-use App\Jobs\Webhooks\OrderCreatedJob;
-use App\Jobs\Webhooks\OrderIsPaidJob;
-use App\Jobs\Webhooks\OrderStatusChangedJob;
-use App\Jobs\Webhooks\OrderTrackAndTraceJob;
+use App\Jobs\Webhooks\Orders\OrderCreatedJob;
+use App\Jobs\Webhooks\Orders\OrderIsPaidJob;
+use App\Jobs\Webhooks\Orders\OrderStatusChangedJob;
+use App\Jobs\Webhooks\Orders\OrderTrackAndTraceJob;
 use BonSDK\SDKIngest\Traits\ApiResponder;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 
-class WebhookController extends BaseController
+class OrdersWebhookController extends BaseController
 {
     use ApiResponder;
 
@@ -25,7 +24,7 @@ class WebhookController extends BaseController
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
 
-        dispatch(new OrderCreatedJob($queueData->content['id'], $request->shopId, $queueData->content))->onQueue('direct');
+        dispatch(new OrderCreatedJob($queueData->content['id'], $shopId, $queueData->content))->onQueue('direct');
 
     }
 
@@ -38,7 +37,7 @@ class WebhookController extends BaseController
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
 
-        dispatch(new OrderIsPaidJob($queueData->content['id'], $request->shopId, $queueData->content))->onQueue('direct');
+        dispatch(new OrderIsPaidJob($queueData->content['id'], $shopId, $queueData->content))->onQueue('direct');
     }
 
     /**
@@ -49,7 +48,7 @@ class WebhookController extends BaseController
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
 
-        dispatch(new OrderStatusChangedJob($queueData->content['id'], $request->shopId, $queueData->content))->onQueue('direct');
+        dispatch(new OrderStatusChangedJob($queueData->content['id'], $shopId, $queueData->content))->onQueue('direct');
     }
 
     /**
@@ -60,6 +59,6 @@ class WebhookController extends BaseController
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
 
-        dispatch(new OrderTrackAndTraceJob($queueData->content['id'], $request->shopId, $queueData->content))->onQueue('direct');
+        dispatch(new OrderTrackAndTraceJob($queueData->content['id'], $shopId, $queueData->content))->onQueue('direct');
     }
 }

@@ -56,8 +56,19 @@ $router->group([
 
 });
 
-$router->post('/webhooks/orders/created/{shopId}', ['as' => 'orderCreatedWebhook', 'uses' => 'Webhooks\WebhookController@orderCreated']);
-$router->post('/webhooks/orders/is_paid/{shopId}', ['as' => 'orderIsPaidWebhook', 'uses' => 'Webhooks\WebhookController@orderIsPaid']);
-$router->post('/webhooks/orders/status_change/{shopId}', ['as' => 'orderStatusChangedWebhook', 'uses' => 'Webhooks\WebhookController@orderStatusChanged']);
-$router->post('/webhooks/orders/track_and_trace/{shopId}', ['as' => 'orderTrackAndTraceWebhook', 'uses' => 'Webhooks\WebhookController@orderTrackAndTrace']);
+$router->post('/webhooks/orders/created/{shopId}', ['as' => 'orderCreatedWebhook', 'uses' => 'Webhooks\Orders\OrdersWebhookController@orderCreated']);
+$router->post('/webhooks/orders/is_paid/{shopId}', ['as' => 'orderIsPaidWebhook', 'uses' => 'Webhooks\Orders\OrdersWebhookController@orderIsPaid']);
+$router->post('/webhooks/orders/status_change/{shopId}', ['as' => 'orderStatusChangedWebhook', 'uses' => 'Webhooks\Orders\OrdersWebhookController@orderStatusChanged']);
+$router->post('/webhooks/orders/track_and_trace/{shopId}', ['as' => 'orderTrackAndTraceWebhook', 'uses' => 'Webhooks\Orders\OrdersWebhookController@orderTrackAndTrace']);
 
+$router->post('/webhooks/products/created/{shopId}', ['as' => 'productCreatedWebhook', 'uses' => 'Webhooks\Products\ProductsWebhookController@productCreated']);
+$router->post('/webhooks/products/updated/{shopId}', ['as' => 'productUpdatedWebhook', 'uses' => 'Webhooks\Products\ProductsWebhookController@productUpdated']);
+$router->post('/webhooks/products/deleted/{shopId}', ['as' => 'productDeletedWebhook', 'uses' => 'Webhooks\Products\ProductsWebhookController@productDeleted']);
+
+$router->post('/webhooks/categories/created/{shopId}', ['as' => 'categoryCreatedWebhook', 'uses' => 'Webhooks\Categories\CategoriesWebhookController@categoryCreated']);
+$router->post('/webhooks/categories/updated/{shopId}', ['as' => 'categoryUpdatedWebhook', 'uses' => 'Webhooks\Categories\CategoriesWebhookController@categoryUpdated']);
+$router->post('/webhooks/categories/deleted/{shopId}', ['as' => 'categoryDeletedWebhook', 'uses' => 'Webhooks\Categories\CategoriesWebhookController@categoryDeleted']);
+
+$router->post('/webhooks/returns/created/{shopId}', ['as' => 'returnCreatedWebhook', 'uses' => 'Webhooks\Returns\ReturbsWebhookController@returnCreated']);
+$router->post('/webhooks/returns/updated/{shopId}', ['as' => 'returnUpdatedWebhook', 'uses' => 'Webhooks\Returns\ReturbsWebhookController@returnUpdated']);
+$router->post('/webhooks/returns/deleted/{shopId}', ['as' => 'returnDeletedWebhook', 'uses' => 'Webhooks\Returns\ReturbsWebhookController@returnDeleted']);
