@@ -1,5 +1,5 @@
 <?php
-namespace App\Transformers\Language;
+namespace App\Transformers\Account;
 
 use App\Transformers\Transformer;
 

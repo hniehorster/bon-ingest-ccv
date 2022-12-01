@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs\Webhooks\Orders;
+namespace App\Jobs\Webhooks\Returns;
 
 use App\Classes\CCVApi\CCVApi;
 use App\Classes\QueueHelperClass;

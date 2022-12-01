@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Webhooks\Categories;
+namespace App\Http\Controllers\Webhooks\Returns;
 
 use App\Classes\WebhookRequestHelperClass;
 use App\Jobs\Webhooks\Orders\OrderCreatedJob;

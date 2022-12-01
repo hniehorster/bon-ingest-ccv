@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
-class HandshakeController extends BaseController {
+class UninstallController extends BaseController {
 
     /**
      * @param Request $request
