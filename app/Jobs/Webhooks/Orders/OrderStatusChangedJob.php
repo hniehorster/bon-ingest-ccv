@@ -45,7 +45,8 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
         $orderGID    = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
         $shipmentGID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
 
-        $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID]);
+        $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $orderGID, 'business_uuid' => $apiUser->business_uuid]);
+
         Log::info('[BONAPI] GET order ' . $orderGID);
 
         if ($bonOrderCheck->meta->count > 0) {
@@ -53,7 +54,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
             if($this->orderData['status'] == 5) {
                 //Something changed and the order seems to be shipped
                 //check for a shipment
-                $bonShipmentCheck = $bonApi->shipments->get(null, ['gid' => $shipmentGID]);
+                $bonShipmentCheck = $bonApi->shipments->get(null, ['gid' => $shipmentGID, 'business_uuid' => $apiUser->business_uuid]);
                 if ($bonShipmentCheck->meta->count == 0) {
                     //Create the shipment
 
@@ -62,7 +63,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                     $transformedShipment['object_type'] = 'order';
                     $transformedShipment['object_uuid'] = $bonOrderCheck->data[0]->uuid;
 
-                    $bonShipmentsCheck = $bonApi->shipments->get(null, ['gid' => $transformedShipment['gid']]);
+                    $bonShipmentsCheck = $bonApi->shipments->get(null, ['gid' => $transformedShipment['gid'], 'business_uuid' => $apiUser->business_uuid]);
 
                     if ($bonShipmentsCheck->meta->count > 0) {
                         $bonShipment = $bonApi->shipments->update($bonShipmentsCheck->data[0]->uuid, $transformedShipment);
@@ -110,7 +111,7 @@ class OrderStatusChangedJob extends Job implements ShouldQueue
                 }
 
                 //Check for shipment Tracking
-                $bonShipmentTrackingCheck = $bonApi->shipmentTrackings->get(null, ['shipment_uuid' => $bonShipment->uuid]);
+                $bonShipmentTrackingCheck = $bonApi->shipmentTrackings->get(null, ['shipment_uuid' => $bonShipment->uuid, 'business_uuid' => $apiUser->business_uuid]);
 
                 $trackingEnabled = false;
 

@@ -46,7 +46,7 @@ class OrderTrackAndTraceJob extends Job implements ShouldQueue
         $orderGID    = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
         $shipmentGID = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'order', $apiUser->business_uuid, $this->externalOrderId)->getGID();
 
-        $bonOrderCheck      = $bonApi->orders->get(null, ['gid' => $orderGID]);
+        $bonOrderCheck      = $bonApi->orders->get(null, ['gid' => $orderGID, 'business_uuid' => $apiUser->business_uuid]);
 
         if($bonOrderCheck->meta->count > 0) {
 

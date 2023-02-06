@@ -55,7 +55,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
             $bonApi = new BonIngestAPI(env('BON_SERVER'), $apiUser->internal_api_key, $apiUser->internal_api_secret, $apiUser->language);
 
-            $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $transformedOrder['gid']]);
+            $bonOrderCheck = $bonApi->orders->get(null, ['gid' => $transformedOrder['gid'], 'business_uuid' => $apiUser->business_uuid]);
             Log::info('[BONAPI] GET order ' . $transformedOrder['gid']);
 
             if ($bonOrderCheck->meta->count > 0) {
@@ -104,7 +104,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
                             $transformedOrderRow['variant_gid'] = null;
                         }
 
-                        $bonLineItemCheck = $bonApi->orderLineItems->get(null, ['order_uuid' => $bonOrder->uuid, 'line_item_id' => $transformedOrderRow['line_item_id']]);
+                        $bonLineItemCheck = $bonApi->orderLineItems->get(null, ['order_uuid' => $bonOrder->uuid, 'line_item_id' => $transformedOrderRow['line_item_id'], 'business_uuid' => $apiUser->business_uuid]);
                         Log::info('[BONAPI] GET orderLineItems ' . $transformedOrder['gid']);
 
                         if ($bonLineItemCheck->meta->count > 0) {
