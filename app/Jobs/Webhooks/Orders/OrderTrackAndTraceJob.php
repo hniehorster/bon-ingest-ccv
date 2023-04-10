@@ -56,6 +56,8 @@ class OrderTrackAndTraceJob extends Job implements ShouldQueue
 
                 $bonShipmentTrackingCheck = $bonApi->shipmentTrackings->get(null, ['shipment_uuid' => $bonShipmentCheck->data[0]->uuid]);
 
+                Log::info(json_encode($bonShipmentTrackingCheck));
+
                 $trackingEnabled = false;
 
                 if(!empty($orderDetails->track_and_trace_code) && !empty($orderDetails->track_and_trace_carrier)){
@@ -71,9 +73,9 @@ class OrderTrackAndTraceJob extends Job implements ShouldQueue
                 ];
 
                 if ($bonShipmentTrackingCheck->meta->count == 0) {
-                    $bonShipment = $bonApi->shipmentTrackings->update($bonShipmentTrackingCheck->data[0]->uuid, $bonShipmentTrackingData);
-                } else {
                     $bonShipment = $bonApi->shipmentTrackings->create($bonShipmentTrackingData);
+                } else {
+                    $bonShipment = $bonApi->shipmentTrackings->update($bonShipmentTrackingCheck->data[0]->uuid, $bonShipmentTrackingData);
                 }
 
             }else{
