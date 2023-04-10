@@ -1,0 +1,97 @@
+name: bon-ingest-ccv
+domains:
+  - domain: ccv.ingest.getbonhq.eu
+    type: PRIMARY
+region: ams3
+services:
+- environment_slug: php
+  envs:
+    - key: APP_NAME
+      scope: RUN_AND_BUILD_TIME
+      value: BonIngestCCV
+    - key: APP_ENV
+      scope: RUN_AND_BUILD_TIME
+      value: production
+    - key: APP_KEY
+      scope: RUN_AND_BUILD_TIME
+      value: base64:IW0grJqgZYXkOzWt5tUcvaAnYXZrmBPF0Pp6pk54fHQ=
+    - key: APP_DEBUG
+      scope: RUN_AND_BUILD_TIME
+      value: false
+    - key: APP_URL
+      scope: RUN_AND_BUILD_TIME
+      value: https://ccv.ingest.getbonhq.eu
+    - key: APP_TIMEZONE
+      scope: RUN_AND_BUILD_TIME
+      value: UTC
+    - key: LOG_CHANNEL
+      scope: RUN_AND_BUILD_TIME
+      value: stack
+    - key: CACHE_DRIVER
+      scope: RUN_AND_BUILD_TIME
+      value: file
+    - key: QUEUE_CONNECTION
+      scope: RUN_AND_BUILD_TIME
+      value: database
+    - key: INGEST_SECRET
+      scope: RUN_AND_BUILD_TIME
+      value: adas14123423412341234
+    - key: INGEST_BASE_URL
+      scope: RUN_AND_BUILD_TIME
+      value: https://ingest.getbonhq.eu
+    - key: PLATFORM_TEXT
+      scope: RUN_AND_BUILD_TIME
+      value: CCV
+    - key: API_MAX_PAGE_SIZE
+      scope: RUN_AND_BUILD_TIME
+      value: 250
+    - key: BON_SERVER
+      scope: RUN_AND_BUILD_TIME
+      value: staging
+    - key: DATABASE_URL
+      scope: RUN_AND_BUILD_TIME
+      value: ${bon-dev-main-db.DATABASE_URL}
+    - key: DB_HOST
+      scope: RUN_AND_BUILD_TIME
+      value: ${bon-dev-main-db.HOSTNAME}
+    - key: DB_PORT
+      scope: RUN_AND_BUILD_TIME
+      value: ${bon-dev-main-db.PORT}
+    - key: DB_DATABASE
+      scope: RUN_AND_BUILD_TIME
+      value: ${bon-dev-main-db.DATABASE}
+    - key: DB_USERNAME
+      scope: RUN_AND_BUILD_TIME
+      value: ${bon-dev-main-db.USERNAME}
+    - key: DB_PASSWORD
+      scope: RUN_AND_BUILD_TIME
+      value: ${bon-dev-main-db.PASSWORD}
+    - key: COMPOSER_AUTH
+      scope: RUN_AND_BUILD_TIME
+      value: {"http-basic": { "github.com": { "username": "hniehorster", "password": "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" } }}
+
+  github:
+    branch: master
+    deploy_on_push: true
+    repo: hniehorster/bon-ingest-ccv
+  http_port: 80
+  instance_count: 1
+  instance_size_slug: professional-xs
+  build_command: composer install
+  run_command: php artisan migrate --force && |
+               heroku-php-apache2 public/
+http_port: 80
+databases:
+  - engine: MYSQL
+    version: 8
+    cluster_name: bon_ingest_ccv
+    db_user: bon_ingest_ccv
+workers:
+  - name: bon-ingest-ccv-worker
+    github:
+      repo: hniehorster/bon-ingest-ccv
+      branch: master
+      deploy_on_push: true
+    build_command: composer install
+    run_command: sh -c "cat ./ok && sleep infinity"
+
