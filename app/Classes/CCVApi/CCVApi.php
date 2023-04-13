@@ -113,6 +113,7 @@ class CCVApi {
         Log::info("Postdata: " . $postData);
         Log::info("TimeStamp: " . $timestamp);
         Log::info('Hash: ' . $this->apiKey . '|' . $method . '|' . $url . '|' . $postData . '|' . $timestamp);
+        Log::info('URL Params: ' . $this->convertQueryParams());
 
         $hashString = sprintf(
             '%s|%s|%s|%s|%s',
