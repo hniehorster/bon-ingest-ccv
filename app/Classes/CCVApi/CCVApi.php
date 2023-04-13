@@ -111,7 +111,7 @@ class CCVApi {
             '%s|%s|%s|%s|%s',
             $this->apiKey,
             $method,
-            $this->hashURL + $this->convertQueryParams([]),
+            $this->hashURL . $this->convertQueryParams([]),
             $postData,
             $timestamp
         );
