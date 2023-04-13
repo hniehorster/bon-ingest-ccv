@@ -155,9 +155,9 @@ class CCVApi {
 
             $this->responseBody = json_decode($response->body());
 
-            Log::info('The responsebody: ' . json_encode($this->responseBody));
+            Log::info('The responsebody: ' . json_encode($this->responseBody->next));
 
-            if(isset($body->next)){
+            if(isset($this->responseBody->next)){
                 $this->hasNextPage = true;
             }
 
