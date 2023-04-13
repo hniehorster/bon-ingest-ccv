@@ -22,7 +22,7 @@ class FetchOrders extends Command
      *
      * @var string
      */
-    protected $signature = 'orders:fetch_history {apiPublic} {createdAtMax} {queueName} {amountOfPages}';
+    protected $signature = 'orders:fetch_history {apiPublic} {createdAtMax} {queueName}';
 
     /**
      * The console command description.
@@ -37,7 +37,7 @@ class FetchOrders extends Command
 
         $this->startTime = Carbon::now()->addMinutes(15);
 
-        $apiPublic = $this->argument('externalIdentifier');
+        $apiPublic = $this->argument('apiPublic');
         $createdAtMax = $this->argument('createdAtMax');
 
         $apiUser = Handshake::where('api_public', $apiPublic)->first();
