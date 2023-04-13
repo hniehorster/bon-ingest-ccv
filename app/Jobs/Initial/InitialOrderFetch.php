@@ -65,6 +65,8 @@ class InitialOrderFetch extends Job
 
             }
 
+            Log::info('Next Page ' . $ccvClient->hasNextPage());
+
             sleep(self::PAGE_SLEEP);
 
             $pageNumber++;

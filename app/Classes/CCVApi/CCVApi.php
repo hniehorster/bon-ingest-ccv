@@ -21,7 +21,7 @@ use function PHPUnit\Framework\returnValue;
 
 class CCVApi {
 
-    const PAGE_SIZE = 25;
+    const PAGE_SIZE = 50;
 
     /**
      * @var string

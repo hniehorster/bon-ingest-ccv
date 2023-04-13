@@ -3,71 +3,77 @@
 namespace App\Console\Commands;
 
 use App\Classes\AuthenticationHelper;
+use App\Classes\CCVApi\CCVApi;
 use App\Classes\QueueHelperClass;
 use App\Classes\WebshopAppApi\WebshopappApiClient;
 use App\Jobs\ProcessOrderJob;
+use App\Jobs\Webhooks\Orders\OrderCreatedJob;
+use App\Models\Handshake;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
 class FetchOrders extends Command
 {
-
-    CONST PAGE_SIZE = 250;
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'orders:fetch_history {externalIdentifier} {createdAtMax} {queueName} {amountOfPages}';
+    protected $signature = 'orders:fetch_history {apiPublic} {createdAtMax} {queueName} {amountOfPages}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Download the hsitorical orders';
+    protected $description = 'Download the historical orders';
 
     public function handle()
     {
-        $externalIdentifier = $this->argument('externalIdentifier');
-        $createdAtMax       = $this->argument('createdAtMax');
-        $queueName          = $this->argument('queueName');
-        $amountOfPages      = $this->argument('amountOfPages');
+        Log::info('Initial Order Grab initiated');
 
-        $this->output->writeln('--- Start Fetching Historical Orders ---');
-        $this->output->writeln(' External Identifier: ' . $externalIdentifier);
-        $this->output->writeln(' CreatedAtMax: ' . $createdAtMax);
-        $this->output->writeln(' queueName: ' . $queueName);
+        $this->startTime = Carbon::now()->addMinutes(15);
 
-        $apiCredentials = AuthenticationHelper::getAPICredentials($externalIdentifier);
+        $apiPublic = $this->argument('externalIdentifier');
+        $createdAtMax = $this->argument('createdAtMax');
 
-        $webshopAppClient = new WebshopappApiClient($apiCredentials->cluster, $apiCredentials->externalApiKey, $apiCredentials->externalApiSecret, $apiCredentials->language);
+        $apiUser = Handshake::where('api_public', $apiPublic)->first();
 
-        $orderCount = $webshopAppClient->orders->count(['created_at_max' => $createdAtMax]);
+        $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
 
-        if($amountOfPages > ($orderCount/self::PAGE_SIZE)){
-            $amountOfPages = ($orderCount/self::PAGE_SIZE);
-        }
+        $orderCount = 0;
+        $pageNumber = 0;
 
-        $this->output->writeln('Found ' . $orderCount . ' order to be processed');
-        $this->output->writeln('Spread over  ' . $amountOfPages . ' pages');
+        do {
 
-        $currentPage = 1;
+            Log::info('Start grabbing orders for ' . $pageNumber );
 
-        for ($currentPage = 0; $currentPage <= $amountOfPages; $currentPage++) {
+            $ccvClient->setPageNumber($pageNumber);
+            $orders = $ccvClient->orders->get(null, ['max_create_date' => $createdAtMax]);
 
-            $this->output->writeln(' - Processing page ' . $currentPage);
+            foreach($orders->items as $order) {
 
-            $orders = $webshopAppClient->orders->get(null, ['created_at_max' => $createdAtMax, 'limit' => self::PAGE_SIZE, 'page' => $currentPage]);
+                $orderCount++;
 
-            foreach ($orders as $order) {
+                Log::info($orderCount . '. Dispatching an order for ' . $order->id );
 
-                Queue::later(QueueHelperClass::getNearestTimeRoundedUp(5, true), new ProcessOrderJob($order['id'], $apiCredentials->externalIdentifier), null, $queueName);
-                $this->output->writeln(' - Order ' . $order['id'] . ' has been queued on queue ' . $queueName);
+                $this->startTime = $this->startTime->addSeconds(2);
+
+                Queue::later($this->startTime, new OrderCreatedJob($order->id, $apiUser->external_identifier, json_decode(json_encode($order), true)), null, $this->argument('queueName'));
+
             }
-        }
 
-        $this->output->writeln('--- Done ---');
+            Log::info('Next Page ' . $ccvClient->hasNextPage());
+
+            sleep(2);
+
+            $pageNumber++;
+
+        } while($ccvClient->hasNextPage());
+
+        Log::info('Initial Order Grab finished');
     }
 }
