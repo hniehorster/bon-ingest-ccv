@@ -38,7 +38,7 @@ class CCVApi {
     protected $baseURL;
     protected $apiSecret;
     protected $version;
-    protected $hasNextPage;
+    protected $hasNextPage = false;
     protected $fullAPIURL;
     protected $hashURL;
     protected $responseBody;
@@ -154,6 +154,8 @@ class CCVApi {
         if($response->successful()){
 
             $this->responseBody = json_decode($response->body());
+
+            Log::info('The responsebody: ' . json_encode($this->responseBody));
 
             if(isset($body->next)){
                 $this->hasNextPage = true;

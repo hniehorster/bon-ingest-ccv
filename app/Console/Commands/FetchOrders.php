@@ -44,6 +44,8 @@ class FetchOrders extends Command
 
         $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
 
+        Log::info('Next Page ' . $ccvClient->hasNextPage());
+
         $orderCount = 0;
         $pageNumber = 0;
 
