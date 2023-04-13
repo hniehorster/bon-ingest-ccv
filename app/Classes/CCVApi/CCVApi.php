@@ -104,8 +104,8 @@ class CCVApi {
 
         $timestamp = (new DateTime('now', new DateTimeZone('UTC')))->format(DateTimeInterface::ISO8601);
 
-        //$postData = json_encode($this->getQueryParams($payload));
-        $postData = $payload !== null ? json_encode($payload) : null;
+        $postData = json_encode($this->getQueryParams($payload));
+        //$postData = $payload !== null ? json_encode($payload) : null;
 
         $hashString = sprintf(
             '%s|%s|%s|%s|%s',
