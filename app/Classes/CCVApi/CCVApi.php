@@ -212,7 +212,7 @@ class CCVApi {
     }
 
     public function convertQueryParams(array $params = [] ) : string {
-        return '?' . $this->getQueryParams($params);
+        return '?' . http_build_query($this->getQueryParams($params));
     }
 
 }
