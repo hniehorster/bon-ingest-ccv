@@ -21,7 +21,7 @@ use function PHPUnit\Framework\returnValue;
 
 class CCVApi {
 
-    const PAGE_SIZE = 50;
+    const PAGE_SIZE = 25;
 
     /**
      * @var string
@@ -104,56 +104,41 @@ class CCVApi {
 
         $timestamp = (new DateTime('now', new DateTimeZone('UTC')))->format(DateTimeInterface::ISO8601);
 
-        //$postData = json_encode($this->getQueryParams($payload));
         $postData = $payload !== null ? json_encode($payload) : null;
 
-        $url = $this->hashURL;
+        $url = $this->hashURL . $this->convertQueryParams();
+        
+        $aDataToHash = [];
+        $aDataToHash[] = $this->apiKey;
+        $aDataToHash[] = $method;
+        $aDataToHash[] = $url;
+        $aDataToHash[] = $postData;
+        $aDataToHash[] = $timestamp;
 
-        Log::info("URL: " . $url);
-        Log::info("Postdata: " . $postData);
-        Log::info("TimeStamp: " . $timestamp);
-        Log::info('Hash: ' . $this->apiKey . '|' . $method . '|' . $url . '|' . $postData . '|' . $timestamp);
-        Log::info('URL Params: ' . $this->convertQueryParams());
+        $sStringToHash = implode('|', $aDataToHash);
 
-        $hashString = sprintf(
-            '%s|%s|%s|%s|%s',
-            $this->apiKey,
-            $method,
-            $url,
-            $postData,
-            $timestamp
-        );
-
-        $requestHeaders['x-hash']   = hash_hmac('sha512', $hashString, $this->apiSecret);
+        $requestHeaders['x-hash']   = hash_hmac('sha512', $sStringToHash, $this->apiSecret);
         $requestHeaders['x-public'] = $this->apiKey;
         $requestHeaders['x-date']   = $timestamp;
         $requestHeaders['Accept']   = 'application/json';
-
-        Log::info('[DEBUG-HASH]: ' . $hashString);
-        Log::info('[DEBUG-API]: ', $requestHeaders);
 
         $request = Http::withHeaders($requestHeaders);
 
         switch($method) {
             case 'GET':
-                Log::info('[REQUEST DEBUG GET]: ' . $this->fullAPIURL);
-                $response = $request->get($this->fullAPIURL, $payload);
+                $response = $request->get($this->fullAPIURL . $this->convertQueryParams(), $payload);
                 break;
             case 'POST':
-                Log::info('[REQUEST DEBUG POST]: ' . $this->fullAPIURL);
-                $response = $request->post($this->fullAPIURL, $payload);
+                $response = $request->post($this->fullAPIURL . $this->convertQueryParams(), $payload);
                 break;
             case 'PATCH':
-                Log::info('[REQUEST DEBUG PATCH]: ' . $this->fullAPIURL);
-                $response = $request->patch($this->fullAPIURL, $payload);
+                $response = $request->patch($this->fullAPIURL . $this->convertQueryParams(), $payload);
                 break;
             case 'PUT':
-                Log::info('[REQUEST DEBUG PUT]: ' . $this->fullAPIURL);
-                $response = $request->put($this->fullAPIURL, $payload);
+                $response = $request->put($this->fullAPIURL . $this->convertQueryParams(), $payload);
                 break;
             case 'DELETE':
-                Log::info('[REQUEST DEBUG DELETE]: ' . $this->fullAPIURL);
-                $response = $request->delete($this->fullAPIURL);
+                $response = $request->delete($this->fullAPIURL . $this->convertQueryParams());
                 break;
             default:
                 throw new \Exception('[CCVAPI] Method not supported');
@@ -163,9 +148,8 @@ class CCVApi {
 
             $this->responseBody = json_decode($response->body());
 
-            Log::info('The responsebody: ' . json_encode($this->responseBody->next));
-
             if(isset($this->responseBody->next)){
+
                 $this->hasNextPage = true;
             }
 
@@ -203,18 +187,22 @@ class CCVApi {
      */
     public function getQueryParams($array = []) {
 
+        $this->queryParams['start'] = 0;
+        $this->queryParams['size'] = self::PAGE_SIZE;
+
         if($this->pageNumber > 0) {
-            $array['start'] = $this->pageNumber*self::PAGE_SIZE;
-            $array['size']  = self::PAGE_SIZE;
+
+            $this->queryParams['start'] = $this->pageNumber * self::PAGE_SIZE;
+            $this->queryParams['size']  = self::PAGE_SIZE;
         }
 
         if(is_null($this->sortOrder)){
             $this->sortOrder = 'id_desc';
         }
 
-        $array['orderby'] = $this->sortOrder;
+        $this->queryParams['orderby'] = $this->sortOrder;
 
-        $this->queryParams = array_merge($array, $this->queryParams);
+        $this->queryParams = array_merge($this->queryParams, $array);
 
         return $this->queryParams;
     }

@@ -44,8 +44,6 @@ class FetchOrders extends Command
 
         $ccvClient = new CCVApi($apiUser->api_root, $apiUser->api_public, $apiUser->api_secret);
 
-        Log::info('Next Page ' . $ccvClient->hasNextPage());
-
         $orderCount = 0;
         $pageNumber = 0;
 
@@ -54,6 +52,7 @@ class FetchOrders extends Command
             Log::info('Start grabbing orders for ' . $pageNumber );
 
             $ccvClient->setPageNumber($pageNumber);
+
             $orders = $ccvClient->orders->get(null, ['max_create_date' => $createdAtMax]);
 
             foreach($orders->items as $order) {
@@ -67,8 +66,6 @@ class FetchOrders extends Command
                 Queue::later($this->startTime, new OrderCreatedJob($order->id, $apiUser->external_identifier, json_decode(json_encode($order), true)), null, $this->argument('queueName'));
 
             }
-
-            Log::info('Next Page ' . $ccvClient->hasNextPage());
 
             sleep(2);
 
