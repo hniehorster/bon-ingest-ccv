@@ -107,7 +107,7 @@ class CCVApi {
         //$postData = json_encode($this->getQueryParams($payload));
         $postData = $payload !== null ? json_encode($payload) : null;
 
-        $url = $this->hashURL . $this->convertQueryParams([]);
+        $url = $this->hashURL;
 
         Log::info("URL: " . $url);
         Log::info("Postdata: " . $postData);
