@@ -94,7 +94,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
                         $transformedOrderRow = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($orderRowDetails), true), $apiUser->defaults))->orderRow->transform();
                         $transformedOrderRow['order_uuid'] = $bonOrder->uuid;
 
-                        Log::info('Working on ' . $transformedOrderRow['id']);
+                        Log::info('Working on ' . json_encode($transformedOrderRow));
 
                         $countAttributes = count($orderRowDetails->attributes);
                         $variantTitle = "";
