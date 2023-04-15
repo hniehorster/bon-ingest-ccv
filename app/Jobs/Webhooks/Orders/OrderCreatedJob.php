@@ -60,9 +60,20 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
             if ($bonOrderCheck->meta->count > 0) {
                 //Update the order
+
+                Log::info('Order Found');
+
                 $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, $transformedOrder);
+
+                Log::info('Order Updated');
             } else {
+
+                Log::info('Order Found');
+
                 $bonOrder = $bonApi->orders->create($transformedOrder);
+
+                Log::info('Order Created');
+
             }
 
             $orderRowsPages = true;
