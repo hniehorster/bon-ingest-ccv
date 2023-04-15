@@ -88,14 +88,13 @@ class OrderCreatedJob extends Job implements ShouldQueue
                     $ccvClient->setPageNumber($orderRowPageNumber);
                     $orderRows = $ccvClient->orderRows->get($this->externalOrderId,);
 
-                    Log::info('Order Rows: ' . json_encode($orderRows));
-                    Log::info('Order Pages: ' . json_encode($ccvClient->hasNextPage()));
-
                     //Let's create the row items
                     foreach ($orderRows->items as $orderRowDetails) {
 
                         $transformedOrderRow = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($orderRowDetails), true), $apiUser->defaults))->orderRow->transform();
                         $transformedOrderRow['order_uuid'] = $bonOrder->uuid;
+
+                        Log::info('Working on ' . $transformedOrderRow['id']);
 
                         $countAttributes = count($orderRowDetails->attributes);
                         $variantTitle = "";
@@ -123,9 +122,13 @@ class OrderCreatedJob extends Job implements ShouldQueue
                         if ($bonLineItemCheck->meta->count > 0) {
 
                             $bonLineItem = $bonApi->orderLineItems->update($bonLineItemCheck->data[0]->uuid, $transformedOrderRow);
+
+                            Log::info($transformedOrderRow['id'] . ' UPDATED');
                         } else {
 
                             $bonLineItem = $bonApi->orderLineItems->create($transformedOrderRow);
+
+                            Log::info($transformedOrderRow['id'] . ' CREATED');
                         }
 
                         $orderCreatedAt = new Carbon($transformedOrder['shop_created_at']);
@@ -141,6 +144,9 @@ class OrderCreatedJob extends Job implements ShouldQueue
                                     $productPhotos = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($productPhotos), true), $apiUser->defaults))->productPhoto->transform();
 
                                     $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $productPhotos['image']]);
+
+                                    Log::info($transformedOrderRow['id'] . ' IMAGE GRABBED');
+
                                 }
                             } catch (Exception $e) {
                                 if ($e->getCode() == 429) {
@@ -173,6 +179,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
                     }
                 }
 
+                Log::info('Let\'s do the next page: ' .$ccvClient->hasNextPage());
                 $orderRowPageNumber++;
 
             } while ($ccvClient->hasNextPage());
