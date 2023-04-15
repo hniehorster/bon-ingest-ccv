@@ -94,7 +94,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
                         $transformedOrderRow = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($orderRowDetails), true), $apiUser->defaults))->orderRow->transform();
                         $transformedOrderRow['order_uuid'] = $bonOrder->uuid;
 
-                        Log::info('Working on ' . json_encode($transformedOrderRow));
+                        Log::info('Working on ' . $transformedOrderRow['line_item_id']);
 
                         $countAttributes = count($orderRowDetails->attributes);
                         $variantTitle = "";
@@ -123,12 +123,12 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
                             $bonLineItem = $bonApi->orderLineItems->update($bonLineItemCheck->data[0]->uuid, $transformedOrderRow);
 
-                            Log::info('UPDATED');
+                            Log::info($transformedOrderRow['line_item_id'] . ' UPDATED');
                         } else {
 
                             $bonLineItem = $bonApi->orderLineItems->create($transformedOrderRow);
 
-                            Log::info('CREATED');
+                            Log::info($transformedOrderRow['line_item_id'] . 'CREATED');
                         }
 
                         $orderCreatedAt = new Carbon($transformedOrder['shop_created_at']);
