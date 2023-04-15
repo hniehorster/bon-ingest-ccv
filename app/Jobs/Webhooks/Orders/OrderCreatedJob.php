@@ -61,11 +61,8 @@ class OrderCreatedJob extends Job implements ShouldQueue
             if ($bonOrderCheck->meta->count > 0) {
                 //Update the order
                 $bonOrder = $bonApi->orders->update($bonOrderCheck->data[0]->uuid, $transformedOrder);
-                Log::info('[BONAPI] UPDATE order ' . $transformedOrder['gid'] . ' ' . $bonOrderCheck->data[0]->uuid);
             } else {
                 $bonOrder = $bonApi->orders->create($transformedOrder);
-                Log::info('[BONAPI] CREATE order ' . $transformedOrder['gid']);
-
             }
 
             $orderRowsPages = true;
@@ -105,18 +102,13 @@ class OrderCreatedJob extends Job implements ShouldQueue
                         }
 
                         $bonLineItemCheck = $bonApi->orderLineItems->get(null, ['order_uuid' => $bonOrder->uuid, 'line_item_id' => $transformedOrderRow['line_item_id'], 'business_uuid' => $apiUser->business_uuid]);
-                        Log::info('[BONAPI] GET orderLineItems ' . $transformedOrder['gid']);
 
                         if ($bonLineItemCheck->meta->count > 0) {
 
                             $bonLineItem = $bonApi->orderLineItems->update($bonLineItemCheck->data[0]->uuid, $transformedOrderRow);
-                            Log::info('[BONAPI] UPDATE orderLineItems ' . $transformedOrder['gid']);
-
                         } else {
 
                             $bonLineItem = $bonApi->orderLineItems->create($transformedOrderRow);
-                            Log::info('[BONAPI] CREATE orderLineItems ' . $transformedOrder['gid']);
-
                         }
 
                         $orderCreatedAt = new Carbon($transformedOrder['shop_created_at']);
@@ -131,11 +123,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
                                     $productPhotos = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($productPhotos), true), $apiUser->defaults))->productPhoto->transform();
 
-                                    Log::info('Product Photo: ', $productPhotos);
-
                                     $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $productPhotos['image']]);
-
-                                    Log::info('Product Photo BON: ', json_decode(json_encode($bonLineItemImage), true));
                                 }
                             } catch (Exception $e) {
                                 if ($e->getCode() == 429) {

@@ -44,10 +44,8 @@ class OrderIsPaidJob extends Job implements ShouldQueue
             var_dump('Order Found');
 
             if($this->orderData['paid']){
-                Log::info('Order paid ');
                 $paid = "paid";
             }else{
-                Log::info('Order not paid ');
                 $paid = "not_paid";
             }
 

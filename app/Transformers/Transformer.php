@@ -141,8 +141,6 @@ class Transformer
      */
     public function transformKey(string $value, array $externalData) {
 
-        Log::info('Order Transformer: ' . $value);
-
         if(Str::startsWith($value,'gid:')) {
             return $this->getGidTransformFromString($value, $externalData);
         }
