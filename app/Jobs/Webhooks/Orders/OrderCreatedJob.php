@@ -79,11 +79,18 @@ class OrderCreatedJob extends Job implements ShouldQueue
             $orderRowsPages = true;
 
             //Let's create the order Line Items
-            while ($orderRowsPages) {
+            do {
+
+                Log::info('Lets do the order pages');
 
                 try {
                     $orderRows = $ccvClient->orderRows->get($this->externalOrderId,);
-                    $orderRowsPages = $ccvClient->hasNextPage();
+
+                    Log::info('Order Rows: ' . json_encode($orderRows));
+
+                    $orderRowsPages =
+
+                    Log::info('Order Pages: ' . json_encode($ccvClient->hasNextPage()));
 
                     //Let's create the row items
                     foreach ($orderRows->items as $orderRowDetails) {
@@ -166,7 +173,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
                         Log::info('RELEASED BACK TO QUEUE');
                     }
                 }
-            }
+            } while ($ccvClient->hasNextPage());
 
             if($transformedOrder['shipment_status'] == 'shipped') {
 
