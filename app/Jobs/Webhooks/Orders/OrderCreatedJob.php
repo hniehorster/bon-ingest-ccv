@@ -173,7 +173,8 @@ class OrderCreatedJob extends Job implements ShouldQueue
                         Log::info('RELEASED BACK TO QUEUE');
                     }else{
                         //release back to the queue if failed
-                        Log::info('Releasing back to queue for other reason');
+                        Log::info('Releasing back to queue for other reason ' . $e->getMessage());
+                        Log::info('Trace ' . $e->getTraceAsString());
                         $this->release(QueueHelperClass::getNearestTimeRoundedUp(1, true));
                         Log::info('RELEASED BACK TO QUEUE');
                     }
