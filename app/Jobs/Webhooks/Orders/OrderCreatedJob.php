@@ -123,12 +123,12 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
                             $bonLineItem = $bonApi->orderLineItems->update($bonLineItemCheck->data[0]->uuid, $transformedOrderRow);
 
-                            Log::info($transformedOrderRow['id'] . ' UPDATED');
+                            Log::info('UPDATED');
                         } else {
 
                             $bonLineItem = $bonApi->orderLineItems->create($transformedOrderRow);
 
-                            Log::info($transformedOrderRow['id'] . ' CREATED');
+                            Log::info('CREATED');
                         }
 
                         $orderCreatedAt = new Carbon($transformedOrder['shop_created_at']);
