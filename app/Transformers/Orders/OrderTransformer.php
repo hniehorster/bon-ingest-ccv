@@ -38,7 +38,7 @@ class OrderTransformer {
             'first_name'                        => 'customer.billingaddress.first_name',
             'last_name'                         => 'customer.billingaddress.last_name',
             'full_name'                         => 'customer.billingaddress.full_name',
-            'phone'                             => 'customer.billingaddress.telephone',
+            'phone'                             => substr('customer.billingaddress.telephone', 0, 20),
             'email'                             => 'customer.email',
             'discount_code'                     => 'discountcoupon.code',
             'currency_code'                     => 'bon_default:currency',
