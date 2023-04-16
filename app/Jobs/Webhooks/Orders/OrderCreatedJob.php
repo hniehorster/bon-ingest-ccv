@@ -145,7 +145,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
                                     $bonLineItemImage = $bonApi->orderLineItemImages->create($bonLineItem->uuid, ['external_url' => $productPhotos['image']]);
 
-                                    Log::info($transformedOrderRow['id'] . ' IMAGE GRABBED');
+                                    Log::info($transformedOrderRow['line_item_id'] . ' IMAGE GRABBED');
 
                                 }
                             } catch (Exception $e) {
