@@ -76,7 +76,7 @@ class CouponController extends Controller {
 
             $coupon = $ccvClient->discountcoupons->create($discountParams);
 
-            return $this->successResponse($coupon, Response::HTTP_CREATED);
+            return $this->successResponse(json_encode($coupon), Response::HTTP_CREATED);
 
 
         } catch (Exception $e) {
