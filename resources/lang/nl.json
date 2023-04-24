@@ -8,7 +8,7 @@
     "pre_install.contract.header": "Voordat we je onderdeel maken van Bon, informeren we je graag over:",
     "pre_install.contract.bon_generates_order" : "Indien Bon een order genereert:",
     "pre_install.contract.1st_purchase": "5% transactie fee, 1ste bestelling gebruiker",
-    "pre_install.contract.2nd_purchase": "4% transactie fee, 3de bestelling gebruiker",
+    "pre_install.contract.2nd_purchase": "4% transactie fee, 2de bestelling gebruiker",
     "pre_install.contract.3rd_purchase": "3% transactie fee, 3de+ bestelling gebruiker",
     "pre_install.contract.fixed_fee": "€0.00 vaste fee per bestelling",
     "pre_install.contract.vat_notice": "Alle prijzen zijn exclusief BTW",

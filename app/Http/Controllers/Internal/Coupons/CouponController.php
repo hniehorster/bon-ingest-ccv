@@ -55,7 +55,6 @@ class CouponController extends Controller {
                 $discountTypeName = 'Price';
             }
 
-
             $discountParams = [
                 'code'              => $request->code,
                 'discount'          => $calculatedDiscount,
@@ -63,7 +62,7 @@ class CouponController extends Controller {
                 'minimumprice'      => $request->minimum_amount,
                 'begindate'         => Carbon::parse($request->valid_from)->format('Y-m-d'),
                 'enddate'           => Carbon::parse($request->valid_till)->format('Y-m-d'),
-                'givesfreeshippin'  => false,
+                'givesfreeshipping' => false,
                 'onetimeuse'        => true,
             ];
 
