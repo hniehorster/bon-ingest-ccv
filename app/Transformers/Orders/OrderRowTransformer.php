@@ -35,7 +35,7 @@ class OrderRowTransformer {
             'business_uuid'     => 'BON_BUSINESSUUID',
             'line_item_id'      => 'id',
 
-            'product_id'        => 'product_id',
+            'product_id'        => 'if_empty:product_id:id',
             'product_gid'       => 'gid:product:if_empty:product_id:id',
             'product_title'     => 'product_name',
 
