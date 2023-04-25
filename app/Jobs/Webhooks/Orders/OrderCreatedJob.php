@@ -108,7 +108,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
                             }
                         }
 
-                        $transformedOrderRow['variant_title'] = $variantTitle;
+                        $transformedOrderRow['variant_title'] = substr($variantTitle,0 ,254);
                         $transformedOrderRow['variant_id'] = $variantId;
 
                         if (!is_null($variantId)) {
