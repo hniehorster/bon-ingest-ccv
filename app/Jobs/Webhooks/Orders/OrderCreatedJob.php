@@ -94,6 +94,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
                         Log::info('Order Row Details: ' . json_encode($orderRowDetails));
 
                         $transformedOrderRow = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($orderRowDetails), true), $apiUser->defaults))->orderRow->transform();
+
                         $transformedOrderRow['order_uuid'] = $bonOrder->uuid;
 
                         Log::info('Working on ' . $transformedOrderRow['line_item_id']);
@@ -112,8 +113,9 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
                         $transformedOrderRow['variant_title'] = substr($variantTitle,0 ,254);
                         $transformedOrderRow['variant_id'] = $variantId;
+                        $transformedOrderRow['product_gid'] = 'ccv:pr:' . $bonOrder->business_uuid .':' . $transformedOrderRow['product_id'];
 
-                        if (!is_null($variantId)) {
+                        if(!is_null($variantId)) {
                             $transformedOrderRow['variant_gid'] = (new BonSDKGID())->encode(env('PLATFORM_TEXT'), 'variant', $bonOrder->business_uuid, $variantId)->getGID();
                         } else {
                             $transformedOrderRow['variant_gid'] = null;

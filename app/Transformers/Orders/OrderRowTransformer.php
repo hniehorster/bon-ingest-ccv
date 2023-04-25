@@ -36,7 +36,6 @@ class OrderRowTransformer {
             'line_item_id'      => 'id',
 
             'product_id'        => 'if_empty:product_id:id',
-            'product_gid'       => 'gid:product:if_empty:product_id:id',
             'product_title'     => 'product_name',
 
             'quantity'          => 'count',
