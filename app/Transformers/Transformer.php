@@ -157,9 +157,6 @@ class Transformer
             return $this->getTaxDeducted($value, $externalData);
         }
         elseif(Str::startsWith($value,'if_empty:')) {
-
-            Log::info('If_empty found: ' . $value);
-
             return $this->getAlternateValueIfEmpty($value, $externalData);
         }
         //Common usage
@@ -172,8 +169,10 @@ class Transformer
         elseif(empty($value)){
             return '';
         }
-        else{
+        elseif(array_key_exists($value, $externalData)){
             return $externalData[$value];
+        }else{
+            return 'N-A';
         }
     }
 
