@@ -91,6 +91,8 @@ class OrderCreatedJob extends Job implements ShouldQueue
                     //Let's create the row items
                     foreach ($orderRows->items as $orderRowDetails) {
 
+                        Log::info('Order Row Details: ' . json_encode($orderRowDetails));
+
                         $transformedOrderRow = (new Transformer($bonOrder->business_uuid, json_decode(json_encode($orderRowDetails), true), $apiUser->defaults))->orderRow->transform();
                         $transformedOrderRow['order_uuid'] = $bonOrder->uuid;
 
