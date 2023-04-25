@@ -170,15 +170,9 @@ class Transformer
             return '';
         }
         elseif(array_key_exists($value, $externalData)){
-
-            if(!is_null($externalData[$value])){
-                return $externalData[$value];
-            }else{
-                return 'DNE';
-            }
-
+            return $externalData[$value];
         }else{
-            return 'DNE';
+            return '';
         }
     }
 
