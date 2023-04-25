@@ -231,6 +231,8 @@ class Transformer
         $objectType     = $parts[0];
         $externalKey    = $this->transformKey($parts[1], $array);
 
+        Log::info('External GID String ' . $parts[1] . ' ' . $externalKey);
+
         return (new BonSDKGID)->encode($this->platform, $objectType, $this->businessUUID, $externalKey)->getGID();
     }
 
