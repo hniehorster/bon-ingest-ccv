@@ -100,6 +100,23 @@ class CarrierFinderHelper {
                 $carrierFound           = true;
             }
 
+            //DPD
+            if(is_numeric($this->trackingCode) && Str::length($this->trackingCode) == 14){
+                $this->carrierName      = 'dpd';
+                $this->trackingEnabled  = true;
+                $carrierFound           = true;
+            }
+
+            //DHL Expres
+            if(
+                Str::startsWith($this->trackingCode, 'JVGL') ||
+                Str::startsWith($this->trackingCode, 'JJD') ||
+                Str::startsWith($this->trackingCode, 'CI')) {
+                $this->carrierName      = 'dhl';
+                $this->trackingEnabled  = true;
+                $carrierFound           = true;
+            }
+
         } else {
             return false;
         }
