@@ -40,9 +40,9 @@ class OrderTransformer {
             'full_name'                         => 'customer.billingaddress.full_name',
             'phone'                             => substr('customer.billingaddress.telephone', 0, 20),
             'email'                             => 'customer.email',
-            'discount_code'                     => 'discountcoupon.code',
             'currency_code'                     => 'bon_default:currency',
 
+            'discount_code'                     => '',
             'payment_status'                    => '',
             'shipment_status'                   => '',
 

@@ -32,6 +32,7 @@ class ProductsWebhookController extends BaseController
      * @return void
      */
     public function productUpdated(int $shopId, Request $request) {
+
         $webhookHelper = new WebhookRequestHelperClass($request);
         $queueData = $webhookHelper->getQueuePreparedData();
 

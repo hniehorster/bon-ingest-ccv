@@ -135,6 +135,7 @@ class InstallController extends BaseController {
         $installHelper->fireInitialOrderGrabEvent($apiUser->api_public, $createdAtMax);
 
 
+
         return view('install.completed', [
             'manualToken' => $newManualLinkToken,
             'business'      => (new BusinessService())->obtainBusiness('en', $businessUUID)

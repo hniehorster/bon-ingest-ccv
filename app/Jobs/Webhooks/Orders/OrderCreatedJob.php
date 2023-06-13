@@ -48,6 +48,7 @@ class OrderCreatedJob extends Job implements ShouldQueue
 
             $transformedOrder['payment_status'] = $orderDetails->paid ? 'paid' : 'not_paid';
             $transformedOrder['shipment_status'] = 'not_shipped';
+            $transformedOrder['discount_code'][] = $orderDetails->discountcoupon->code;
 
             if (in_array($orderDetails->status, [5, 6, 7])) {
                 $transformedOrder['shipment_status'] = 'shipped';

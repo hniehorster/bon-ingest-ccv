@@ -21,11 +21,6 @@ $router->group([
     'where' => ['locale' => '[a-zA-Z]{2}'],
 ], function ($apiLocale) use ($router) {
 
-    $router->get('/time', 'TimeController@get');
-
-    $router->get('/test', function() {
-        echo route('ordersWebhook');
-    });
 
     /****
      * DEBUG API

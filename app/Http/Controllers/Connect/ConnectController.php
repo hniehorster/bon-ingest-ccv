@@ -21,21 +21,27 @@ class ConnectController extends Controller {
     public function show(Request $request) {
 
         $rules = [
-            'user_uuid' => 'required|uuid'
+            'user_uuid' => 'required|uuid',
         ];
+
+        $source = 'app';
+
+        if($request->has('source')) {
+            $source = $request->source;
+        }
 
         $this->validate($request, $rules);
 
         return view('connect.show', [
             'user_uuid' => $request->user_uuid,
+            'source'    => $source,
             'apiLocale' => App::getLocale()
         ]);
     }
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\Response|\Illuminate\View\View|\Laravel\Lumen\Application|\Laravel\Lumen\Http\ResponseFactory
-     * @throws \BonSDK\ApiIngest\Exceptions\BonIngestApiException
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View|\Laravel\Lumen\Application|\Laravel\Lumen\Http\Redirector
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -44,7 +50,8 @@ class ConnectController extends Controller {
         $this->validate($request, [
             'token_1'   => 'required|string|max:4',
             'token_2'   => 'required|string|max:4',
-            'user_uuid' => 'required|uuid'
+            'user_uuid' => 'required|uuid',
+            'source'    => 'required|string'
         ]);
 
         $tokenCheck = ManualLinkToken::where([
@@ -69,6 +76,10 @@ class ConnectController extends Controller {
             $socket = (new AuthPlatformSelectedService())->confirmAuthPlatformSelected('en', $request->user_uuid);
 
             $tokenCheck->delete();
+
+            if($request->source == 'web') {
+                return redirect(env('MERCHANT_BFF') . '/backoffice/install/success/' . $tokenCheck->business_uuid);
+            }
 
             return view('connect.success');
 
